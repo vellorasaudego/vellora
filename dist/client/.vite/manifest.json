@@ -1,0 +1,322 @@
+{
+  "_Badge-D3Nospj7.js": {
+    "file": "assets/Badge-D3Nospj7.js",
+    "name": "Badge",
+    "imports": [
+      "_framework-MXXbyNfi.js"
+    ]
+  },
+  "_TurnstileWidget-BZ7vddLI.js": {
+    "file": "assets/TurnstileWidget-BZ7vddLI.js",
+    "name": "TurnstileWidget",
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js"
+    ]
+  },
+  "_framework-MXXbyNfi.js": {
+    "file": "assets/framework-MXXbyNfi.js",
+    "name": "framework",
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js"
+    ]
+  },
+  "_navigation-CzfSVj_e.js": {
+    "file": "assets/navigation-CzfSVj_e.js",
+    "name": "navigation",
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_readonly-url-search-params-uwfUC-6c.js",
+      "_url-utils-BAkPrQqo.js"
+    ]
+  },
+  "_readonly-url-search-params-uwfUC-6c.js": {
+    "file": "assets/readonly-url-search-params-uwfUC-6c.js",
+    "name": "readonly-url-search-params",
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js"
+    ]
+  },
+  "_rolldown-runtime-S-ySWqyJ.js": {
+    "file": "assets/rolldown-runtime-S-ySWqyJ.js",
+    "name": "rolldown-runtime"
+  },
+  "_url-utils-BAkPrQqo.js": {
+    "file": "assets/url-utils-BAkPrQqo.js",
+    "name": "url-utils"
+  },
+  "node_modules/vinext/dist/shims/layout-segment-context.js": {
+    "file": "assets/layout-segment-context-B-tJ2Xmg.js",
+    "name": "layout-segment-context",
+    "src": "node_modules/vinext/dist/shims/layout-segment-context.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "virtual:vinext-app-browser-entry",
+      "_framework-MXXbyNfi.js"
+    ]
+  },
+  "node_modules/vinext/dist/shims/link.js": {
+    "file": "assets/link-BzBocKJi.js",
+    "name": "link",
+    "src": "node_modules/vinext/dist/shims/link.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "virtual:vinext-app-browser-entry",
+      "_framework-MXXbyNfi.js",
+      "_readonly-url-search-params-uwfUC-6c.js",
+      "_url-utils-BAkPrQqo.js"
+    ],
+    "dynamicImports": [
+      "node_modules/vinext/dist/shims/router.js"
+    ]
+  },
+  "node_modules/vinext/dist/shims/router.js": {
+    "file": "assets/router-BsLE4u_u.js",
+    "name": "router",
+    "src": "node_modules/vinext/dist/shims/router.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "virtual:vinext-app-browser-entry",
+      "_framework-MXXbyNfi.js",
+      "node_modules/vinext/dist/shims/link.js",
+      "_url-utils-BAkPrQqo.js"
+    ],
+    "dynamicImports": [
+      "_framework-MXXbyNfi.js"
+    ]
+  },
+  "src/components/ContactForm.tsx": {
+    "file": "assets/ContactForm-8Dr4VPsZ.js",
+    "name": "ContactForm",
+    "src": "src/components/ContactForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "node_modules/vinext/dist/shims/link.js",
+      "_TurnstileWidget-BZ7vddLI.js"
+    ]
+  },
+  "src/components/DailyRecordForm.tsx": {
+    "file": "assets/DailyRecordForm-JU21tB3B.js",
+    "name": "DailyRecordForm",
+    "src": "src/components/DailyRecordForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/ForgotPasswordForm.tsx": {
+    "file": "assets/ForgotPasswordForm-CZqL15Rf.js",
+    "name": "ForgotPasswordForm",
+    "src": "src/components/ForgotPasswordForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js"
+    ]
+  },
+  "src/components/LoginForm.tsx": {
+    "file": "assets/LoginForm-DB3dczBI.js",
+    "name": "LoginForm",
+    "src": "src/components/LoginForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "node_modules/vinext/dist/shims/link.js"
+    ]
+  },
+  "src/components/LogoutButton.tsx": {
+    "file": "assets/LogoutButton-BJpRZMwE.js",
+    "name": "LogoutButton",
+    "src": "src/components/LogoutButton.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/ProfessionalApplicationForm.tsx": {
+    "file": "assets/ProfessionalApplicationForm-D8dyzTx1.js",
+    "name": "ProfessionalApplicationForm",
+    "src": "src/components/ProfessionalApplicationForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "node_modules/vinext/dist/shims/link.js",
+      "_TurnstileWidget-BZ7vddLI.js"
+    ]
+  },
+  "src/components/ResetPasswordForm.tsx": {
+    "file": "assets/ResetPasswordForm-CK-TQvgp.js",
+    "name": "ResetPasswordForm",
+    "src": "src/components/ResetPasswordForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/AssignmentsManager.tsx": {
+    "file": "assets/AssignmentsManager-BQAdS7Ql.js",
+    "name": "AssignmentsManager",
+    "src": "src/components/admin/AssignmentsManager.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/CaregiverBank.tsx": {
+    "file": "assets/CaregiverBank-Me4k8QwA.js",
+    "name": "CaregiverBank",
+    "src": "src/components/admin/CaregiverBank.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "src/components/admin/ContractManager.tsx",
+      "src/components/admin/DeleteButton.tsx",
+      "_Badge-D3Nospj7.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/ContractManager.tsx": {
+    "file": "assets/ContractManager-B1ht7Gmz.js",
+    "name": "ContractManager",
+    "src": "src/components/admin/ContractManager.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/DeleteButton.tsx": {
+    "file": "assets/DeleteButton-B3IQpBrC.js",
+    "name": "DeleteButton",
+    "src": "src/components/admin/DeleteButton.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/EditPatientForm.tsx": {
+    "file": "assets/EditPatientForm-Bi7dd-Gl.js",
+    "name": "EditPatientForm",
+    "src": "src/components/admin/EditPatientForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/LeadsTable.tsx": {
+    "file": "assets/LeadsTable-CWZkFtcG.js",
+    "name": "LeadsTable",
+    "src": "src/components/admin/LeadsTable.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "node_modules/vinext/dist/shims/link.js",
+      "src/components/admin/DeleteButton.tsx",
+      "_Badge-D3Nospj7.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/NewCaregiverForm.tsx": {
+    "file": "assets/NewCaregiverForm-C9rXdsKp.js",
+    "name": "NewCaregiverForm",
+    "src": "src/components/admin/NewCaregiverForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/NewPatientForm.tsx": {
+    "file": "assets/NewPatientForm-Dtke-Aqv.js",
+    "name": "NewPatientForm",
+    "src": "src/components/admin/NewPatientForm.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/admin/ProfessionalApplicationsTable.tsx": {
+    "file": "assets/ProfessionalApplicationsTable-DSXYvJWZ.js",
+    "name": "ProfessionalApplicationsTable",
+    "src": "src/components/admin/ProfessionalApplicationsTable.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "src/components/admin/DeleteButton.tsx",
+      "_Badge-D3Nospj7.js",
+      "_navigation-CzfSVj_e.js"
+    ]
+  },
+  "src/components/charts/VitalsChart.tsx": {
+    "file": "assets/VitalsChart-CigRe1cI.js",
+    "name": "VitalsChart",
+    "src": "src/components/charts/VitalsChart.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js"
+    ]
+  },
+  "virtual:vinext-app-browser-entry": {
+    "file": "assets/index-BONN1UOr.js",
+    "name": "index",
+    "src": "virtual:vinext-app-browser-entry",
+    "isEntry": true,
+    "imports": [
+      "_rolldown-runtime-S-ySWqyJ.js",
+      "_framework-MXXbyNfi.js",
+      "_readonly-url-search-params-uwfUC-6c.js",
+      "_url-utils-BAkPrQqo.js"
+    ],
+    "dynamicImports": [
+      "src/components/DailyRecordForm.tsx",
+      "node_modules/vinext/dist/shims/layout-segment-context.js",
+      "src/components/admin/AssignmentsManager.tsx",
+      "src/components/admin/EditPatientForm.tsx",
+      "src/components/LogoutButton.tsx",
+      "virtual:vinext-app-browser-entry",
+      "src/components/admin/CaregiverBank.tsx",
+      "src/components/admin/NewCaregiverForm.tsx",
+      "src/components/admin/NewPatientForm.tsx",
+      "src/components/ResetPasswordForm.tsx",
+      "src/components/admin/DeleteButton.tsx",
+      "src/components/admin/ProfessionalApplicationsTable.tsx",
+      "src/components/ProfessionalApplicationForm.tsx",
+      "src/components/admin/ContractManager.tsx",
+      "node_modules/vinext/dist/shims/link.js",
+      "src/components/ForgotPasswordForm.tsx",
+      "src/components/ContactForm.tsx",
+      "src/components/LoginForm.tsx",
+      "src/components/charts/VitalsChart.tsx",
+      "src/components/admin/LeadsTable.tsx"
+    ]
+  }
+}

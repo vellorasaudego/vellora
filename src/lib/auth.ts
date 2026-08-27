@@ -1,0 +1,87 @@
+import { SignJWT, jwtVerify } from "jose";
+import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
+import { queryOne } from "./db";
+import { runtimeValue } from "./runtime-config";
+
+export type Role = "admin" | "familia" | "cuidador";
+
+export type SessionPayload = {
+  userId: string;
+  name: string;
+  role: Role;
+  sessionVersion: number;
+};
+
+const SESSION_COOKIE = "vellora_session";
+
+function sessionSecret(): Uint8Array {
+  const secretValue = runtimeValue("VELLORA_SESSION_SECRET");
+  if (!secretValue) {
+    throw new Error("Configure VELLORA_SESSION_SECRET antes de habilitar o acesso restrito.");
+  }
+  return new TextEncoder().encode(secretValue);
+}
+
+export function hashPassword(password: string): string {
+  return bcrypt.hashSync(password, 10);
+}
+
+export function verifyPassword(password: string, hash: string): boolean {
+  return bcrypt.compareSync(password, hash);
+}
+
+export async function createSessionToken(payload: SessionPayload): Promise<string> {
+  return new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(sessionSecret());
+}
+
+export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
+  try {
+    const { payload } = await jwtVerify(token, sessionSecret());
+    if (
+      typeof payload.userId === "string" &&
+      typeof payload.name === "string" &&
+      typeof payload.sessionVersion === "number" &&
+      (payload.role === "admin" || payload.role === "familia" || payload.role === "cuidador")
+    ) {
+      return {
+        userId: payload.userId,
+        name: payload.name,
+        role: payload.role,
+        sessionVersion: payload.sessionVersion,
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getSession(): Promise<SessionPayload | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+  const payload = await verifySessionToken(token);
+  if (!payload) return null;
+
+  const user = await queryOne<{ role: Role; session_version: number }>(
+    "SELECT role, session_version FROM users WHERE id = $1 AND deleted_at IS NULL",
+    [payload.userId]
+  );
+  if (!user || user.role !== payload.role || user.session_version !== payload.sessionVersion) {
+    return null;
+  }
+  return payload;
+}
+
+export const SESSION_COOKIE_NAME = SESSION_COOKIE;
+
+export function roleHomePath(role: Role): string {
+  if (role === "admin") return "/admin";
+  if (role === "familia") return "/familia";
+  return "/cuidador";
+}
