@@ -28,59 +28,80 @@ npm run start
 
 ## Dados e arquivos
 
-- O banco estruturado usa **Cloudflare D1**, com o binding `DB`.
-- Contratos PDF usam **Cloudflare R2**, com o binding `BUCKET`.
-- O schema é definido em `db/schema.ts`.
-- As migrações versionadas ficam em `drizzle/` e são aplicadas pela hospedagem.
-- O código de execução não cria nem altera tabelas; mudanças de schema devem sempre gerar uma nova migração.
+No rollout atual, o runtime de produção usa **Supabase Auth**, **Supabase
+Postgres** e **Supabase Storage** para autenticação, dados estruturados,
+contratos e fotos. Mantenha `VELLORA_AUTH_PROVIDER=supabase`,
+`VELLORA_DATA_PROVIDER=supabase` e `VELLORA_STORAGE_PROVIDER=supabase`.
 
-Depois de alterar `db/schema.ts`, gere e confira a migração:
-
-```bash
-npx drizzle-kit generate
-```
+As migrations SQL do runtime de produção ficam em `supabase/migrations/` e
+devem ser revisadas e aplicadas manualmente no projeto Supabase de produção.
+`db/schema.ts` e `drizzle/` pertencem ao adaptador legado. Cloudflare D1/R2 e
+os artefatos de OpenAI Sites só podem aparecer em um legado ou preview
+explicitamente configurado; não são requisitos da produção Supabase.
 
 ## Configuração segura
 
-`VELLORA_SESSION_SECRET` é obrigatório para assinar os cookies de sessão.
+`VELLORA_SESSION_SECRET` só é necessário quando o fallback de autenticação
+`legacy` estiver explicitamente selecionado; não é requisito da sessão atual
+com Supabase Auth.
 
-No primeiro banco vazio, o administrador pode ser criado temporariamente com:
+Na produção Supabase, provisione o primeiro administrador com
+`npm run supabase:provision-user`, usando em um ambiente confiável:
 
-- `VELLORA_BOOTSTRAP_ADMIN_EMAIL`
-- `VELLORA_BOOTSTRAP_ADMIN_PASSWORD` (mínimo de 12 caracteres)
-- `VELLORA_BOOTSTRAP_ADMIN_NAME` (opcional)
-- `VELLORA_BOOTSTRAP_ADMIN_PHONE` (opcional)
+- `SUPABASE_URL`;
+- `SUPABASE_SECRET_KEY` ou `SUPABASE_SERVICE_ROLE_KEY`, somente no servidor;
+- `SUPABASE_PROVISION_EMAIL`, `SUPABASE_PROVISION_NAME`,
+  `SUPABASE_PROVISION_PASSWORD` (mínimo de 12 caracteres) e
+  `SUPABASE_PROVISION_ROLE` (`admin`, `familia` ou `cuidador`).
 
-Remova as variáveis de bootstrap depois de confirmar o primeiro acesso. As variáveis reais nunca devem ser salvas no repositório.
+Remova senha e demais entradas temporárias depois do provisionamento. As
+variáveis `VELLORA_BOOTSTRAP_ADMIN_*` e `VELLORA_ADMIN_RECOVERY_*` são
+alternativas exclusivas do fallback legacy; chaves e valores reais nunca devem
+ser salvos no repositório.
 
-Para ativar **Esqueci minha senha**, configure:
+Para ativar **Esqueci minha senha**, configure o envio correspondente ao
+provider de autenticação. Com `VELLORA_AUTH_PROVIDER=legacy`, use Resend:
 
 - `RESEND_API_KEY`
 - `VELLORA_EMAIL_FROM`
 - `VELLORA_APP_URL`
 
-Para ativar os alertas operacionais por e-mail, configure também:
+Com `VELLORA_AUTH_PROVIDER=supabase`, a recuperação usa o Supabase Auth e as
+variáveis de reset do fluxo legacy não são consultadas. O envio depende da
+configuração de e-mail do próprio Supabase.
+
+Para os alertas opcionais de intercorrências por e-mail, configure também:
 
 - `VELLORA_NOTIFICATION_EMAIL` (um ou mais endereços separados por vírgula)
 
-Para exigir a verificação antiabuso nos formulários públicos, configure as duas chaves do Cloudflare Turnstile:
+Novos leads e novas candidaturas profissionais são acompanhados nos painéis
+`/admin/leads` e `/admin/profissionais`, que são as fontes oficiais desses
+registros.
+
+No runtime Supabase, a verificação antiabuso dos formulários públicos exige as
+duas chaves do Cloudflare Turnstile:
 
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
 - `CLOUDFLARE_TURNSTILE_SECRET_KEY`
 
-Os formulários já contam com honeypot, validação de origem, limite de tentativas e validação server-side do Turnstile quando as chaves estão presentes.
+Os formulários contam com honeypot, validação de origem, limite de tentativas e
+validação server-side do Turnstile. Sem as duas chaves no provider Supabase, a
+entrada pública falha fechada.
 
 ## Fluxo principal
 
 1. A solicitação pública aparece em `/admin/leads`.
-2. O administrador converte a solicitação em paciente e cria ou vincula a conta da família.
-3. Candidaturas aprovadas entram automaticamente no banco de cuidadores com acesso pendente.
-4. O administrador cria o e-mail e a senha do cuidador aprovado e o vincula a um paciente.
-5. Família e cuidador veem os contratos atribuídos em modo somente leitura.
-6. O cuidador registra o atendimento; a família acompanha o histórico permitido.
-7. O cuidador pode editar seus próprios registros salvos; alterações ficam na trilha de auditoria administrativa.
+2. A candidatura profissional aparece em `/admin/profissionais`.
+3. O administrador converte a solicitação em paciente e cria ou vincula a conta da família.
+4. Candidaturas aprovadas entram automaticamente no banco de cuidadores com acesso pendente.
+5. O administrador cria o e-mail e a senha do cuidador aprovado e o vincula a um paciente.
+6. Família e cuidador veem os contratos atribuídos em modo somente leitura.
+7. O cuidador registra o atendimento; a família acompanha o histórico permitido.
+8. O cuidador pode editar seus próprios registros salvos; alterações ficam na trilha de auditoria administrativa.
 
-O fluxo de operação e os cuidados para um ambiente separado estão em [STAGING.md](./STAGING.md).
+O rollout atual é direto em produção, sem staging persistente. A decisão e a
+opção futura de uma prévia segura estão em [STAGING.md](./STAGING.md). Vercel
+será tratado somente na Wave 12.
 
 ## Verificações
 

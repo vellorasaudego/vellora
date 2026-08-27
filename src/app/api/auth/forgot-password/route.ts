@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserByEmail } from "@/lib/data";
-import {
-  createPasswordResetToken,
-  discardPasswordResetToken,
-} from "@/lib/password-reset";
-import { isPasswordEmailConfigured, sendPasswordResetEmail } from "@/lib/email";
+import { getAuthProvider } from "@/lib/auth";
 import { isSafePreview } from "@/lib/preview";
 import { consumeRateLimit, isSameOriginRequest } from "@/lib/abuse-prevention";
 import { isValidEmail } from "@/lib/validation";
+import {
+  applySupabaseCookieState,
+  createSupabaseCookieState,
+} from "@/lib/supabase/server";
+import {
+  getSupabasePasswordResetRedirectUrl,
+  requestSupabasePasswordReset,
+} from "@/lib/supabase/auth";
 
 const GENERIC_MESSAGE =
   "Se houver uma conta com este e-mail, enviaremos as instruções para criar uma nova senha.";
@@ -35,6 +38,43 @@ export async function POST(req: NextRequest) {
   if (isSafePreview()) {
     return NextResponse.json({ ok: true, message: GENERIC_MESSAGE });
   }
+
+  if (getAuthProvider() === "supabase") {
+    try {
+      const state = createSupabaseCookieState();
+      const error = await requestSupabasePasswordReset(
+        req,
+        email,
+        getSupabasePasswordResetRedirectUrl(req.url),
+        state,
+      );
+      if (error) {
+        console.error("[api/auth/forgot-password] Não foi possível solicitar recuperação Supabase.", {
+          error: error.message,
+        });
+        return NextResponse.json(
+          { error: "A recuperação por e-mail está temporariamente indisponível. Tente novamente mais tarde." },
+          { status: 503 },
+        );
+      }
+      return applySupabaseCookieState(
+        NextResponse.json({ ok: true, message: GENERIC_MESSAGE }),
+        state,
+      );
+    } catch (error) {
+      console.error("[api/auth/forgot-password] Configuração Supabase indisponível.", {
+        error: error instanceof Error ? error.message : "Erro desconhecido",
+      });
+      return NextResponse.json(
+        { error: "A recuperação por e-mail está temporariamente indisponível. Tente novamente mais tarde." },
+        { status: 503 },
+      );
+    }
+  }
+
+  const { getUserByEmail } = await import("@/lib/data");
+  const { createPasswordResetToken, discardPasswordResetToken } = await import("@/lib/password-reset");
+  const { isPasswordEmailConfigured, sendPasswordResetEmail } = await import("@/lib/email");
 
   if (!isPasswordEmailConfigured()) {
     return NextResponse.json(

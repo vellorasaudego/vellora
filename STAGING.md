@@ -1,33 +1,51 @@
 # Staging da Vellora Saúde
 
-O staging deve ser isolado da produção e nunca deve receber prontuários ou documentos reais.
+Não há projeto de staging persistente neste rollout. A aplicação será validada
+e publicada diretamente no projeto Supabase de produção, após os gates locais e
+a revisão manual do proprietário. Staging não é pré-requisito para concluir as
+waves atuais.
 
 ## Prévia segura
 
-Use `.env.staging.example` como referência para uma prévia visual. Com `VELLORA_SAFE_PREVIEW=true`:
+Uma prévia visual sem dados pode usar `.env.staging.example` como referência e
+`VELLORA_SAFE_PREVIEW=true`:
 
 - os painéis e o login ficam bloqueados;
 - os formulários públicos validam os campos, mas não gravam dados;
-- nenhum contrato, paciente ou registro é exibido.
+- nenhum contrato, paciente, foto ou registro é exibido.
 
-## Staging funcional
+Essa prévia não representa um ambiente funcional, não recebe dados reais e não
+substitui a validação do runtime Supabase de produção.
 
-Para testar login e fluxos com dados fictícios, use um D1 e um R2 separados, aplique todas as migrações e configure:
+## Ambiente isolado futuro
 
-- `VELLORA_SESSION_SECRET` exclusivo do staging;
-- `VELLORA_SAFE_PREVIEW=false`;
-- credenciais temporárias de bootstrap para criar o primeiro administrador;
-- `VELLORA_APP_URL` com a URL do staging;
-- `RESEND_API_KEY`, `VELLORA_EMAIL_FROM` e `VELLORA_NOTIFICATION_EMAIL` apontando para uma caixa de testes, se os alertas forem validados;
-- as duas chaves do Turnstile quando a proteção antifraude for testada.
+Se um ambiente funcional for criado em uma etapa posterior, ele deverá usar um
+projeto Supabase separado, com Auth, Postgres e Storage isolados, dados
+fictícios e credenciais próprias. Não deverá usar dados reais nem ser tratado
+como o projeto de produção. D1/R2 e OpenAI Sites não são requisitos desse
+ambiente futuro; qualquer uso será apenas legado/preview explicitamente
+configurado.
 
-Depois do primeiro acesso, remova as variáveis de bootstrap. Não copie dados da produção para o staging sem anonimização documentada.
+## Checklist do rollout direto em produção
 
-## Checklist antes de promover
+Antes da publicação manual pelo proprietário, execute localmente:
 
 ```bash
 npm run check
 npm run build
+npm run supabase:smoke
 ```
 
-Verifique manualmente: formulário de solicitação, cadastro profissional, login, registro diário, edição de um registro, remoção de foto, alerta de intercorrência, logout e páginas de privacidade/termos.
+Depois, valide os fluxos no projeto de produção conforme a janela de rollout:
+
+- solicitação de cuidado em `/solicitar-cuidado` e conferência em
+  `/admin/leads`;
+- candidatura profissional em `/trabalhe-conosco` e conferência em
+  `/admin/profissionais`;
+- login, registro diário, edição de registro, remoção de foto e logout;
+- alerta de intercorrência, quando o Resend estiver configurado;
+- páginas de privacidade e termos.
+
+Leads e candidaturas não dependem de e-mail: os painéis são suas fontes
+oficiais. A configuração de Vercel e o deploy correspondente ficam para a
+Wave 12.

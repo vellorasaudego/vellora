@@ -3,7 +3,6 @@ import { createProfessionalApplication } from "@/lib/data";
 import { isSafePreview } from "@/lib/preview";
 import { consumeRateLimit, isSameOriginRequest, verifyTurnstileToken } from "@/lib/abuse-prevention";
 import { cleanText, isValidEmail, normalizedPhoneDigits } from "@/lib/validation";
-import { notifySafely } from "@/lib/notifications";
 
 const VALID_PROFESSIONS = new Set(["cuidador", "tecnico_enfermagem", "enfermeiro", "outros"]);
 const PRIVACY_NOTICE_VERSION = "2026-08-21";
@@ -83,7 +82,16 @@ export async function POST(req: NextRequest) {
 
   const turnstile = await verifyTurnstileToken(req, body.turnstile_token);
   if (!turnstile.ok) {
-    return NextResponse.json({ error: "Confirme a verificação de segurança e tente novamente." }, { status: 400 });
+    if (turnstile.configured === false) {
+      return NextResponse.json(
+        { error: "A proteção de segurança está indisponível. O cadastro não pode ser enviado agora." },
+        { status: 503 },
+      );
+    }
+    return NextResponse.json(
+      { error: "A verificação de segurança expirou ou é inválida. Conclua-a novamente e tente enviar." },
+      { status: 400 },
+    );
   }
 
   if (isSafePreview()) {
@@ -106,22 +114,6 @@ export async function POST(req: NextRequest) {
       lgpd_consent: true,
       privacy_notice_version: PRIVACY_NOTICE_VERSION,
     });
-
-    await notifySafely(
-      {
-        idempotencyKey: `professional-application-${application.id}`,
-        subject: "Nova candidatura profissional — Vellora Saúde",
-        text:
-          `Nova candidatura recebida.\n\n` +
-          `Nome: ${application.name}\n` +
-          `Profissão: ${application.profession}\n` +
-          `Cidade: ${application.city || "Não informada"}\n` +
-          `Telefone: ${application.phone}\n` +
-          `E-mail: ${application.email}\n` +
-          `Experiência: ${application.experience || "Não informada"}`,
-      },
-      "Não foi possível enviar o alerta de nova candidatura."
-    );
 
     return NextResponse.json({ ok: true, id: application.id });
   } catch (error) {

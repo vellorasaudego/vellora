@@ -3,7 +3,6 @@ import { createLead } from "./data";
 import { isSafePreview } from "./preview";
 import { consumeRateLimit, isSameOriginRequest, verifyTurnstileToken } from "./abuse-prevention";
 import { cleanText, isValidEmail, normalizedPhoneDigits } from "./validation";
-import { notifySafely } from "./notifications";
 
 export async function handlePublicLeadRequest(req: NextRequest, logLabel: string) {
   if (!isSameOriginRequest(req)) {
@@ -55,7 +54,16 @@ export async function handlePublicLeadRequest(req: NextRequest, logLabel: string
 
   const turnstile = await verifyTurnstileToken(req, body.turnstile_token);
   if (!turnstile.ok) {
-    return NextResponse.json({ error: "Confirme a verificação de segurança e tente novamente." }, { status: 400 });
+    if (turnstile.configured === false) {
+      return NextResponse.json(
+        { error: "A proteção de segurança está indisponível. A solicitação não pode ser enviada agora." },
+        { status: 503 },
+      );
+    }
+    return NextResponse.json(
+      { error: "A verificação de segurança expirou ou é inválida. Conclua-a novamente e tente enviar." },
+      { status: 400 },
+    );
   }
 
   if (isSafePreview()) {
@@ -71,21 +79,6 @@ export async function handlePublicLeadRequest(req: NextRequest, logLabel: string
       care_type: careType,
       message: message || undefined,
     });
-    await notifySafely(
-      {
-        idempotencyKey: `lead-${lead.id}`,
-        subject: "Nova solicitação de cuidado — Vellora Saúde",
-        text:
-          `Nova solicitação recebida.\n\n` +
-          `Nome: ${lead.name}\n` +
-          `Paciente: ${lead.patient_name || "Não informado"}\n` +
-          `Telefone: ${lead.phone}\n` +
-          `E-mail: ${lead.email}\n` +
-          `Tipo de cuidado: ${lead.care_type || "Não informado"}\n\n` +
-          `${lead.message || "Sem mensagem adicional."}`,
-      },
-      "Não foi possível enviar o alerta de nova solicitação."
-    );
     return NextResponse.json({ ok: true, id: lead.id });
   } catch (error) {
     console.error(`[${logLabel}] Não foi possível gravar a solicitação.`, {

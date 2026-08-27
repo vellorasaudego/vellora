@@ -1,8 +1,9 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
-import { queryOne } from "./db";
 import { runtimeValue } from "./runtime-config";
+import { resolveAuthProvider, type AuthProvider } from "./auth-provider";
+import { getSupabaseSession } from "./supabase/auth";
 
 export type Role = "admin" | "familia" | "cuidador";
 
@@ -62,6 +63,17 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
 }
 
 export async function getSession(): Promise<SessionPayload | null> {
+  return getAuthProvider() === "supabase" ? getSupabaseSession() : getLegacySession();
+}
+
+export const SESSION_COOKIE_NAME = SESSION_COOKIE;
+
+export function getAuthProvider(): AuthProvider {
+  return resolveAuthProvider(runtimeValue("VELLORA_AUTH_PROVIDER"));
+}
+
+async function getLegacySession(): Promise<SessionPayload | null> {
+  const { queryOne } = await import("./db");
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (!token) return null;
@@ -77,8 +89,6 @@ export async function getSession(): Promise<SessionPayload | null> {
   }
   return payload;
 }
-
-export const SESSION_COOKIE_NAME = SESSION_COOKIE;
 
 export function roleHomePath(role: Role): string {
   if (role === "admin") return "/admin";

@@ -2,6 +2,11 @@ import { createHash } from "crypto";
 import type { NextRequest } from "next/server";
 import { query, queryOne } from "./db";
 import { runtimeValue } from "./runtime-config";
+import { incrementSupabaseRateLimitBucket } from "./supabase/rate-limit";
+import {
+  resolveRateLimitProvider,
+  resolveTurnstileRequired,
+} from "./supabase/rate-limit-policy";
 
 type RateLimitOptions = {
   limit: number;
@@ -19,6 +24,10 @@ type MemoryBucket = { count: number; resetAt: number };
 
 const memoryBuckets = new Map<string, MemoryBucket>();
 const MAX_MEMORY_BUCKETS = 5_000;
+
+const MAX_RATE_LIMIT_SCOPE_LENGTH = 80;
+const MAX_RATE_LIMIT_LIMIT = 10_000;
+const MAX_RATE_LIMIT_WINDOW_SECONDS = 86_400;
 
 export function getClientAddress(request: Pick<Request, "headers">): string {
   const headers = request.headers;
@@ -57,6 +66,41 @@ function memoryRateLimit(key: string, options: RateLimitOptions): RateLimitResul
   };
 }
 
+function assertRateLimitOptions(scope: string, options: RateLimitOptions): string {
+  const normalizedScope = scope.trim();
+  if (
+    !normalizedScope ||
+    normalizedScope.length > MAX_RATE_LIMIT_SCOPE_LENGTH ||
+    /[\u0000-\u001f\u007f]/.test(normalizedScope)
+  ) {
+    throw new Error("O escopo do rate limit n\u00e3o \u00e9 v\u00e1lido.");
+  }
+  if (
+    !Number.isInteger(options.limit) ||
+    options.limit < 1 ||
+    options.limit > MAX_RATE_LIMIT_LIMIT
+  ) {
+    throw new Error("O limite do rate limit n\u00e3o \u00e9 v\u00e1lido.");
+  }
+  if (
+    !Number.isInteger(options.windowSeconds) ||
+    options.windowSeconds < 1 ||
+    options.windowSeconds > MAX_RATE_LIMIT_WINDOW_SECONDS
+  ) {
+    throw new Error("A janela do rate limit n\u00e3o \u00e9 v\u00e1lida.");
+  }
+  return normalizedScope;
+}
+
+function failClosedRateLimit(options: RateLimitOptions, retryAfterSeconds: number): RateLimitResult {
+  return {
+    allowed: false,
+    limit: options.limit,
+    remaining: 0,
+    retryAfterSeconds: Math.max(1, retryAfterSeconds),
+  };
+}
+
 /**
  * Uses D1 when available and falls back to a bounded process-local bucket while
  * a migration is being rolled out. The database key contains only a hash of the
@@ -68,13 +112,39 @@ export async function consumeRateLimit(
   options: RateLimitOptions,
   discriminator = ""
 ): Promise<RateLimitResult> {
+  const normalizedScope = assertRateLimitOptions(scope, options);
   const windowIndex = Math.floor(Date.now() / (options.windowSeconds * 1000));
   const identity = `${getClientAddress(request)}\u0000${discriminator}`;
-  const bucketKey = `${scope}:${hashKey(identity)}:${windowIndex}`;
+  const bucketKey = `${normalizedScope}:${hashKey(identity)}:${windowIndex}`;
   const retryAfterSeconds = Math.max(
     1,
     Math.ceil((windowIndex * options.windowSeconds * 1000 + options.windowSeconds * 1000 - Date.now()) / 1000)
   );
+
+  if (resolveRateLimitProvider(runtimeValue("VELLORA_DATA_PROVIDER")) === "supabase") {
+    try {
+      const bucket = await incrementSupabaseRateLimitBucket(bucketKey, options.windowSeconds);
+      const databaseRetryAfter = Math.max(
+        1,
+        Math.ceil((Date.parse(bucket.expiresAt) - Date.now()) / 1000),
+      );
+      return {
+        allowed: bucket.count <= options.limit,
+        limit: options.limit,
+        remaining: Math.max(0, options.limit - bucket.count),
+        retryAfterSeconds: databaseRetryAfter,
+      };
+    } catch (error) {
+      // A Supabase production deployment must never silently downgrade its
+      // distributed limit to a process-local map. Returning allowed=false
+      // makes every caller reject the request while preserving Retry-After.
+      console.error("[rate-limit] Supabase indispon\u00edvel; bloqueando a solicita\u00e7\u00e3o.", {
+        scope: normalizedScope,
+        error: error instanceof Error ? error.message : "Erro desconhecido",
+      });
+      return failClosedRateLimit(options, retryAfterSeconds);
+    }
+  }
 
   try {
     const row = await queryOne<{ count: number }>(
@@ -119,14 +189,30 @@ export function turnstileSiteKey(): string {
   return runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY")?.trim() || "";
 }
 
+export function isTurnstileRequired(): boolean {
+  return resolveTurnstileRequired(
+    runtimeValue("VELLORA_DATA_PROVIDER"),
+    runtimeValue("VELLORA_TURNSTILE_REQUIRED"),
+  );
+}
+
 export async function verifyTurnstileToken(
   request: NextRequest,
   token: unknown
-): Promise<{ ok: boolean; configured: boolean }> {
+): Promise<{ ok: boolean; configured: boolean; required: boolean }> {
   const secret = runtimeValue("CLOUDFLARE_TURNSTILE_SECRET_KEY")?.trim();
-  if (!secret) return { ok: true, configured: false };
+  const siteKey = turnstileSiteKey();
+  const required = isTurnstileRequired();
+  const partiallyConfigured = Boolean(secret || siteKey);
+  if (!secret || !siteKey) {
+    return {
+      ok: !required && !partiallyConfigured,
+      configured: false,
+      required,
+    };
+  }
   if (typeof token !== "string" || token.length < 10 || token.length > 2_048) {
-    return { ok: false, configured: true };
+    return { ok: false, configured: true, required };
   }
 
   const body = new URLSearchParams({ secret, response: token });
@@ -139,13 +225,13 @@ export async function verifyTurnstileToken(
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
     });
-    if (!response.ok) return { ok: false, configured: true };
+    if (!response.ok) return { ok: false, configured: true, required };
     const result = (await response.json()) as { success?: boolean };
-    return { ok: result.success === true, configured: true };
+    return { ok: result.success === true, configured: true, required };
   } catch (error) {
     console.error("[turnstile] Não foi possível validar o desafio.", {
       error: error instanceof Error ? error.message : "Erro desconhecido",
     });
-    return { ok: false, configured: true };
+    return { ok: false, configured: true, required };
   }
 }

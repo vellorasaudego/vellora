@@ -11628,7 +11628,7 @@ function createFromReadableStream(stream, options = {}) {
 //#region \0virtual:vite-rsc/client-references
 var client_references_default = {
 	"108487685012": async () => {
-		const m = await import("./assets/DailyRecordForm-DPBlmzxU.js");
+		const m = await import("./assets/DailyRecordForm-0QLqRCu1.js");
 		return { get "DailyRecordForm"() {
 			return m["DailyRecordForm"];
 		} };
@@ -11710,7 +11710,7 @@ var client_references_default = {
 		};
 	},
 	"a1e5201a4cb5": async () => {
-		const m = await import("./assets/ResetPasswordForm-ZtXx88Oh.js");
+		const m = await import("./assets/ResetPasswordForm-DOrleDdA.js");
 		return { get "ResetPasswordForm"() {
 			return m["ResetPasswordForm"];
 		} };
@@ -11728,7 +11728,7 @@ var client_references_default = {
 		} };
 	},
 	"b67ba796ee67": async () => {
-		const m = await import("./assets/ProfessionalApplicationForm-I3R8E6LX.js");
+		const m = await import("./assets/ProfessionalApplicationForm-DScNkVWB.js");
 		return { get "ProfessionalApplicationForm"() {
 			return m["ProfessionalApplicationForm"];
 		} };
@@ -11746,13 +11746,13 @@ var client_references_default = {
 		} };
 	},
 	"db858d0f5d88": async () => {
-		const m = await import("./assets/ForgotPasswordForm-D_RLKDDo.js");
+		const m = await import("./assets/ForgotPasswordForm-BtQt8euz.js");
 		return { get "ForgotPasswordForm"() {
 			return m["ForgotPasswordForm"];
 		} };
 	},
 	"df78bc062d1f": async () => {
-		const m = await import("./assets/ContactForm-CjkaIV4I.js");
+		const m = await import("./assets/ContactForm-x-MjcUBN.js");
 		return { get "ContactForm"() {
 			return m["ContactForm"];
 		} };

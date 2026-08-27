@@ -20,14 +20,23 @@ export function ForgotPasswordForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => null) as {
+        error?: unknown;
+        message?: unknown;
+      } | null;
       if (!response.ok) {
-        setError(data.error || "Não foi possível enviar as instruções.");
-      } else {
+        setError(
+          typeof data?.error === "string"
+            ? data.error
+            : "Não foi possível processar a solicitação. Tente novamente mais tarde.",
+        );
+      } else if (typeof data?.message === "string") {
         setMessage(data.message);
+      } else {
+        setError("O servidor retornou uma resposta inesperada. Tente novamente.");
       }
     } catch {
-      setError("Erro de conexão. Tente novamente.");
+      setError("Não foi possível conectar ao serviço. Verifique sua conexão e tente novamente.");
     } finally {
       setLoading(false);
     }

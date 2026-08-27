@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { isSafePreview } from "@/lib/preview";
-import { queryOne } from "@/lib/db";
 import { runtimeValue } from "@/lib/runtime-config";
+import { getAuthProvider, type Role } from "@/lib/auth";
+import { proxySupabaseAuth } from "@/lib/supabase/proxy";
 
 const SESSION_COOKIE = "vellora_session";
 
-const ROLE_PREFIX: Record<string, string> = {
+const ROLE_PREFIX: Record<string, Role> = {
   "/admin": "admin",
   "/familia": "familia",
   "/cuidador": "cuidador",
@@ -24,6 +25,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  const requiredRole = ROLE_PREFIX[matchedPrefix];
+  if (getAuthProvider() === "supabase") {
+    return proxySupabaseAuth(req, requiredRole);
+  }
+
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   if (!token) {
     const url = req.nextUrl.clone();
@@ -36,7 +42,6 @@ export async function proxy(req: NextRequest) {
     const secretValue = runtimeValue("VELLORA_SESSION_SECRET");
     if (!secretValue) throw new Error("VELLORA_SESSION_SECRET não configurada.");
     const { payload } = await jwtVerify(token, new TextEncoder().encode(secretValue));
-    const requiredRole = ROLE_PREFIX[matchedPrefix];
     if (
       typeof payload.userId !== "string" ||
       typeof payload.sessionVersion !== "number" ||
@@ -47,6 +52,7 @@ export async function proxy(req: NextRequest) {
       url.searchParams.set("next", pathname);
       return NextResponse.redirect(url);
     }
+    const { queryOne } = await import("@/lib/db");
     const user = await queryOne<{ role: string; session_version: number }>(
       "SELECT role, session_version FROM users WHERE id = $1 AND deleted_at IS NULL",
       [payload.userId]

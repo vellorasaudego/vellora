@@ -26,7 +26,16 @@ const NUMERIC_FIELDS = {
   pain_level: { min: 0, max: 10, integer: true },
 } as const;
 
-type RecordFieldValues = Omit<DailyRecord, "id" | "created_at" | "updated_at" | "patient_id" | "caregiver_user_id">;
+type RecordFieldValues = Omit<
+  DailyRecord,
+  "id" | "created_at" | "updated_at" | "patient_id" | "caregiver_user_id" | "photo_data"
+>;
+
+type PhotoReadResult = {
+  provided: boolean;
+  data: string | null;
+  error?: string;
+};
 
 function limitedText(form: FormData, key: string, maxLength: number): string | null {
   const value = cleanText(form.get(key), maxLength);
@@ -48,7 +57,7 @@ function validImageSignature(type: string, bytes: Uint8Array): boolean {
   return false;
 }
 
-async function readPhoto(form: FormData): Promise<{ provided: boolean; data: string | null; error?: string }> {
+async function readPhoto(form: FormData): Promise<PhotoReadResult> {
   const photo = form.get("photo");
   if (!photo || typeof photo === "string" || photo.size === 0) {
     return { provided: false, data: null };
@@ -113,9 +122,19 @@ function parseRecordFields(form: FormData): { values?: RecordFieldValues; error?
       notes: limitedText(form, "notes", 3_000),
       incident,
       incident_description: incident ? incidentDescription : null,
-      photo_data: null,
     },
   };
+}
+
+function isPhotoRemovalRequested(form: FormData): boolean {
+  const value = form.get("remove_photo");
+  return value === "on" || value === "true";
+}
+
+function photoFieldsForPatch(form: FormData, photo: PhotoReadResult): { photo_data?: string | null } {
+  if (photo.provided) return { photo_data: photo.data };
+  if (isPhotoRemovalRequested(form)) return { photo_data: null };
+  return {};
 }
 
 function rateLimitedResponse(retryAfterSeconds: number) {
@@ -207,11 +226,7 @@ async function saveRecord(req: NextRequest, mode: "create" | "update") {
       recordId,
       {
         ...parsed.values,
-        ...(photo.provided
-          ? { photo_data: photo.data }
-          : form.get("remove_photo") === "on" || form.get("remove_photo") === "true"
-            ? { photo_data: null }
-            : {}),
+        ...photoFieldsForPatch(form, photo),
       },
       { userId: session.userId, name: session.name }
     );

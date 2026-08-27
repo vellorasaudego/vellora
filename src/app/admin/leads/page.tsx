@@ -6,8 +6,8 @@ export default async function AdminLeadsPage() {
   return (
     <div>
       <p className="text-sm text-[var(--muted)] mb-6">
-        Solicitações recebidas pelo site. Atualize o status conforme o contato avança e converta em paciente quando o
-        serviço for contratado.
+        Novas solicitações ficam disponíveis aqui. Este painel é a fonte oficial para acompanhar o contato, atualizar o
+        status e converter em paciente quando o serviço for contratado.
       </p>
       <LeadsTable leads={leads} />
     </div>

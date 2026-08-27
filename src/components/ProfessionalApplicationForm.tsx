@@ -41,13 +41,21 @@ function fieldValue(data: FormData, key: string): string {
   return String(data.get(key) || "").trim();
 }
 
-export function ProfessionalApplicationForm({ turnstileSiteKey = "" }: { turnstileSiteKey?: string }) {
+export function ProfessionalApplicationForm({
+  turnstileSiteKey = "",
+  turnstileRequired = false,
+}: {
+  turnstileSiteKey?: string;
+  turnstileRequired?: boolean;
+}) {
   const [profession, setProfession] = useState("cuidador");
   const requiresCoren = profession === "tecnico_enfermagem" || profession === "enfermeiro";
   const [lgpdAuthorized, setLgpdAuthorized] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "sent-preview" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileUnavailable = turnstileRequired && !turnstileSiteKey;
+  const turnstilePending = Boolean(turnstileSiteKey) && !turnstileToken;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -61,6 +69,17 @@ export function ProfessionalApplicationForm({ turnstileSiteKey = "" }: { turnsti
     if (availabilityDays.length === 0 || availabilityShifts.length === 0) {
       setStatus("error");
       setError("Selecione pelo menos um dia e um horário disponível.");
+      return;
+    }
+
+    if (turnstileUnavailable) {
+      setStatus("error");
+      setError("A proteção de segurança está indisponível. O cadastro não pode ser enviado agora.");
+      return;
+    }
+    if (turnstilePending) {
+      setStatus("error");
+      setError("Conclua a verificação de segurança para liberar o envio.");
       return;
     }
 
@@ -241,7 +260,7 @@ export function ProfessionalApplicationForm({ turnstileSiteKey = "" }: { turnsti
           em contato sobre oportunidades, conforme a Lei Geral de Proteção de Dados (LGPD). Consulte a <Link className="font-semibold text-[var(--brand)] underline" href="/privacidade">Política de Privacidade</Link>. Sei que posso solicitar correção ou exclusão dos meus dados pelos canais da empresa. *
         </span>
       </label>
-      <TurnstileWidget siteKey={turnstileSiteKey} onToken={setTurnstileToken} />
+      <TurnstileWidget siteKey={turnstileSiteKey} required={turnstileRequired} onToken={setTurnstileToken} />
       {turnstileSiteKey && <input type="hidden" name="turnstile_token" value={turnstileToken} readOnly />}
 
       {error ? <p className="sm:col-span-2 text-sm text-[var(--status-critical)]" role="alert" aria-live="polite">{error}</p> : null}
@@ -249,9 +268,17 @@ export function ProfessionalApplicationForm({ turnstileSiteKey = "" }: { turnsti
       <div className="sm:col-span-2">
         <button
           type="submit"
-          disabled={status === "sending" || !lgpdAuthorized}
-          aria-disabled={status === "sending" || !lgpdAuthorized}
-          title={!lgpdAuthorized ? "Autorize o uso dos dados para enviar a solicitação" : undefined}
+          disabled={status === "sending" || !lgpdAuthorized || turnstileUnavailable || turnstilePending}
+          aria-disabled={status === "sending" || !lgpdAuthorized || turnstileUnavailable || turnstilePending}
+          title={
+            !lgpdAuthorized
+              ? "Autorize o uso dos dados para enviar a solicitação"
+              : turnstileUnavailable
+                ? "A proteção de segurança está temporariamente indisponível"
+                : turnstilePending
+                  ? "Conclua a verificação de segurança para enviar"
+                  : undefined
+          }
           className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-[var(--brand-dark)] px-7 text-sm font-semibold text-white hover:bg-[var(--brand-deep)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           {status === "sending" ? "Enviando..." : "Enviar solicitação"}
@@ -259,6 +286,11 @@ export function ProfessionalApplicationForm({ turnstileSiteKey = "" }: { turnsti
         {!lgpdAuthorized ? (
           <p className="mt-2 text-xs font-medium text-[var(--brand-dark)]" role="status">
             Marque a autorização de uso dos dados para liberar o envio.
+          </p>
+        ) : null}
+        {turnstileUnavailable ? (
+          <p className="mt-2 text-xs font-medium text-[var(--status-critical)]" role="status">
+            O envio ficará disponível quando a proteção de segurança for configurada.
           </p>
         ) : null}
         <p className="mt-3 text-xs leading-5 text-[var(--muted-2)]">

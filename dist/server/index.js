@@ -1,43 +1,14 @@
-globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/Badge-D3Nospj7.js","assets/TurnstileWidget-BZ7vddLI.js","assets/navigation-CzfSVj_e.js","assets/layout-segment-context-B-tJ2Xmg.js","assets/link-BzBocKJi.js","assets/router-BsLE4u_u.js","assets/ContactForm-8Dr4VPsZ.js","assets/DailyRecordForm-JU21tB3B.js","assets/ForgotPasswordForm-CZqL15Rf.js","assets/LoginForm-DB3dczBI.js","assets/LogoutButton-BJpRZMwE.js","assets/ProfessionalApplicationForm-D8dyzTx1.js","assets/ResetPasswordForm-CK-TQvgp.js","assets/AssignmentsManager-BQAdS7Ql.js","assets/CaregiverBank-Me4k8QwA.js","assets/ContractManager-B1ht7Gmz.js","assets/DeleteButton-B3IQpBrC.js","assets/EditPatientForm-Bi7dd-Gl.js","assets/LeadsTable-CWZkFtcG.js","assets/NewCaregiverForm-C9rXdsKp.js","assets/NewPatientForm-Dtke-Aqv.js","assets/ProfessionalApplicationsTable-DSXYvJWZ.js","assets/VitalsChart-CigRe1cI.js"];
+globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/Badge-D3Nospj7.js","assets/TurnstileWidget-BilDF6Y3.js","assets/navigation-CzfSVj_e.js","assets/layout-segment-context-BCqtrVoA.js","assets/link-j7Qg5aJz.js","assets/router-4LvrYt-Q.js","assets/ContactForm-B7JvUuCv.js","assets/DailyRecordForm-CZevQYsE.js","assets/ForgotPasswordForm-Brk-NoZg.js","assets/LoginForm-Cxd9vemr.js","assets/LogoutButton-BJpRZMwE.js","assets/ProfessionalApplicationForm-w0xz5-Bz.js","assets/ResetPasswordForm-DMj2Z7eP.js","assets/AssignmentsManager-BQAdS7Ql.js","assets/CaregiverBank-Me4k8QwA.js","assets/ContractManager-B1ht7Gmz.js","assets/DeleteButton-B3IQpBrC.js","assets/EditPatientForm-Bi7dd-Gl.js","assets/LeadsTable-DlgOZuim.js","assets/NewCaregiverForm-C9rXdsKp.js","assets/NewPatientForm-Dtke-Aqv.js","assets/ProfessionalApplicationsTable-DSXYvJWZ.js","assets/VitalsChart-CigRe1cI.js"];
+import { $ as VINEXT_CACHE_HEADER, A as markDynamicUsage, B as ACTION_REDIRECT_STATUS_HEADER, C as consumeDynamicUsage, D as getHeadersContext, E as getDraftModeCookieHeader, F as validateCookieName, G as MIDDLEWARE_NEXT_HEADER, H as ACTION_REVALIDATED_HEADER, I as buildRequestHeadersFromMiddlewareResponse, J as NEXTJS_ACTION_NOT_FOUND_HEADER, K as MIDDLEWARE_REWRITE_HEADER, L as encodeMiddlewareRequestHeaders, M as setHeadersContext, N as parseCookieHeader, O as headersContextFromRequest, P as serializeSetCookie, Q as NEXT_URL_HEADER, R as shouldKeepMiddlewareHeader, S as applyMiddlewareRequestHeaders, T as getAndClearPendingCookies, U as FLIGHT_HEADERS, V as ACTION_REDIRECT_TYPE_HEADER, W as INTERNAL_HEADERS, X as NEXT_ROUTER_SEGMENT_PREFETCH_HEADER, Y as NEXT_ROUTER_PREFETCH_HEADER, Z as NEXT_ROUTER_STATE_TREE_HEADER, _ as createSupabaseServerClient, a as hashPassword, at as VINEXT_RSC_RENDER_MODE_HEADER, b as resolveAuthProvider, c as getSupabasePasswordResetRedirectUrl, ct as createRequestContext, d as signOutWithSupabase, dt as runWithRequestContext, et as VINEXT_INTERCEPTION_CONTEXT_HEADER, f as updateSupabasePassword, ft as runWithUnifiedStateMutation, g as createSupabaseRequestClient, gt as __toESM, h as createSupabaseCookieState, ht as __exportAll, i as getSession, it as VINEXT_PRERENDER_SECRET_HEADER, j as setHeadersAccessPhase, k as isDraftModeRequest, l as requestSupabasePasswordReset, lt as getRequestContext, m as applySupabaseCookieState, mt as __commonJSMin, n as createSessionToken, nt as VINEXT_MW_CTX_HEADER, o as roleHomePath, ot as VINEXT_STATIC_FILE_HEADER, p as mapSupabaseSession, pt as getOrCreateAls, q as MIDDLEWARE_SET_COOKIE_HEADER, r as getAuthProvider, rt as VINEXT_PARAMS_HEADER, s as verifyPassword, st as VINEXT_TIMING_HEADER, t as SESSION_COOKIE_NAME, tt as VINEXT_MOUNTED_SLOTS_HEADER, u as signInWithSupabase, ut as isInsideUnifiedScope, v as validateSupabaseConfig, w as consumeInvalidDynamicUsageError, x as jwtVerify, y as createClient, z as ACTION_REDIRECT_HEADER } from "./assets/auth-BMMW7Zok.js";
+import { t as runtimeValue } from "./assets/runtime-config-DIeQIoik.js";
+import { n as query, r as queryOne, t as executeBatch } from "./assets/db-DG7c0MHC.js";
 import { env } from "cloudflare:workers";
 import * as __viteRscAsyncHooks from "node:async_hooks";
 import { AsyncLocalStorage as AsyncLocalStorage$1 } from "node:async_hooks";
 import assetsManifest from "./__vite_rsc_assets_manifest.js";
-import nodeCrypto, { createHash, createHmac, randomBytes, randomUUID } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import "node:fs";
 import "node:path";
-//#region \0rolldown/runtime.js
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __commonJSMin = (cb, mod) => () => (mod || (cb((mod = { exports: {} }).exports, mod), cb = null), mod.exports);
-var __exportAll = (all, no_symbols) => {
-	let target = {};
-	for (var name in all) __defProp(target, name, {
-		get: all[name],
-		enumerable: true
-	});
-	if (!no_symbols) __defProp(target, Symbol.toStringTag, { value: "Module" });
-	return target;
-};
-var __copyProps = (to, from, except, desc) => {
-	if (from && typeof from === "object" || typeof from === "function") for (var keys = __getOwnPropNames(from), i = 0, n = keys.length, key; i < n; i++) {
-		key = keys[i];
-		if (!__hasOwnProp.call(to, key) && key !== except) __defProp(to, key, {
-			get: ((k) => from[k]).bind(null, key),
-			enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable
-		});
-	}
-	return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", {
-	value: mod,
-	enumerable: true
-}) : target, mod));
-//#endregion
 //#region node_modules/vinext/dist/server/http-error-responses.js
 /**
 * Build a 400 Bad Request plain-text response.
@@ -287,134 +258,6 @@ async function handleImageOptimization(request, handlers, allowedWidths, imageCo
 	}
 }
 //#endregion
-//#region node_modules/vinext/dist/shims/internal/als-registry.js
-/**
-* Shared helper for registering AsyncLocalStorage instances on `globalThis`
-* via `Symbol.for(...)` so that they survive multiple module instances.
-*
-* Why this helper exists
-* ----------------------
-* Vite's multi-environment setup (RSC / SSR / client) and HMR can load a
-* single source module under several different specifiers, producing more
-* than one module instance at runtime. If each instance kept its own
-* module-local `new AsyncLocalStorage()`, request-scoped state would silently
-* fork across instances — `headers()` in one environment wouldn't see what
-* `connection()` registered in another, concurrent requests would stomp each
-* other, etc.
-*
-* The fix every shim was applying inline:
-*
-*   const _ALS_KEY = Symbol.for("vinext.foo.als");
-*   const _g = globalThis as unknown as Record<PropertyKey, unknown>;
-*   const _als = (_g[_ALS_KEY] ??=
-*     new AsyncLocalStorage<T>()) as AsyncLocalStorage<T>;
-*
-* This helper packages that pattern.
-*
-* Cross-bundle singleton property — preserved
-* -------------------------------------------
-* - `Symbol.for(key)` consults the global symbol registry and returns the
-*   same symbol regardless of which module instance calls it.
-* - `globalThis[sym]` is a single slot shared by every module instance.
-* - `??=` only assigns when the slot is empty, so the first caller wins and
-*   every subsequent caller (in any module instance) reads the same ALS.
-*
-* The helper module itself never holds the ALS by reference — it always
-* round-trips through `globalThis`. So even if this helper file is itself
-* loaded under multiple module instances, every copy still hands back the
-* one true ALS for a given key.
-*/
-var _g$8 = globalThis;
-/**
-* Get (or lazily create) the AsyncLocalStorage registered on `globalThis`
-* under `Symbol.for(key)`. Multiple callers — including callers in different
-* module instances — that pass the same `key` receive the same ALS instance.
-*
-* @param key - String key fed to `Symbol.for(...)`. By convention vinext
-*   shims use a dotted namespace such as `"vinext.cache.als"`.
-*/
-function getOrCreateAls(key) {
-	const sym = Symbol.for(key);
-	return _g$8[sym] ??= new AsyncLocalStorage$1();
-}
-//#endregion
-//#region node_modules/vinext/dist/shims/unified-request-context.js
-var _REQUEST_CONTEXT_ALS_KEY = Symbol.for("vinext.requestContext.als");
-var _g$7 = globalThis;
-var _als$4 = getOrCreateAls("vinext.unifiedRequestContext.als");
-function _getInheritedExecutionContext() {
-	const unifiedStore = _als$4.getStore();
-	if (unifiedStore) return unifiedStore.executionContext;
-	return _g$7[_REQUEST_CONTEXT_ALS_KEY]?.getStore() ?? null;
-}
-/**
-* Create a fresh `UnifiedRequestContext` with defaults for all fields.
-* Pass partial overrides for the fields you need to pre-populate.
-*/
-function createRequestContext(opts) {
-	return {
-		headersContext: null,
-		actionRevalidationKind: 0,
-		dynamicUsageDetected: false,
-		invalidDynamicUsageError: null,
-		pendingSetCookies: [],
-		draftModeCookieHeader: null,
-		phase: "render",
-		i18nContext: null,
-		serverContext: null,
-		serverInsertedHTMLCallbacks: [],
-		requestScopedCacheLife: null,
-		unstableCacheRevalidation: "foreground",
-		_privateCache: null,
-		currentRequestTags: [],
-		currentFetchSoftTags: [],
-		currentFetchCacheMode: null,
-		isFetchDedupeActive: false,
-		currentFetchDedupeEntries: /* @__PURE__ */ new Map(),
-		executionContext: _getInheritedExecutionContext(),
-		requestCache: /* @__PURE__ */ new WeakMap(),
-		ssrContext: null,
-		ssrHeadChildren: [],
-		rootParams: null,
-		...opts
-	};
-}
-function runWithRequestContext(ctx, fn) {
-	return _als$4.run(ctx, fn);
-}
-function runWithUnifiedStateMutation(mutate, fn) {
-	const parentCtx = _als$4.getStore();
-	if (!parentCtx) return fn();
-	const childCtx = { ...parentCtx };
-	mutate(childCtx);
-	return _als$4.run(childCtx, fn);
-}
-/**
-* Get the current unified request context.
-* Returns the ALS store when inside a `runWithRequestContext()` scope,
-* or a fresh detached context otherwise. Unlike the legacy per-shim fallback
-* singletons, this detached value is ephemeral — mutations do not persist
-* across calls. This is intentional to prevent state leakage outside request
-* scopes.
-*
-* Only direct callers observe this detached fallback. Shim `_getState()`
-* helpers should continue to gate on `isInsideUnifiedScope()` and fall back
-* to their standalone ALS/fallback singletons outside the unified scope.
-* If called inside a standalone `runWithExecutionContext()` scope, the
-* detached context still reflects that inherited `executionContext`.
-*/
-function getRequestContext() {
-	return _als$4.getStore() ?? createRequestContext();
-}
-/**
-* Check whether the current execution is inside a `runWithRequestContext()` scope.
-* Shim modules use this to decide whether to read from the unified store
-* or fall back to their own standalone ALS.
-*/
-function isInsideUnifiedScope() {
-	return _als$4.getStore() != null;
-}
-//#endregion
 //#region node_modules/vinext/dist/shims/request-context.js
 /**
 * Request ExecutionContext — AsyncLocalStorage-backed accessor.
@@ -438,12 +281,12 @@ function isInsideUnifiedScope() {
 *   const ctx = getRequestExecutionContext(); // null on Node.js dev
 *   ctx?.waitUntil(somePromise);
 */
-var _als$3 = getOrCreateAls("vinext.requestContext.als");
+var _als$2 = getOrCreateAls("vinext.requestContext.als");
 function runWithExecutionContext(ctx, fn) {
 	if (isInsideUnifiedScope()) return runWithUnifiedStateMutation((uCtx) => {
 		uCtx.executionContext = ctx;
 	}, fn);
-	return _als$3.run(ctx, fn);
+	return _als$2.run(ctx, fn);
 }
 /**
 * Get the `ExecutionContext` for the current request, or `null` when called
@@ -454,7 +297,7 @@ function runWithExecutionContext(ctx, fn) {
 */
 function getRequestExecutionContext() {
 	if (isInsideUnifiedScope()) return getRequestContext().executionContext;
-	return _als$3.getStore() ?? null;
+	return _als$2.getStore() ?? null;
 }
 //#endregion
 //#region node_modules/vinext/dist/utils/base-path.js
@@ -490,155 +333,6 @@ function removeTrailingSlash(pathname) {
 	let end = pathname.length;
 	while (end > 0 && pathname.charCodeAt(end - 1) === 47) end--;
 	return end === 0 ? "/" : pathname.slice(0, end);
-}
-//#endregion
-//#region node_modules/vinext/dist/server/headers.js
-/**
-* Internal HTTP header name constants used throughout vinext.
-*
-* Centralizes all custom header names so they are defined once and referenced
-* everywhere via imports. Keeping them in one module prevents typos, makes
-* rename-refactors trivial, and lets grep find every consumer instantly.
-*
-* Standard HTTP headers (Content-Type, Cache-Control, etc.) are intentionally
-* omitted — only vinext-internal and Next.js-protocol headers belong here.
-*/
-/** ISR / page cache state indicator: "HIT" | "MISS" | "STALE" | "STATIC". */
-var VINEXT_CACHE_HEADER = "X-Vinext-Cache";
-/** Static file signal — value is URL-encoded pathname. */
-var VINEXT_STATIC_FILE_HEADER = "x-vinext-static-file";
-/** Serialized middleware context (JSON) forwarded from dev server to RSC entry. */
-var VINEXT_MW_CTX_HEADER = "x-vinext-mw-ctx";
-/** Timing metrics: `handlerStart,compileMs,renderMs`. */
-var VINEXT_TIMING_HEADER = "x-vinext-timing";
-/** Build-time prerender authentication secret. */
-var VINEXT_PRERENDER_SECRET_HEADER = "x-vinext-prerender-secret";
-/** URL-encoded JSON route params carried on RSC responses. */
-var VINEXT_PARAMS_HEADER = "X-Vinext-Params";
-/** Deduplicated, sorted list of mounted layout slots for cache keying. */
-var VINEXT_MOUNTED_SLOTS_HEADER = "X-Vinext-Mounted-Slots";
-/** Route interception context for parallel/intercepting routes. */
-var VINEXT_INTERCEPTION_CONTEXT_HEADER = "X-Vinext-Interception-Context";
-/** RSC render mode (e.g. "navigation", "prefetch"). */
-var VINEXT_RSC_RENDER_MODE_HEADER = "X-Vinext-Rsc-Render-Mode";
-/** Next.js action-not-found indicator (value "1"). */
-var NEXTJS_ACTION_NOT_FOUND_HEADER = "x-nextjs-action-not-found";
-/** Indicates revalidation occurred — value is JSON kind (1 = path/tag, 2 = dynamic-only). */
-var ACTION_REVALIDATED_HEADER = "x-action-revalidated";
-/** Redirect URL from a Server Action. */
-var ACTION_REDIRECT_HEADER = "x-action-redirect";
-/** Redirect type from a Server Action ("push" | "replace"). */
-var ACTION_REDIRECT_TYPE_HEADER = "x-action-redirect-type";
-/** HTTP status for a Server Action redirect (e.g. "308"). */
-var ACTION_REDIRECT_STATUS_HEADER = "x-action-redirect-status";
-/** Prefix for forwarded request headers (e.g. `x-middleware-request-cookie`). */
-var MIDDLEWARE_REQUEST_HEADER_PREFIX = "x-middleware-request-";
-/** Comma-separated list of header names that middleware wants to override. */
-var MIDDLEWARE_OVERRIDE_HEADERS = "x-middleware-override-headers";
-/** Carries cookies set by middleware for same-render reads. */
-var MIDDLEWARE_SET_COOKIE_HEADER = "x-middleware-set-cookie";
-/** Signal from `NextResponse.next()` — value "1" means "continue to next handler". */
-var MIDDLEWARE_NEXT_HEADER = "x-middleware-next";
-/** Rewrite destination URL set by `NextResponse.rewrite()`. */
-var MIDDLEWARE_REWRITE_HEADER = "x-middleware-rewrite";
-/** Redirect URL set by middleware. */
-var MIDDLEWARE_REDIRECT_HEADER = "x-middleware-redirect";
-/** Skip-middleware signal. */
-var MIDDLEWARE_SKIP_HEADER = "x-middleware-skip";
-var NEXT_ROUTER_STATE_TREE_HEADER = "Next-Router-State-Tree";
-var NEXT_ROUTER_PREFETCH_HEADER = "Next-Router-Prefetch";
-var NEXT_ROUTER_SEGMENT_PREFETCH_HEADER = "Next-Router-Segment-Prefetch";
-var NEXT_URL_HEADER = "Next-Url";
-/** Lowercase flight header variants used in middleware forwarding. */
-var FLIGHT_HEADERS = [
-	"rsc",
-	"next-router-state-tree",
-	"next-router-prefetch",
-	"next-hmr-refresh",
-	"next-router-segment-prefetch"
-];
-/**
-* Headers that must be stripped from external requests before any handler
-* processes them. An attacker could forge these to influence routing or
-* impersonate internal data fetches.
-*
-* Ported from Next.js `INTERNAL_HEADERS`:
-* https://github.com/vercel/next.js/blob/canary/packages/next/src/server/lib/server-ipc/utils.ts
-*/
-var INTERNAL_HEADERS = [
-	MIDDLEWARE_REWRITE_HEADER,
-	MIDDLEWARE_REDIRECT_HEADER,
-	MIDDLEWARE_SET_COOKIE_HEADER,
-	MIDDLEWARE_SKIP_HEADER,
-	MIDDLEWARE_OVERRIDE_HEADERS,
-	MIDDLEWARE_NEXT_HEADER,
-	"x-now-route-matches",
-	"x-matched-path",
-	"x-nextjs-data",
-	"x-next-resume-state-length"
-];
-//#endregion
-//#region node_modules/vinext/dist/server/middleware-request-headers.js
-var CREDENTIAL_REQUEST_HEADERS = ["authorization", "cookie"];
-function getMiddlewareHeaderValue(source, key) {
-	if (source instanceof Headers) return source.get(key);
-	const value = source[key];
-	if (value === void 0) return null;
-	return Array.isArray(value) ? value[0] ?? null : value;
-}
-function getOverrideHeaderNames(source) {
-	const rawValue = getMiddlewareHeaderValue(source, MIDDLEWARE_OVERRIDE_HEADERS);
-	if (rawValue === null) return null;
-	return rawValue.split(",").map((key) => key.trim()).filter(Boolean);
-}
-function getForwardedRequestHeaders(source) {
-	const forwardedHeaders = /* @__PURE__ */ new Map();
-	if (source instanceof Headers) {
-		for (const [key, value] of source.entries()) if (key.startsWith("x-middleware-request-")) forwardedHeaders.set(key.slice(MIDDLEWARE_REQUEST_HEADER_PREFIX.length), value);
-		return forwardedHeaders;
-	}
-	for (const [key, value] of Object.entries(source)) {
-		if (!key.startsWith("x-middleware-request-")) continue;
-		const normalizedValue = Array.isArray(value) ? value[0] ?? "" : value;
-		forwardedHeaders.set(key.slice(MIDDLEWARE_REQUEST_HEADER_PREFIX.length), normalizedValue);
-	}
-	return forwardedHeaders;
-}
-function cloneHeaders(source) {
-	const cloned = new Headers();
-	for (const [key, value] of source.entries()) cloned.append(key, value);
-	return cloned;
-}
-function encodeMiddlewareRequestHeaders(targetHeaders, requestHeaders) {
-	const overrideHeaderNames = [...requestHeaders.keys()];
-	targetHeaders.set(MIDDLEWARE_OVERRIDE_HEADERS, overrideHeaderNames.join(","));
-	for (const [key, value] of requestHeaders.entries()) targetHeaders.set(`${MIDDLEWARE_REQUEST_HEADER_PREFIX}${key}`, value);
-}
-function buildRequestHeadersFromMiddlewareResponse(baseHeaders, middlewareHeaders, options = {}) {
-	const overrideHeaderNames = getOverrideHeaderNames(middlewareHeaders);
-	const forwardedHeaders = getForwardedRequestHeaders(middlewareHeaders);
-	if (overrideHeaderNames === null && forwardedHeaders.size === 0) return null;
-	const nextHeaders = overrideHeaderNames === null ? cloneHeaders(baseHeaders) : new Headers();
-	if (overrideHeaderNames === null) {
-		for (const [key, value] of forwardedHeaders) nextHeaders.set(key, value);
-		return nextHeaders;
-	}
-	if (options.preserveCredentialHeaders) {
-		const overrideHeaderNameSet = new Set(overrideHeaderNames);
-		for (const key of CREDENTIAL_REQUEST_HEADERS) {
-			if (overrideHeaderNameSet.has(key)) continue;
-			const value = baseHeaders.get(key);
-			if (value !== null) nextHeaders.set(key, value);
-		}
-	}
-	for (const key of overrideHeaderNames) {
-		const value = forwardedHeaders.get(key);
-		if (value !== void 0) nextHeaders.set(key, value);
-	}
-	return nextHeaders;
-}
-function shouldKeepMiddlewareHeader(key) {
-	return key === "x-middleware-override-headers" || key === "x-middleware-set-cookie" || key.startsWith("x-middleware-request-");
 }
 //#endregion
 //#region node_modules/vinext/dist/config/config-matchers.js
@@ -5469,593 +5163,6 @@ function buildClientHookErrorMessage(hookName) {
 	return `${hookName} only works in Client Components. Add the "use client" directive at the top of the file to use it. Read more: https://nextjs.org/docs/messages/react-client-hook-in-server-component`;
 }
 //#endregion
-//#region node_modules/vinext/dist/shims/internal/cookie-serialize.js
-/**
-* RFC 6265 §4.1.1: cookie-name is a token (RFC 2616 §2.2).
-* Allowed: any visible ASCII (0x21-0x7E) except separators: ()<>@,;:\"/[]?={}
-*/
-var VALID_COOKIE_NAME_RE = /^[\x21\x23-\x27\x2A\x2B\x2D\x2E\x30-\x39\x41-\x5A\x5E-\x7A\x7C\x7E]+$/;
-function validateCookieName(name) {
-	if (!name || !VALID_COOKIE_NAME_RE.test(name)) throw new Error(`Invalid cookie name: ${JSON.stringify(name)}`);
-}
-/**
-* Validate cookie attribute values (path, domain) to prevent injection
-* via semicolons, newlines, or other control characters.
-*/
-function validateCookieAttributeValue(value, attributeName) {
-	for (let i = 0; i < value.length; i++) {
-		const code = value.charCodeAt(i);
-		if (code <= 31 || code === 127 || value[i] === ";") throw new Error(`Invalid cookie ${attributeName} value: ${JSON.stringify(value)}`);
-	}
-}
-/**
-* Build a Set-Cookie header string from a cookie name, value, and attributes.
-*
-* - Encodes the value with `encodeURIComponent`.
-* - Defaults `Path` to `/` (matching @edge-runtime/cookies and Next.js).
-* - Validates path/domain to reject control characters and semicolons.
-* - Emits attributes in the order: Path, Domain, Max-Age, Expires, HttpOnly,
-*   Secure, SameSite.
-*
-* The caller is responsible for validating the cookie name (typically before
-* mutating any internal state) via `validateCookieName`.
-*/
-function serializeSetCookie(name, value, options) {
-	const parts = [`${name}=${encodeURIComponent(value)}`];
-	const path = options?.path ?? "/";
-	validateCookieAttributeValue(path, "Path");
-	parts.push(`Path=${path}`);
-	if (options?.domain) {
-		validateCookieAttributeValue(options.domain, "Domain");
-		parts.push(`Domain=${options.domain}`);
-	}
-	if (options?.maxAge !== void 0) parts.push(`Max-Age=${options.maxAge}`);
-	if (options?.expires) parts.push(`Expires=${options.expires.toUTCString()}`);
-	if (options?.httpOnly) parts.push("HttpOnly");
-	if (options?.secure) parts.push("Secure");
-	if (options?.sameSite) parts.push(`SameSite=${options.sameSite}`);
-	return parts.join("; ");
-}
-//#endregion
-//#region node_modules/vinext/dist/shims/internal/parse-cookie-header.js
-/**
-* Port of the current Next.js/@edge-runtime request cookie parser semantics.
-*
-* Important details:
-* - split on a semicolon-plus-optional-spaces pattern
-* - preserve whitespace around names/values otherwise
-* - bare tokens become "true"
-* - malformed percent-encoded values are skipped
-* - duplicate names collapse to the last value via Map.set()
-*/
-function parseCookieHeader(cookieHeader) {
-	const cookies = /* @__PURE__ */ new Map();
-	for (const pair of cookieHeader.split(/; */)) {
-		if (!pair) continue;
-		const splitAt = pair.indexOf("=");
-		if (splitAt === -1) {
-			cookies.set(pair, "true");
-			continue;
-		}
-		const key = pair.slice(0, splitAt);
-		const value = pair.slice(splitAt + 1);
-		try {
-			cookies.set(key, decodeURIComponent(value));
-		} catch {}
-	}
-	return cookies;
-}
-//#endregion
-//#region node_modules/vinext/dist/shims/headers.js
-var _FALLBACK_KEY$4 = Symbol.for("vinext.nextHeadersShim.fallback");
-var _g$6 = globalThis;
-var _als$2 = getOrCreateAls("vinext.nextHeadersShim.als");
-var _fallbackState$3 = _g$6[_FALLBACK_KEY$4] ??= {
-	headersContext: null,
-	dynamicUsageDetected: false,
-	invalidDynamicUsageError: null,
-	pendingSetCookies: [],
-	draftModeCookieHeader: null,
-	phase: "render"
-};
-var EXPIRED_COOKIE_DATE = (/* @__PURE__ */ new Date(0)).toUTCString();
-function splitMiddlewareSetCookieHeader(value) {
-	const cookies = [];
-	let start = 0;
-	let inExpires = false;
-	let expiresCommaSeen = false;
-	for (let i = 0; i < value.length; i++) {
-		if (value.slice(i, i + 8).toLowerCase() === "expires=") {
-			inExpires = true;
-			expiresCommaSeen = false;
-			i += 7;
-			continue;
-		}
-		const ch = value[i];
-		if (inExpires && ch === ";") {
-			inExpires = false;
-			expiresCommaSeen = false;
-			continue;
-		}
-		if (ch !== ",") continue;
-		if (inExpires && !expiresCommaSeen) {
-			expiresCommaSeen = true;
-			continue;
-		}
-		const cookie = value.slice(start, i).trim();
-		if (cookie) cookies.push(cookie);
-		start = i + 1;
-		inExpires = false;
-		expiresCommaSeen = false;
-	}
-	const cookie = value.slice(start).trim();
-	if (cookie) cookies.push(cookie);
-	return cookies;
-}
-function setCookieNameValue(setCookie) {
-	const equalsIndex = setCookie.indexOf("=");
-	if (equalsIndex <= 0) return null;
-	const name = setCookie.slice(0, equalsIndex).trim();
-	const valueEnd = setCookie.indexOf(";", equalsIndex + 1);
-	const encodedValue = setCookie.slice(equalsIndex + 1, valueEnd === -1 ? void 0 : valueEnd);
-	let value;
-	try {
-		value = decodeURIComponent(encodedValue);
-	} catch {
-		value = encodedValue;
-	}
-	return {
-		name,
-		value
-	};
-}
-function rebuildCookiesFromHeader(ctx, cookieHeader) {
-	ctx.cookies.clear();
-	if (cookieHeader === null) return;
-	const nextCookies = parseCookieHeader(cookieHeader);
-	for (const [name, value] of nextCookies) ctx.cookies.set(name, value);
-}
-function mergeMiddlewareSetCookies(ctx, rawHeader) {
-	if (rawHeader === null) return false;
-	let merged = false;
-	for (const setCookie of splitMiddlewareSetCookieHeader(rawHeader)) {
-		const entry = setCookieNameValue(setCookie);
-		if (!entry) continue;
-		ctx.cookies.set(entry.name, entry.value);
-		merged = true;
-	}
-	return merged;
-}
-function _getState$2() {
-	if (isInsideUnifiedScope()) return getRequestContext();
-	return _als$2.getStore() ?? _fallbackState$3;
-}
-/**
-* Dynamic usage flag — set when a component calls connection(), cookies(),
-* headers(), or noStore() during rendering. When true, ISR caching is
-* bypassed and the response gets Cache-Control: no-store.
-*/
-/**
-* Mark the current render as requiring dynamic (uncached) rendering.
-* Called by connection(), cookies(), headers(), and noStore().
-*/
-function markDynamicUsage() {
-	const state = _getState$2();
-	if (state.headersContext?.forceStatic) return;
-	state.dynamicUsageDetected = true;
-}
-/** Symbol used by cache-runtime.ts to store the "use cache" ALS on globalThis */
-var _USE_CACHE_ALS_KEY = Symbol.for("vinext.cacheRuntime.contextAls");
-/** Symbol used by cache.ts to store the unstable_cache ALS on globalThis */
-var _UNSTABLE_CACHE_ALS_KEY = Symbol.for("vinext.unstableCache.als");
-var _gHeaders = globalThis;
-function _isInsideUseCache() {
-	return _gHeaders[_USE_CACHE_ALS_KEY]?.getStore() != null;
-}
-function _isInsideUnstableCache() {
-	return _gHeaders[_UNSTABLE_CACHE_ALS_KEY]?.getStore() === true;
-}
-/**
-* Throw if the current execution is inside a "use cache" or unstable_cache()
-* scope. Called by dynamic request APIs (headers, cookies, connection) to
-* prevent request-specific data from being frozen into cached results.
-*
-* @param apiName - The name of the API being called (e.g. "connection()")
-*/
-function throwIfInsideCacheScope(apiName) {
-	if (_isInsideUseCache()) {
-		const error = /* @__PURE__ */ new Error(`\`${apiName}\` cannot be called inside "use cache". If you need this data inside a cached function, call \`${apiName}\` outside and pass the required data as an argument.`);
-		try {
-			const ctx = getRequestContext();
-			if (ctx) ctx.invalidDynamicUsageError = error;
-		} catch {}
-		throw error;
-	}
-	if (_isInsideUnstableCache()) {
-		const error = /* @__PURE__ */ new Error(`\`${apiName}\` cannot be called inside a function cached with \`unstable_cache()\`. If you need this data inside a cached function, call \`${apiName}\` outside and pass the required data as an argument.`);
-		try {
-			const ctx = getRequestContext();
-			if (ctx) ctx.invalidDynamicUsageError = error;
-		} catch {}
-		throw error;
-	}
-}
-/**
-* Check, consume, and return any invalid dynamic usage error recorded during
-* the render (e.g. cookies() called inside "use cache"). This error persists
-* even if the throw was caught by user-code try/catch, so it can surface on
-* client-side navigations where the static shell validation is skipped.
-* Ported from Next.js: workStore.invalidDynamicUsageError in
-* packages/next/src/server/app-render/app-render.tsx
-* https://github.com/vercel/next.js/commit/f5e54c06726b571a042fce67417e40a29f6b8689
-*/
-function consumeInvalidDynamicUsageError() {
-	const state = _getState$2();
-	const err = state.invalidDynamicUsageError;
-	state.invalidDynamicUsageError = null;
-	return err;
-}
-/**
-* Check and reset the dynamic usage flag.
-* Called by the server after rendering to decide on caching.
-*/
-function consumeDynamicUsage() {
-	const state = _getState$2();
-	const used = state.dynamicUsageDetected;
-	state.dynamicUsageDetected = false;
-	return used;
-}
-function _setStatePhase(state, phase) {
-	const previous = state.phase;
-	state.phase = phase;
-	return previous;
-}
-function _areCookiesMutableInCurrentPhase() {
-	const phase = _getState$2().phase;
-	return phase === "action" || phase === "route-handler";
-}
-function setHeadersAccessPhase(phase) {
-	return _setStatePhase(_getState$2(), phase);
-}
-/**
-* Set the headers/cookies context for the current RSC render.
-* Called by the framework's RSC entry before rendering each request.
-*
-* @deprecated Prefer runWithHeadersContext() which uses als.run() for
-* proper per-request isolation. This function mutates the ALS store
-* in-place and is only safe for cleanup (ctx=null) within an existing
-* als.run() scope.
-*/
-/**
-* Returns the current live HeadersContext from ALS (or the fallback).
-* Used after applyMiddlewareRequestHeaders() to build a post-middleware
-* request context for afterFiles/fallback rewrite has/missing evaluation.
-*/
-function getHeadersContext() {
-	return _getState$2().headersContext;
-}
-function setHeadersContext(ctx) {
-	const state = _getState$2();
-	if (ctx !== null) {
-		state.headersContext = ctx;
-		state.dynamicUsageDetected = false;
-		state.pendingSetCookies = [];
-		state.draftModeCookieHeader = null;
-		state.phase = "render";
-	} else {
-		state.headersContext = null;
-		state.phase = "render";
-	}
-}
-/**
-* Apply middleware-forwarded request headers to the current headers context.
-*
-* When Next.js middleware calls `NextResponse.next()` or `NextResponse.rewrite()`
-* with `{ request: { headers } }`, the modified headers are encoded on the
-* middleware response. This function decodes that protocol and applies the
-* resulting request header set to the live `HeadersContext`. When an override
-* list is present, omitted headers are deleted as part of the rebuild.
-*
-* Cached `readonlyHeaders` and `readonlyCookies` snapshots on the
-* HeadersContext must be invalidated whenever this function rebuilds the
-* underlying `headers`/`cookies`. Otherwise a middleware that reads
-* `headers()` (or `cookies()`) before returning a request-header override —
-* for example `@clerk/nextjs`, whose `clerkClient()` reads `headers()` via
-* `buildRequestLike()` during middleware execution — primes a sealed snapshot
-* built from the *pre*-override request, and any subsequent `headers()` call
-* from a Server Component would return that stale snapshot instead of the
-* middleware-modified view.
-*/
-function applyMiddlewareRequestHeaders(middlewareResponseHeaders) {
-	const state = _getState$2();
-	if (!state.headersContext) return;
-	const ctx = state.headersContext;
-	const previousCookieHeader = ctx.headers.get("cookie");
-	const middlewareSetCookieHeader = middlewareResponseHeaders.get(MIDDLEWARE_SET_COOKIE_HEADER);
-	const nextHeaders = buildRequestHeadersFromMiddlewareResponse(ctx.headers, middlewareResponseHeaders);
-	if (!nextHeaders && middlewareSetCookieHeader === null) return;
-	if (nextHeaders) {
-		ctx.headers = nextHeaders;
-		ctx.readonlyHeaders = void 0;
-		const nextCookieHeader = nextHeaders.get("cookie");
-		if (previousCookieHeader !== nextCookieHeader) {
-			rebuildCookiesFromHeader(ctx, nextCookieHeader);
-			ctx.readonlyCookies = void 0;
-			ctx.mutableCookies = void 0;
-		}
-	}
-	if (mergeMiddlewareSetCookies(ctx, middlewareSetCookieHeader)) {
-		ctx.readonlyCookies = void 0;
-		ctx.mutableCookies = void 0;
-	}
-}
-/** Methods on `Headers` that mutate state. Hoisted to module scope — static. */
-var _HEADERS_MUTATING_METHODS = new Set([
-	"set",
-	"delete",
-	"append"
-]);
-var ReadonlyRequestCookiesError$1 = class ReadonlyRequestCookiesError extends Error {
-	constructor() {
-		super("Cookies can only be modified in a Server Action or Route Handler. Read more: https://nextjs.org/docs/app/api-reference/functions/cookies#options");
-	}
-	static callable() {
-		throw new ReadonlyRequestCookiesError();
-	}
-};
-function _decorateRequestApiPromise(promise, target) {
-	return new Proxy(promise, {
-		get(promiseTarget, prop) {
-			if (prop in promiseTarget) {
-				const value = Reflect.get(promiseTarget, prop, promiseTarget);
-				return typeof value === "function" ? value.bind(promiseTarget) : value;
-			}
-			const value = Reflect.get(target, prop, target);
-			return typeof value === "function" ? value.bind(target) : value;
-		},
-		has(promiseTarget, prop) {
-			return prop in promiseTarget || prop in target;
-		},
-		ownKeys(promiseTarget) {
-			return Array.from(new Set([...Reflect.ownKeys(promiseTarget), ...Reflect.ownKeys(target)]));
-		},
-		getOwnPropertyDescriptor(promiseTarget, prop) {
-			return Reflect.getOwnPropertyDescriptor(promiseTarget, prop) ?? Reflect.getOwnPropertyDescriptor(target, prop);
-		}
-	});
-}
-var _decoratedCookiesPromises = /* @__PURE__ */ new WeakMap();
-function _getOrCreateDecoratedRequestApiPromise(cache, target) {
-	const cached = cache.get(target);
-	if (cached) return cached;
-	const promise = _decorateRequestApiPromise(Promise.resolve(target), target);
-	cache.set(target, promise);
-	return promise;
-}
-function _decorateRejectedRequestApiPromise(error) {
-	const normalizedError = error instanceof Error ? error : new Error(String(error));
-	const promise = Promise.reject(normalizedError);
-	promise.catch(() => {});
-	return _decorateRequestApiPromise(promise, new Proxy({}, { get(_target, prop) {
-		if (prop === "then" || prop === "catch" || prop === "finally") return;
-		throw normalizedError;
-	} }));
-}
-function _wrapMutableCookies(cookies) {
-	return new Proxy(cookies, { get(target, prop) {
-		if (prop === "set" || prop === "delete") return (...args) => {
-			if (!_areCookiesMutableInCurrentPhase()) throw new ReadonlyRequestCookiesError$1();
-			return Reflect.get(target, prop, target).apply(target, args);
-		};
-		const value = Reflect.get(target, prop, target);
-		return typeof value === "function" ? value.bind(target) : value;
-	} });
-}
-function _sealCookies(cookies) {
-	return new Proxy(cookies, { get(target, prop) {
-		if (prop === "set" || prop === "delete") throw new ReadonlyRequestCookiesError$1();
-		const value = Reflect.get(target, prop, target);
-		return typeof value === "function" ? value.bind(target) : value;
-	} });
-}
-function _getMutableCookies(ctx) {
-	if (!ctx.mutableCookies) ctx.mutableCookies = _wrapMutableCookies(new RequestCookies$1(ctx.cookies));
-	return ctx.mutableCookies;
-}
-function _getReadonlyCookies(ctx) {
-	if (!ctx.readonlyCookies) ctx.readonlyCookies = _sealCookies(new RequestCookies$1(ctx.cookies));
-	return ctx.readonlyCookies;
-}
-/**
-* Create a HeadersContext from a standard Request object.
-*
-* Performance note: In Workerd (Cloudflare Workers), `new Headers(request.headers)`
-* copies the entire header map across the V8/C++ boundary, which shows up as
-* ~815 ms self-time in production profiles when requests carry many headers.
-* We defer this copy with a lazy proxy:
-*
-* - Reads (`get`, `has`, `entries`, …) are forwarded directly to the original
-*   immutable `request.headers` — zero copy cost on the hot path.
-* - The first mutating call (`set`, `delete`, `append`) materialises
-*   `new Headers(request.headers)` once, then applies the mutation to the copy.
-*   All subsequent operations go to the copy.
-*
-* This means the ~815 ms copy only occurs when middleware actually rewrites
-* request headers via `NextResponse.next({ request: { headers } })`, which is
-* uncommon.  Pure read requests (the vast majority) pay zero copy cost.
-*
-* Cookie parsing is also deferred: the `cookie` header string is not split
-* until the first call to `cookies()` or `draftMode()`.
-*/
-function headersContextFromRequest(request) {
-	let _mutable = null;
-	const headersProxy = new Proxy(request.headers, { get(target, prop) {
-		const src = _mutable ?? target;
-		if (typeof prop === "string" && _HEADERS_MUTATING_METHODS.has(prop)) return (...args) => {
-			if (!_mutable) _mutable = new Headers(target);
-			return _mutable[prop](...args);
-		};
-		const value = Reflect.get(src, prop, src);
-		return typeof value === "function" ? value.bind(src) : value;
-	} });
-	let _cookies = null;
-	function getCookies() {
-		if (_cookies) return _cookies;
-		_cookies = parseCookieHeader(headersProxy.get("cookie") || "");
-		return _cookies;
-	}
-	return {
-		headers: headersProxy,
-		get cookies() {
-			return getCookies();
-		}
-	};
-}
-/**
-* Cookie jar from the incoming request.
-* Returns a ReadonlyRequestCookies-like object.
-*/
-function cookies() {
-	try {
-		throwIfInsideCacheScope("cookies()");
-	} catch (error) {
-		return _decorateRejectedRequestApiPromise(error);
-	}
-	const state = _getState$2();
-	if (!state.headersContext) return _decorateRejectedRequestApiPromise(/* @__PURE__ */ new Error("cookies() can only be called from a Server Component, Route Handler, or Server Action."));
-	if (state.headersContext.accessError) return _decorateRejectedRequestApiPromise(state.headersContext.accessError);
-	markDynamicUsage();
-	return _getOrCreateDecoratedRequestApiPromise(_decoratedCookiesPromises, _areCookiesMutableInCurrentPhase() ? _getMutableCookies(state.headersContext) : _getReadonlyCookies(state.headersContext));
-}
-/** Accumulated Set-Cookie headers from cookies().set() / .delete() calls */
-/**
-* Get and clear all pending Set-Cookie headers generated by cookies().set()/delete().
-* Called by the framework after rendering to attach headers to the response.
-*/
-function getAndClearPendingCookies() {
-	const state = _getState$2();
-	const cookies = state.pendingSetCookies;
-	state.pendingSetCookies = [];
-	return cookies;
-}
-var DRAFT_MODE_COOKIE = "__prerender_bypass";
-(/* @__PURE__ */ new Date(0)).toUTCString();
-function getDraftSecret() {
-	return "fc0d2cb6-30c3-4448-b479-e0aa8f61a58c";
-}
-/**
-* Get any Set-Cookie header generated by draftMode().enable()/disable().
-* Called by the framework after rendering to attach the header to the response.
-*/
-function getDraftModeCookieHeader() {
-	const state = _getState$2();
-	const header = state.draftModeCookieHeader;
-	state.draftModeCookieHeader = null;
-	return header;
-}
-function isDraftModeRequest(request) {
-	const cookieHeader = request.headers.get("cookie");
-	if (!cookieHeader) return false;
-	return parseCookieHeader(cookieHeader).get(DRAFT_MODE_COOKIE) === getDraftSecret();
-}
-var RequestCookies$1 = class {
-	_cookies;
-	constructor(cookies) {
-		this._cookies = cookies;
-	}
-	get(name) {
-		const value = this._cookies.get(name);
-		if (value === void 0) return void 0;
-		return {
-			name,
-			value
-		};
-	}
-	getAll(nameOrOptions) {
-		const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions?.name;
-		const result = [];
-		for (const [cookieName, value] of this._cookies) if (name === void 0 || cookieName === name) result.push({
-			name: cookieName,
-			value
-		});
-		return result;
-	}
-	has(name) {
-		return this._cookies.has(name);
-	}
-	/**
-	* Set a cookie. In Route Handlers and Server Actions, this produces
-	* a Set-Cookie header on the response.
-	*/
-	set(nameOrOptions, value, options) {
-		let cookieName;
-		let cookieValue;
-		let opts;
-		if (typeof nameOrOptions === "string") {
-			cookieName = nameOrOptions;
-			cookieValue = value ?? "";
-			opts = options;
-		} else {
-			cookieName = nameOrOptions.name;
-			cookieValue = nameOrOptions.value;
-			opts = nameOrOptions;
-		}
-		validateCookieName(cookieName);
-		this._cookies.set(cookieName, cookieValue);
-		_getState$2().pendingSetCookies.push(serializeSetCookie(cookieName, cookieValue, opts));
-		return this;
-	}
-	/**
-	* Delete a cookie by emitting an expired Set-Cookie header.
-	*/
-	delete(nameOrOptions) {
-		const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
-		const path = typeof nameOrOptions === "string" ? "/" : nameOrOptions.path ?? "/";
-		const domain = typeof nameOrOptions === "string" ? void 0 : nameOrOptions.domain;
-		validateCookieName(name);
-		validateCookieAttributeValue(path, "Path");
-		if (domain) validateCookieAttributeValue(domain, "Domain");
-		this._cookies.delete(name);
-		const parts = [`${name}=`, `Path=${path}`];
-		if (domain) parts.push(`Domain=${domain}`);
-		parts.push(`Expires=${EXPIRED_COOKIE_DATE}`);
-		_getState$2().pendingSetCookies.push(parts.join("; "));
-		return this;
-	}
-	get size() {
-		return this._cookies.size;
-	}
-	[Symbol.iterator]() {
-		const entries = this._cookies.entries();
-		const iter = {
-			[Symbol.iterator]() {
-				return iter;
-			},
-			next() {
-				const { value, done } = entries.next();
-				if (done) return {
-					value: void 0,
-					done: true
-				};
-				const [name, val] = value;
-				return {
-					value: [name, {
-						name,
-						value: val
-					}],
-					done: false
-				};
-			}
-		};
-		return iter;
-	}
-	toString() {
-		const parts = [];
-		for (const [name, value] of this._cookies) parts.push(`${name}=${value}`);
-		return parts.join("; ");
-	}
-};
-//#endregion
 //#region node_modules/vinext/dist/shims/thenable-params.js
 function hasParamProperty(obj, prop) {
 	return Object.prototype.hasOwnProperty.call(obj, prop);
@@ -7105,7 +6212,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "b59c8ff8-33c5-4f28-bf7f-84e6681c311d";
+		return "84d2750a-5d3a-4cda-baf8-fb34eb0ffd5b";
 	}
 };
 var RequestCookies = class {
@@ -7360,2885 +6467,53 @@ var NextFetchEvent = class {
 };
 globalThis.URLPattern;
 //#endregion
-//#region node_modules/jose/dist/webapi/lib/buffer_utils.js
-var encoder = new TextEncoder();
-var decoder = new TextDecoder();
-var strictDecoder = new TextDecoder("utf-8", { fatal: true });
-function concat(...buffers) {
-	const size = buffers.reduce((acc, { length }) => acc + length, 0);
-	const buf = new Uint8Array(size);
-	let i = 0;
-	for (const buffer of buffers) {
-		buf.set(buffer, i);
-		i += buffer.length;
-	}
-	return buf;
-}
-function encode$1(string) {
-	const bytes = new Uint8Array(string.length);
-	for (let i = 0; i < string.length; i++) {
-		const code = string.charCodeAt(i);
-		if (code > 127) throw new TypeError("non-ASCII string encountered in encode()");
-		bytes[i] = code;
-	}
-	return bytes;
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/crypto_key.js
-var unusable = (name, prop = "algorithm.name") => /* @__PURE__ */ new TypeError(`CryptoKey does not support this operation, its ${prop} must be ${name}`);
-function checkUsage(key, usage) {
-	if (usage && !key.usages.includes(usage)) throw new TypeError(`CryptoKey does not support this operation, its usages must include ${usage}.`);
-}
-function checkModulusLength(alg, key) {
-	const { modulusLength } = key.algorithm;
-	if (typeof modulusLength !== "number" || modulusLength < 2048) throw new TypeError(`${alg} requires key modulusLength to be 2048 bits or larger`);
-}
-function checkCryptoKey(key, expected, usage) {
-	const algorithm = key.algorithm;
-	if (algorithm.name !== expected.name) throw unusable(expected.name);
-	if (expected.hash && algorithm.hash?.name !== expected.hash) throw unusable(expected.hash, "algorithm.hash");
-	if (expected.namedCurve && algorithm.namedCurve !== expected.namedCurve) throw unusable(expected.namedCurve, "algorithm.namedCurve");
-	if (expected.length !== void 0 && algorithm.length !== expected.length) throw unusable(expected.length, "algorithm.length");
-	checkUsage(key, usage);
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/invalid_key_input.js
-function message(msg, actual, ...types) {
-	if (types.length > 2) {
-		const last = types.pop();
-		msg += `one of type ${types.join(", ")}, or ${last}.`;
-	} else if (types.length === 2) msg += `one of type ${types[0]} or ${types[1]}.`;
-	else msg += `of type ${types[0]}.`;
-	if (actual == null) msg += ` Received ${actual}`;
-	else if (typeof actual === "function" && actual.name) msg += ` Received function ${actual.name}`;
-	else if (typeof actual === "object" && actual != null) {
-		if (actual.constructor?.name) msg += ` Received an instance of ${actual.constructor.name}`;
-	}
-	return msg;
-}
-var withAlg = (alg, actual, ...types) => message(`Key for the ${alg} algorithm must be `, actual, ...types);
-//#endregion
-//#region node_modules/jose/dist/webapi/util/errors.js
-var JOSEError = class extends Error {
-	static code = "ERR_JOSE_GENERIC";
-	code = "ERR_JOSE_GENERIC";
-	constructor(message, options) {
-		super(message, options);
-		this.name = this.constructor.name;
-		Error.captureStackTrace?.(this, this.constructor);
-	}
-};
-var JWTClaimValidationFailed = class extends JOSEError {
-	static code = "ERR_JWT_CLAIM_VALIDATION_FAILED";
-	code = "ERR_JWT_CLAIM_VALIDATION_FAILED";
-	claim;
-	reason;
-	payload;
-	constructor(message, payload, claim = "unspecified", reason = "unspecified") {
-		super(message, { cause: {
-			claim,
-			reason,
-			payload
-		} });
-		this.claim = claim;
-		this.reason = reason;
-		this.payload = payload;
-	}
-};
-var JWTExpired = class extends JOSEError {
-	static code = "ERR_JWT_EXPIRED";
-	code = "ERR_JWT_EXPIRED";
-	claim;
-	reason;
-	payload;
-	constructor(message, payload, claim = "unspecified", reason = "unspecified") {
-		super(message, { cause: {
-			claim,
-			reason,
-			payload
-		} });
-		this.claim = claim;
-		this.reason = reason;
-		this.payload = payload;
-	}
-};
-var JOSEAlgNotAllowed = class extends JOSEError {
-	static code = "ERR_JOSE_ALG_NOT_ALLOWED";
-	code = "ERR_JOSE_ALG_NOT_ALLOWED";
-};
-var JOSENotSupported = class extends JOSEError {
-	static code = "ERR_JOSE_NOT_SUPPORTED";
-	code = "ERR_JOSE_NOT_SUPPORTED";
-};
-var JWSInvalid = class extends JOSEError {
-	static code = "ERR_JWS_INVALID";
-	code = "ERR_JWS_INVALID";
-};
-var JWTInvalid = class extends JOSEError {
-	static code = "ERR_JWT_INVALID";
-	code = "ERR_JWT_INVALID";
-};
-var JWSSignatureVerificationFailed = class extends JOSEError {
-	static code = "ERR_JWS_SIGNATURE_VERIFICATION_FAILED";
-	code = "ERR_JWS_SIGNATURE_VERIFICATION_FAILED";
-	constructor(message = "signature verification failed", options) {
-		super(message, options);
-	}
-};
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/is_key_like.js
-var isCryptoKey = (key) => {
-	if (key?.[Symbol.toStringTag] === "CryptoKey") return true;
-	try {
-		return key instanceof CryptoKey;
-	} catch {
-		return false;
-	}
-};
-var isKeyObject = (key) => key?.[Symbol.toStringTag] === "KeyObject";
-var isKeyLike = (key) => isCryptoKey(key) || isKeyObject(key);
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/base64.js
-function encodeBase64$1(input) {
-	if (Uint8Array.prototype.toBase64) return input.toBase64();
-	const CHUNK_SIZE = 32768;
-	const arr = [];
-	for (let i = 0; i < input.length; i += CHUNK_SIZE) arr.push(String.fromCharCode.apply(null, input.subarray(i, i + CHUNK_SIZE)));
-	return btoa(arr.join(""));
-}
-function decodeBase64$1(encoded) {
-	if (Uint8Array.fromBase64) return Uint8Array.fromBase64(encoded);
-	const binary = atob(encoded);
-	const bytes = new Uint8Array(binary.length);
-	for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-	return bytes;
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/util/base64url.js
-var invalid = "The input to be decoded is not correctly encoded.";
-function decode(input) {
-	if (Uint8Array.fromBase64) try {
-		return Uint8Array.fromBase64(typeof input === "string" ? input : decoder.decode(input), { alphabet: "base64url" });
-	} catch (cause) {
-		throw new TypeError(invalid, { cause });
-	}
-	let encoded = input;
-	if (encoded instanceof Uint8Array) encoded = decoder.decode(encoded);
-	if (encoded.includes("+") || encoded.includes("/")) throw new TypeError(invalid);
-	encoded = encoded.replace(/-/g, "+").replace(/_/g, "/");
-	try {
-		return decodeBase64$1(encoded);
-	} catch {
-		throw new TypeError(invalid);
-	}
-}
-function encode(input) {
-	let unencoded = input;
-	if (typeof unencoded === "string") unencoded = encoder.encode(unencoded);
-	if (Uint8Array.prototype.toBase64) return unencoded.toBase64({
-		alphabet: "base64url",
-		omitPadding: true
-	});
-	return encodeBase64$1(unencoded).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/type_checks.js
-function isObject$1(input) {
-	if (typeof input !== "object" || input === null || Object.prototype.toString.call(input) !== "[object Object]") return false;
-	const prototype = Object.getPrototypeOf(input);
-	if (prototype === null) return true;
-	let proto = prototype;
-	while (Object.getPrototypeOf(proto) !== null) proto = Object.getPrototypeOf(proto);
-	return prototype === proto;
-}
-function isDisjoint(...headers) {
-	const parameters = /* @__PURE__ */ new Set();
-	for (const header of headers) {
-		if (!header) continue;
-		for (const parameter of Object.keys(header)) {
-			if (parameters.has(parameter)) return false;
-			parameters.add(parameter);
-		}
-	}
-	return true;
-}
-var isJWK = (key) => isObject$1(key) && typeof key.kty === "string";
-var isPrivateJWK = (key) => key.kty !== "oct" && (key.kty === "AKP" && typeof key.priv === "string" || typeof key.d === "string");
-var isPublicJWK = (key) => key.kty !== "oct" && key.d === void 0 && key.priv === void 0;
-var isSecretJWK = (key) => key.kty === "oct" && typeof key.k === "string";
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/helpers.js
-function assertNotSet(value, name) {
-	if (value) throw new TypeError(`${name} can only be called once`);
-}
-function decodeBase64url(value, label, ErrorClass) {
-	try {
-		return decode(value);
-	} catch {
-		throw new ErrorClass(`Failed to base64url decode the ${label}`);
-	}
-}
-function encodeBase64url(value, label, ErrorClass) {
-	try {
-		return encode$1(value);
-	} catch {
-		throw new ErrorClass(`The ${label} is not a valid base64url string`);
-	}
-}
-function parseJoseHeader(b64, ErrorClass, message) {
-	let parsed;
-	try {
-		parsed = JSON.parse(strictDecoder.decode(decode(b64)));
-	} catch {
-		throw new ErrorClass(message);
-	}
-	if (!isObject$1(parsed)) throw new ErrorClass(message);
-	return parsed;
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/jwk_to_key.js
-async function jwkToKey(entry, jwk) {
-	if (jwk.kty === "RSA" && "oth" in jwk && jwk.oth !== void 0) throw new JOSENotSupported("RSA JWK \"oth\" (Other Primes Info) Parameter value is not supported");
-	if (!entry.kty.includes(jwk.kty)) throw new JOSENotSupported("Invalid or unsupported JWK \"alg\" (Algorithm) Parameter value");
-	const algorithm = entry.resolve?.({
-		kty: jwk.kty,
-		crv: jwk.crv
-	}) ?? entry.subtle;
-	const isPrivate = !!(jwk.d || jwk.priv);
-	const keyData = { ...jwk };
-	if (keyData.kty !== "AKP") delete keyData.alg;
-	delete keyData.use;
-	return crypto.subtle.importKey("jwk", keyData, algorithm, jwk.ext ?? !isPrivate, jwk.key_ops ?? entry.usages[isPrivate ? 1 : 0]);
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/key.js
-var tag = (key) => key[Symbol.toStringTag];
-var jwkMatchesOp = (entry, key, usage) => {
-	const { alg } = entry;
-	if (key.use !== void 0) {
-		const expected = usage === "sign" || usage === "verify" ? "sig" : "enc";
-		if (key.use !== expected) throw new TypeError(`Invalid key for this operation, its "use" must be "${expected}" when present`);
-	}
-	if (key.alg !== void 0 && key.alg !== alg) throw new TypeError(`Invalid key for this operation, its "alg" must be "${alg}" when present`);
-	if (Array.isArray(key.key_ops)) {
-		const expectedKeyOp = usage === "encrypt" || usage === "decrypt" ? entry.ops?.[usage === "encrypt" ? 0 : 1] : usage;
-		if (expectedKeyOp && !key.key_ops.includes(expectedKeyOp)) throw new TypeError(`Invalid key for this operation, its "key_ops" must include "${expectedKeyOp}" when present`);
-	}
-};
-function checkKeyType(entry, key, usage) {
-	const { alg, secret } = entry;
-	const privateKey = usage === "decrypt" || usage === "sign";
-	if (secret && key instanceof Uint8Array) return [BYTES, key];
-	if (isJWK(key)) {
-		if (secret ? !isSecretJWK(key) : !(privateKey ? isPrivateJWK(key) : isPublicJWK(key))) throw new TypeError(secret ? `JSON Web Key for symmetric algorithms must have JWK "kty" (Key Type) equal to "oct" and the JWK "k" (Key Value) present` : `JSON Web Key for this operation must be a ${privateKey ? "private" : "public"} JWK`);
-		jwkMatchesOp(entry, key, usage);
-		return [JWK, key];
-	}
-	if (!isKeyLike(key)) throw new TypeError(secret ? withAlg(alg, key, "CryptoKey", "KeyObject", "JSON Web Key", "Uint8Array") : withAlg(alg, key, "CryptoKey", "KeyObject", "JSON Web Key"));
-	if (secret) {
-		if (key.type !== "secret") throw new TypeError(`${tag(key)} instances for symmetric algorithms must be of type "secret"`);
-	} else {
-		if (key.type === "secret") throw new TypeError(`${tag(key)} instances for asymmetric algorithms must not be of type "secret"`);
-		const expectedType = privateKey ? "private" : "public";
-		if ((key.type === "public" || key.type === "private") && key.type !== expectedType) {
-			const operation = usage === "sign" ? "signing" : usage === "verify" ? "verifying" : `${usage.slice(0, -1)}tion`;
-			throw new TypeError(`${tag(key)} instances for asymmetric algorithm ${operation} must be of type "${expectedType}"`);
-		}
-	}
-	return isCryptoKey(key) ? [CRYPTO, key] : [KEYOBJECT, key];
-}
-var BYTES = 0;
-var CRYPTO = 1;
-var KEYOBJECT = 2;
-var JWK = 3;
-var cache;
-var nist = {
-	__proto__: null,
-	prime256v1: "P-256",
-	secp384r1: "P-384",
-	secp521r1: "P-521"
-};
-function cached(key, alg, value) {
-	cache ||= /* @__PURE__ */ new WeakMap();
-	const entry = cache.get(key);
-	if (value) if (entry) entry[alg] = value;
-	else cache.set(key, {
-		__proto__: null,
-		[alg]: value
-	});
-	return value ?? entry?.[alg];
-}
-var handleJWK = async (key, jwk, entry) => cached(key, entry.alg) ?? cached(key, entry.alg, await jwkToKey(entry, {
-	...jwk,
-	alg: entry.alg
-}));
-var handleKeyObject = (keyObject, entry) => {
-	const hit = cached(keyObject, entry.alg);
-	if (hit) return hit;
-	const isPublic = keyObject.type === "public";
-	const usages = entry.usages[isPublic ? 0 : 1];
-	const { asymmetricKeyType } = keyObject;
-	const crv = nist[keyObject.asymmetricKeyDetails?.namedCurve];
-	const params = entry.resolve?.({
-		crv,
-		asymmetricKeyType
-	}) ?? entry.subtle;
-	return cached(keyObject, entry.alg, keyObject.toCryptoKey(params, isPublic, usages));
-};
-async function prepareKey(entry, key, usage) {
-	const tagged = checkKeyType(entry, key, usage);
-	switch (tagged[0]) {
-		case BYTES:
-		case CRYPTO: return tagged[1];
-		case JWK: {
-			const key = tagged[1];
-			if (key.k) return decode(key.k);
-			if (!Object.isFrozen(key)) {
-				const { key_ops } = key;
-				if (Array.isArray(key_ops)) Object.freeze(key_ops);
-				Object.freeze(key);
-			}
-			return handleJWK(key, key, entry);
-		}
-		case KEYOBJECT: {
-			const keyObject = tagged[1];
-			if (keyObject.type === "secret") return keyObject.export();
-			if ("toCryptoKey" in keyObject && typeof keyObject.toCryptoKey === "function") return handleKeyObject(keyObject, entry);
-			return handleJWK(keyObject, keyObject.export({ format: "jwk" }), entry);
-		}
-	}
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/key_descriptor.js
-function table(entries) {
-	const out = { __proto__: null };
-	for (const alg in entries) out[alg] = {
-		...entries[alg],
-		alg
-	};
-	return out;
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/options.js
-var JWS_RECOGNIZED = {
-	__proto__: null,
-	b64: true
-};
-function validateAlgorithms(option, algorithms) {
-	if (algorithms !== void 0 && (!Array.isArray(algorithms) || algorithms.some((s) => typeof s !== "string"))) throw new TypeError(`"${option}" option must be an array of strings`);
-	if (!algorithms) return;
-	return new Set(algorithms);
-}
-function validateCritDuplicates(Err, protectedHeader) {
-	const { crit } = protectedHeader ?? {};
-	if (Array.isArray(crit) && new Set(crit).size !== crit.length) throw new Err("\"crit\" (Critical) Header Parameter MUST NOT contain duplicate values");
-}
-function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader, joseHeader) {
-	if (joseHeader.crit !== void 0 && protectedHeader?.crit === void 0) throw new Err("\"crit\" (Critical) Header Parameter MUST be integrity protected");
-	if (!protectedHeader || protectedHeader.crit === void 0) return [];
-	if (!Array.isArray(protectedHeader.crit) || protectedHeader.crit.length === 0 || protectedHeader.crit.some((input) => typeof input !== "string" || input.length === 0)) throw new Err("\"crit\" (Critical) Header Parameter MUST be an array of non-empty strings when present");
-	const recognized = recognizedOption === void 0 ? recognizedDefault : {
-		__proto__: null,
-		...recognizedOption,
-		...recognizedDefault
-	};
-	for (const parameter of protectedHeader.crit) {
-		if (!(parameter in recognized)) throw new JOSENotSupported(`Extension Header Parameter "${parameter}" is not recognized`);
-		if (!Object.hasOwn(joseHeader, parameter) || joseHeader[parameter] === void 0) throw new Err(`Extension Header Parameter "${parameter}" is missing`);
-		if (recognized[parameter] && (!Object.hasOwn(protectedHeader, parameter) || protectedHeader[parameter] === void 0)) throw new Err(`Extension Header Parameter "${parameter}" MUST be integrity protected`);
-	}
-	return protectedHeader.crit;
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/signing.js
-async function getSigKey(entry, key, usage) {
-	if (key instanceof Uint8Array) return crypto.subtle.importKey("raw", key, entry.subtle, false, [usage]);
-	checkCryptoKey(key, entry.subtle, usage);
-	if (entry.minRsaBits) checkModulusLength(entry.alg, key);
-	return key;
-}
-async function sign(entry, key, data) {
-	const cryptoKey = await getSigKey(entry, key, "sign");
-	const signature = await crypto.subtle.sign(entry.signing, cryptoKey, data);
-	return new Uint8Array(signature);
-}
-async function verify(entry, key, signature, data) {
-	const cryptoKey = await getSigKey(entry, key, "verify");
-	try {
-		return await crypto.subtle.verify(entry.signing, cryptoKey, signature, data);
-	} catch {
-		return false;
-	}
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/jws_algorithms.js
-var sig = [["verify"], ["sign"]];
-function hmac(bits) {
-	const subtle = {
-		name: "HMAC",
-		hash: `SHA-${bits}`
-	};
-	return {
-		kty: ["oct"],
-		secret: true,
-		subtle,
-		signing: subtle,
-		usages: sig
-	};
-}
-function rsa(bits, saltLength) {
-	const subtle = {
-		name: saltLength ? "RSA-PSS" : "RSASSA-PKCS1-v1_5",
-		hash: `SHA-${bits}`
-	};
-	return {
-		kty: ["RSA"],
-		subtle,
-		signing: saltLength ? {
-			...subtle,
-			saltLength
-		} : subtle,
-		usages: sig,
-		minRsaBits: 2048
-	};
-}
-function ecdsa(crv, bits) {
-	return {
-		kty: ["EC"],
-		crv,
-		subtle: {
-			name: "ECDSA",
-			namedCurve: crv
-		},
-		signing: {
-			name: "ECDSA",
-			hash: `SHA-${bits}`
-		},
-		usages: sig
-	};
-}
-function eddsa() {
-	const subtle = { name: "Ed25519" };
-	return {
-		kty: ["OKP"],
-		crv: "Ed25519",
-		subtle,
-		signing: subtle,
-		usages: sig
-	};
-}
-function mldsa(bits) {
-	const subtle = { name: `ML-DSA-${bits}` };
-	return {
-		kty: ["AKP"],
-		subtle,
-		signing: subtle,
-		usages: sig
-	};
-}
-var JWS = table({
-	HS256: hmac(256),
-	HS384: hmac(384),
-	HS512: hmac(512),
-	RS256: rsa(256),
-	RS384: rsa(384),
-	RS512: rsa(512),
-	PS256: rsa(256, 32),
-	PS384: rsa(384, 48),
-	PS512: rsa(512, 64),
-	ES256: ecdsa("P-256", 256),
-	ES384: ecdsa("P-384", 384),
-	ES512: ecdsa("P-521", 512),
-	EdDSA: eddsa(),
-	Ed25519: eddsa(),
-	"ML-DSA-44": mldsa(44),
-	"ML-DSA-65": mldsa(65),
-	"ML-DSA-87": mldsa(87)
-});
-function jwsAlgorithm(alg) {
-	const entry = typeof alg === "string" ? JWS[alg] : void 0;
-	if (!entry) throw new JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
-	return entry;
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/jws_verify.js
-function prepareVerify(options) {
-	return [options && validateAlgorithms("algorithms", options.algorithms), options?.crit];
-}
-async function verifySignature(jws, shared, key) {
-	const { protected: encodedProtected, header, payload: inputPayload } = jws;
-	let parsedProt = {};
-	if (encodedProtected) parsedProt = parseJoseHeader(encodedProtected, JWSInvalid, "JWS Protected Header is invalid");
-	let joseHeader;
-	if (header !== void 0) {
-		if (!isDisjoint(parsedProt, header)) throw new JWSInvalid("JWS Protected and JWS Unprotected Header Parameter names must be disjoint");
-		joseHeader = {
-			...parsedProt,
-			...header
-		};
-	} else joseHeader = parsedProt;
-	const extensions = validateCrit(JWSInvalid, JWS_RECOGNIZED, shared[1], parsedProt, joseHeader);
-	let b64 = true;
-	if (extensions.includes("b64")) {
-		b64 = parsedProt.b64;
-		if (typeof b64 !== "boolean") throw new JWSInvalid("The \"b64\" (base64url-encode payload) Header Parameter must be a boolean");
-	}
-	const { alg } = joseHeader;
-	if (typeof alg !== "string" || !alg) throw new JWSInvalid("JWS \"alg\" (Algorithm) Header Parameter missing or invalid");
-	if (shared[0] && !shared[0].has(alg)) throw new JOSEAlgNotAllowed("\"alg\" (Algorithm) Header Parameter value not allowed");
-	if (b64) {
-		if (typeof inputPayload !== "string") throw new JWSInvalid("JWS Payload must be a string");
-	} else if (typeof inputPayload !== "string" && !(inputPayload instanceof Uint8Array)) throw new JWSInvalid("JWS Payload must be a string or an Uint8Array instance");
-	let resolvedKey = false;
-	if (typeof key === "function") {
-		key = await key(parsedProt, jws);
-		resolvedKey = true;
-	}
-	const entry = jwsAlgorithm(alg);
-	const data = concat(encodedProtected !== void 0 ? encode$1(encodedProtected) : new Uint8Array(), encode$1("."), typeof inputPayload === "string" ? b64 ? shared[2] ??= encodeBase64url(inputPayload, "payload", JWSInvalid) : encoder.encode(inputPayload) : inputPayload);
-	const signature = decodeBase64url(jws.signature, "signature", JWSInvalid);
-	const k = await prepareKey(entry, key, "verify");
-	if (!await verify(entry, k, signature, data)) throw new JWSSignatureVerificationFailed();
-	let payload;
-	if (b64) payload = decodeBase64url(inputPayload, "payload", JWSInvalid);
-	else if (typeof inputPayload === "string") payload = encoder.encode(inputPayload);
-	else payload = inputPayload;
-	return [
-		payload,
-		parsedProt,
-		b64,
-		k,
-		resolvedKey
-	];
-}
-async function verifyCompact(jws, shared, key) {
-	if (jws instanceof Uint8Array) jws = decoder.decode(jws);
-	if (typeof jws !== "string") throw new JWSInvalid("Compact JWS must be a string or Uint8Array");
-	const { 0: protectedHeader, 1: payload, 2: signature, length } = jws.split(".");
-	if (length !== 3) throw new JWSInvalid("Invalid Compact JWS");
-	return verifySignature({
-		payload,
-		protected: protectedHeader,
-		signature
-	}, shared, key);
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/jwt_claims_set.js
-var epoch = (date) => Math.floor(date.getTime() / 1e3);
-var multipliers = {
-	s: 1,
-	m: 60,
-	h: 3600,
-	d: 86400,
-	w: 604800,
-	y: 31557600
-};
-var REGEX = /^(\+|\-)? ?(\d+|\d+\.\d+) ?(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)(?: (ago|from now))?$/i;
-var checkFailed = "check_failed";
-function secs(str) {
-	const matched = REGEX.exec(str);
-	if (!matched || matched[4] && matched[1]) throw new TypeError("Invalid time period format");
-	const value = parseFloat(matched[2]);
-	const numericDate = Math.round(value * multipliers[matched[3][0].toLowerCase()]);
-	if (matched[1] === "-" || matched[4] === "ago") return -numericDate;
-	return numericDate;
-}
-function validateInput(label, input) {
-	if (!Number.isFinite(input)) throw new TypeError(`Invalid ${label} input`);
-	return input;
-}
-function numericDate(value, label) {
-	if (typeof value === "number") return validateInput(label, value);
-	if (value instanceof Date) return validateInput(label, epoch(value));
-	return epoch(/* @__PURE__ */ new Date()) + secs(value);
-}
-var normalizeTyp = (value) => {
-	if (value.includes("/")) return value.toLowerCase();
-	return `application/${value.toLowerCase()}`;
-};
-var checkAudiencePresence = (audPayload, audOption) => {
-	if (typeof audPayload === "string") return audOption.includes(audPayload);
-	if (Array.isArray(audPayload)) return audOption.some((aud) => audPayload.includes(aud));
-	return false;
-};
-function validateNumericDate(payload, claim, required = false) {
-	const value = payload[claim];
-	if (value === void 0 && !required) return void 0;
-	if (typeof value !== "number") throw new JWTClaimValidationFailed(`"${claim}" claim must be a number`, payload, claim, "invalid");
-	return value;
-}
-function unexpectedClaim(payload, claim) {
-	throw new JWTClaimValidationFailed(`unexpected "${claim}" claim value`, payload, claim, checkFailed);
-}
-function validateClaimsSet(protectedHeader, encodedPayload, options = {}) {
-	let payload;
-	try {
-		payload = JSON.parse(strictDecoder.decode(encodedPayload));
-	} catch {}
-	if (!isObject$1(payload)) throw new JWTInvalid("JWT Claims Set must be a top-level JSON object");
-	const { typ } = options;
-	if (typ && (typeof protectedHeader.typ !== "string" || normalizeTyp(protectedHeader.typ) !== normalizeTyp(typ))) throw new JWTClaimValidationFailed("unexpected \"typ\" JWT header value", payload, "typ", checkFailed);
-	const { requiredClaims = [], issuer, subject, audience, maxTokenAge } = options;
-	const presenceCheck = [...requiredClaims];
-	if (maxTokenAge !== void 0) presenceCheck.push("iat");
-	if (audience !== void 0) presenceCheck.push("aud");
-	if (subject !== void 0) presenceCheck.push("sub");
-	if (issuer !== void 0) presenceCheck.push("iss");
-	for (const claim of new Set(presenceCheck.reverse())) if (!Object.hasOwn(payload, claim)) throw new JWTClaimValidationFailed(`missing required "${claim}" claim`, payload, claim, "missing");
-	if (issuer !== void 0 && !(Array.isArray(issuer) ? issuer : [issuer]).includes(payload.iss)) unexpectedClaim(payload, "iss");
-	if (subject !== void 0 && payload.sub !== subject) unexpectedClaim(payload, "sub");
-	if (audience !== void 0 && !checkAudiencePresence(payload.aud, typeof audience === "string" ? [audience] : audience)) unexpectedClaim(payload, "aud");
-	const { clockTolerance } = options;
-	let tolerance = 0;
-	if (typeof clockTolerance === "string") tolerance = secs(clockTolerance);
-	else if (clockTolerance !== void 0) {
-		if (typeof clockTolerance !== "number") throw new TypeError("Invalid clockTolerance option type");
-		tolerance = clockTolerance;
-	}
-	validateInput("clockTolerance option", tolerance);
-	const { currentDate } = options;
-	const now = validateInput("currentDate option", epoch(currentDate || /* @__PURE__ */ new Date()));
-	const iat = validateNumericDate(payload, "iat", maxTokenAge !== void 0);
-	const nbf = validateNumericDate(payload, "nbf");
-	if (nbf !== void 0) {
-		if (nbf > now + tolerance) throw new JWTClaimValidationFailed("\"nbf\" claim timestamp check failed", payload, "nbf", checkFailed);
-	}
-	const exp = validateNumericDate(payload, "exp");
-	if (exp !== void 0) {
-		if (exp <= now - tolerance) throw new JWTExpired("\"exp\" claim timestamp check failed", payload, "exp", checkFailed);
-	}
-	if (maxTokenAge !== void 0) {
-		const age = now - iat;
-		const max = typeof maxTokenAge === "number" ? maxTokenAge : secs(maxTokenAge);
-		if (age - tolerance > max) throw new JWTExpired("\"iat\" claim timestamp check failed (too far in the past)", payload, "iat", checkFailed);
-		if (age < 0 - tolerance) throw new JWTClaimValidationFailed("\"iat\" claim timestamp check failed (it should be in the past)", payload, "iat", checkFailed);
-	}
-	return payload;
-}
-var JWTClaimsBuilder = class {
-	#payload;
-	constructor(payload) {
-		if (!isObject$1(payload)) throw new TypeError("JWT Claims Set MUST be an object");
-		this.#payload = structuredClone(payload);
-	}
-	data() {
-		return encoder.encode(JSON.stringify(this.#payload));
-	}
-	get iss() {
-		return this.#payload.iss;
-	}
-	set iss(value) {
-		this.#payload.iss = value;
-	}
-	get sub() {
-		return this.#payload.sub;
-	}
-	set sub(value) {
-		this.#payload.sub = value;
-	}
-	get aud() {
-		return this.#payload.aud;
-	}
-	set aud(value) {
-		this.#payload.aud = value;
-	}
-	set jti(value) {
-		this.#payload.jti = value;
-	}
-	set nbf(value) {
-		this.#payload.nbf = numericDate(value, "setNotBefore");
-	}
-	set exp(value) {
-		this.#payload.exp = numericDate(value, "setExpirationTime");
-	}
-	set iat(value) {
-		if (value === void 0) this.#payload.iat = epoch(/* @__PURE__ */ new Date());
-		else if (typeof value === "string") this.#payload.iat = validateInput("setIssuedAt", epoch(/* @__PURE__ */ new Date()) + secs(value));
-		else this.#payload.iat = numericDate(value, "setIssuedAt");
-	}
-};
-//#endregion
-//#region node_modules/jose/dist/webapi/jwt/verify.js
-async function jwtVerify(jwt, key, options) {
-	const verified = await verifyCompact(jwt, prepareVerify(options), key);
-	if (!verified[2]) throw new JWTInvalid("JWTs MUST NOT use unencoded payload");
-	const result = {
-		payload: validateClaimsSet(verified[1], verified[0], options),
-		protectedHeader: verified[1]
-	};
-	if (typeof key === "function") return {
-		...result,
-		key: verified[3]
-	};
-	return result;
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/lib/jws_sign.js
-function unencodedPayload(protectedHeader) {
-	return protectedHeader?.b64 === false && Array.isArray(protectedHeader.crit) && protectedHeader.crit.includes("b64");
-}
-async function createSignature(input, key) {
-	const { protectedHeader, unprotectedHeader } = input;
-	if (!protectedHeader && !unprotectedHeader) throw new JWSInvalid("either setProtectedHeader or setUnprotectedHeader must be called before #sign()");
-	if (!isDisjoint(protectedHeader, unprotectedHeader)) throw new JWSInvalid("JWS Protected and JWS Unprotected Header Parameter names must be disjoint");
-	const joseHeader = {
-		...protectedHeader,
-		...unprotectedHeader
-	};
-	validateCritDuplicates(JWSInvalid, protectedHeader);
-	const extensions = validateCrit(JWSInvalid, JWS_RECOGNIZED, input.crit, protectedHeader, joseHeader);
-	let b64 = true;
-	if (extensions.includes("b64")) {
-		b64 = protectedHeader.b64;
-		if (typeof b64 !== "boolean") throw new JWSInvalid("The \"b64\" (base64url-encode payload) Header Parameter must be a boolean");
-	}
-	const { alg } = joseHeader;
-	if (typeof alg !== "string" || !alg) throw new JWSInvalid("JWS \"alg\" (Algorithm) Header Parameter missing or invalid");
-	const entry = jwsAlgorithm(alg);
-	let payloadS;
-	let payloadB;
-	if (b64) {
-		const encoded = input.encoded ??= [];
-		encoded[0] ??= encode(input.payload);
-		encoded[1] ??= encode$1(encoded[0]);
-		payloadS = encoded[0];
-		payloadB = encoded[1];
-	} else {
-		payloadB = input.payload;
-		payloadS = "";
-	}
-	let protectedHeaderString;
-	let protectedHeaderBytes;
-	if (protectedHeader) {
-		protectedHeaderString = encode(JSON.stringify(protectedHeader));
-		protectedHeaderBytes = encode$1(protectedHeaderString);
-	} else {
-		protectedHeaderString = "";
-		protectedHeaderBytes = new Uint8Array();
-	}
-	const data = concat(protectedHeaderBytes, encode$1("."), payloadB);
-	const jws = {
-		signature: encode(await sign(entry, await prepareKey(entry, key, "sign"), data)),
-		payload: payloadS
-	};
-	if (protectedHeader) jws.protected = protectedHeaderString;
-	if (unprotectedHeader) jws.header = unprotectedHeader;
-	return jws;
-}
-//#endregion
-//#region node_modules/jose/dist/webapi/jws/flattened/sign.js
-var FlattenedSign = class {
-	#payload;
-	#protectedHeader;
-	#unprotectedHeader;
-	constructor(payload) {
-		if (!(payload instanceof Uint8Array)) throw new TypeError("payload must be an instance of Uint8Array");
-		this.#payload = payload;
-	}
-	setProtectedHeader(protectedHeader) {
-		assertNotSet(this.#protectedHeader, "setProtectedHeader");
-		this.#protectedHeader = protectedHeader;
-		return this;
-	}
-	setUnprotectedHeader(unprotectedHeader) {
-		assertNotSet(this.#unprotectedHeader, "setUnprotectedHeader");
-		this.#unprotectedHeader = unprotectedHeader;
-		return this;
-	}
-	async sign(key, options) {
-		return createSignature({
-			payload: this.#payload,
-			protectedHeader: this.#protectedHeader,
-			unprotectedHeader: this.#unprotectedHeader,
-			crit: options?.crit
-		}, key);
-	}
-};
-//#endregion
-//#region node_modules/jose/dist/webapi/jws/compact/sign.js
-var CompactSign = class {
-	#flattened;
-	#protectedHeader;
-	constructor(payload) {
-		this.#flattened = new FlattenedSign(payload);
-	}
-	setProtectedHeader(protectedHeader) {
-		this.#flattened.setProtectedHeader(protectedHeader);
-		this.#protectedHeader = protectedHeader;
-		return this;
-	}
-	async sign(key, options) {
-		if (unencodedPayload(this.#protectedHeader)) throw new TypeError("use the flattened module for creating JWS with b64: false");
-		const jws = await this.#flattened.sign(key, options);
-		return `${jws.protected}.${jws.payload}.${jws.signature}`;
-	}
-};
-//#endregion
-//#region node_modules/jose/dist/webapi/jwt/sign.js
-var SignJWT = class {
-	#protectedHeader;
-	#jwt;
-	constructor(payload = {}) {
-		this.#jwt = new JWTClaimsBuilder(payload);
-	}
-	setIssuer(issuer) {
-		this.#jwt.iss = issuer;
-		return this;
-	}
-	setSubject(subject) {
-		this.#jwt.sub = subject;
-		return this;
-	}
-	setAudience(audience) {
-		this.#jwt.aud = audience;
-		return this;
-	}
-	setJti(jwtId) {
-		this.#jwt.jti = jwtId;
-		return this;
-	}
-	setNotBefore(input) {
-		this.#jwt.nbf = input;
-		return this;
-	}
-	setExpirationTime(input) {
-		this.#jwt.exp = input;
-		return this;
-	}
-	setIssuedAt(input) {
-		this.#jwt.iat = input;
-		return this;
-	}
-	setProtectedHeader(protectedHeader) {
-		this.#protectedHeader = protectedHeader;
-		return this;
-	}
-	async sign(key, options) {
-		const sig = new CompactSign(this.#jwt.data());
-		sig.setProtectedHeader(this.#protectedHeader);
-		if (unencodedPayload(this.#protectedHeader)) throw new JWTInvalid("JWTs MUST NOT use unencoded payload");
-		return sig.sign(key, options);
-	}
-};
-//#endregion
-//#region src/lib/runtime-config.ts
-function runtimeValue(key) {
-	const workerValue = env[key];
-	if (typeof workerValue === "string") return workerValue;
-	const processValue = process.env[key];
-	return typeof processValue === "string" ? processValue : void 0;
-}
-//#endregion
 //#region src/lib/preview.ts
 function isSafePreview() {
 	return runtimeValue("VERCEL_ENV") === "preview" || runtimeValue("VELLORA_SAFE_PREVIEW") === "true";
 }
 //#endregion
-//#region node_modules/bcryptjs/index.js
+//#region src/lib/supabase/proxy-session.ts
 /**
-* The random implementation to use as a fallback.
-* @type {?function(number):!Array.<number>}
-* @inner
+* Proxy-only session lookup. getClaims() verifies the token and supplies only
+* the immutable subject used to read the caller's own profile through RLS.
+* Role and display data always come from public.profiles, never from claims.
 */
-var randomFallback = null;
-/**
-* Generates cryptographically secure random bytes.
-* @function
-* @param {number} len Bytes length
-* @returns {!Array.<number>} Random bytes
-* @throws {Error} If no random implementation is available
-* @inner
-*/
-function randomBytes$1(len) {
-	try {
-		return crypto.getRandomValues(new Uint8Array(len));
-	} catch {}
-	try {
-		return nodeCrypto.randomBytes(len);
-	} catch {}
-	if (!randomFallback) throw Error("Neither WebCryptoAPI nor a crypto module is available. Use bcrypt.setRandomFallback to set an alternative");
-	return randomFallback(len);
-}
-/**
-* Sets the pseudo random number generator to use as a fallback if neither node's `crypto` module nor the Web Crypto
-*  API is available. Please note: It is highly important that the PRNG used is cryptographically secure and that it
-*  is seeded properly!
-* @param {?function(number):!Array.<number>} random Function taking the number of bytes to generate as its
-*  sole argument, returning the corresponding array of cryptographically secure random byte values.
-* @see http://nodejs.org/api/crypto.html
-* @see http://www.w3.org/TR/WebCryptoAPI/
-*/
-function setRandomFallback(random) {
-	randomFallback = random;
-}
-/**
-* Synchronously generates a salt.
-* @param {number=} rounds Number of rounds to use, defaults to 10 if omitted
-* @param {number=} seed_length Not supported.
-* @returns {string} Resulting salt
-* @throws {Error} If a random fallback is required but not set
-*/
-function genSaltSync(rounds, seed_length) {
-	rounds = rounds || GENSALT_DEFAULT_LOG2_ROUNDS;
-	if (typeof rounds !== "number") throw Error("Illegal arguments: " + typeof rounds + ", " + typeof seed_length);
-	if (rounds < 4) rounds = 4;
-	else if (rounds > 31) rounds = 31;
-	var salt = [];
-	salt.push("$2b$");
-	if (rounds < 10) salt.push("0");
-	salt.push(rounds.toString());
-	salt.push("$");
-	salt.push(base64_encode(randomBytes$1(BCRYPT_SALT_LEN), BCRYPT_SALT_LEN));
-	return salt.join("");
-}
-/**
-* Asynchronously generates a salt.
-* @param {(number|function(Error, string=))=} rounds Number of rounds to use, defaults to 10 if omitted
-* @param {(number|function(Error, string=))=} seed_length Not supported.
-* @param {function(Error, string=)=} callback Callback receiving the error, if any, and the resulting salt
-* @returns {!Promise} If `callback` has been omitted
-* @throws {Error} If `callback` is present but not a function
-*/
-function genSalt(rounds, seed_length, callback) {
-	if (typeof seed_length === "function") callback = seed_length, seed_length = void 0;
-	if (typeof rounds === "function") callback = rounds, rounds = void 0;
-	if (typeof rounds === "undefined") rounds = GENSALT_DEFAULT_LOG2_ROUNDS;
-	else if (typeof rounds !== "number") throw Error("illegal arguments: " + typeof rounds);
-	function _async(callback) {
-		nextTick(function() {
-			try {
-				callback(null, genSaltSync(rounds));
-			} catch (err) {
-				callback(err);
-			}
-		});
-	}
-	if (callback) {
-		if (typeof callback !== "function") throw Error("Illegal callback: " + typeof callback);
-		_async(callback);
-	} else return new Promise(function(resolve, reject) {
-		_async(function(err, res) {
-			if (err) {
-				reject(err);
-				return;
-			}
-			resolve(res);
-		});
-	});
-}
-/**
-* Synchronously generates a hash for the given password.
-* @param {string} password Password to hash
-* @param {(number|string)=} salt Salt length to generate or salt to use, default to 10
-* @returns {string} Resulting hash
-*/
-function hashSync(password, salt) {
-	if (typeof salt === "undefined") salt = GENSALT_DEFAULT_LOG2_ROUNDS;
-	if (typeof salt === "number") salt = genSaltSync(salt);
-	if (typeof password !== "string" || typeof salt !== "string") throw Error("Illegal arguments: " + typeof password + ", " + typeof salt);
-	return _hash(password, salt);
-}
-/**
-* Asynchronously generates a hash for the given password.
-* @param {string} password Password to hash
-* @param {number|string} salt Salt length to generate or salt to use
-* @param {function(Error, string=)=} callback Callback receiving the error, if any, and the resulting hash
-* @param {function(number)=} progressCallback Callback successively called with the percentage of rounds completed
-*  (0.0 - 1.0), maximally once per `MAX_EXECUTION_TIME = 100` ms.
-* @returns {!Promise} If `callback` has been omitted
-* @throws {Error} If `callback` is present but not a function
-*/
-function hash(password, salt, callback, progressCallback) {
-	function _async(callback) {
-		if (typeof password === "string" && typeof salt === "number") genSalt(salt, function(err, salt) {
-			_hash(password, salt, callback, progressCallback);
-		});
-		else if (typeof password === "string" && typeof salt === "string") _hash(password, salt, callback, progressCallback);
-		else nextTick(callback.bind(this, Error("Illegal arguments: " + typeof password + ", " + typeof salt)));
-	}
-	if (callback) {
-		if (typeof callback !== "function") throw Error("Illegal callback: " + typeof callback);
-		_async(callback);
-	} else return new Promise(function(resolve, reject) {
-		_async(function(err, res) {
-			if (err) {
-				reject(err);
-				return;
-			}
-			resolve(res);
-		});
-	});
-}
-/**
-* Compares two strings of the same length in constant time.
-* @param {string} known Must be of the correct length
-* @param {string} unknown Must be the same length as `known`
-* @returns {boolean}
-* @inner
-*/
-function safeStringCompare(known, unknown) {
-	var diff = known.length ^ unknown.length;
-	for (var i = 0; i < known.length; ++i) diff |= known.charCodeAt(i) ^ unknown.charCodeAt(i);
-	return diff === 0;
-}
-/**
-* Synchronously tests a password against a hash.
-* @param {string} password Password to compare
-* @param {string} hash Hash to test against
-* @returns {boolean} true if matching, otherwise false
-* @throws {Error} If an argument is illegal
-*/
-function compareSync(password, hash) {
-	if (typeof password !== "string" || typeof hash !== "string") throw Error("Illegal arguments: " + typeof password + ", " + typeof hash);
-	if (hash.length !== 60) return false;
-	return safeStringCompare(hashSync(password, hash.substring(0, hash.length - 31)), hash);
-}
-/**
-* Asynchronously tests a password against a hash.
-* @param {string} password Password to compare
-* @param {string} hashValue Hash to test against
-* @param {function(Error, boolean)=} callback Callback receiving the error, if any, otherwise the result
-* @param {function(number)=} progressCallback Callback successively called with the percentage of rounds completed
-*  (0.0 - 1.0), maximally once per `MAX_EXECUTION_TIME = 100` ms.
-* @returns {!Promise} If `callback` has been omitted
-* @throws {Error} If `callback` is present but not a function
-*/
-function compare(password, hashValue, callback, progressCallback) {
-	function _async(callback) {
-		if (typeof password !== "string" || typeof hashValue !== "string") {
-			nextTick(callback.bind(this, Error("Illegal arguments: " + typeof password + ", " + typeof hashValue)));
-			return;
-		}
-		if (hashValue.length !== 60) {
-			nextTick(callback.bind(this, null, false));
-			return;
-		}
-		hash(password, hashValue.substring(0, 29), function(err, comp) {
-			if (err) callback(err);
-			else callback(null, safeStringCompare(comp, hashValue));
-		}, progressCallback);
-	}
-	if (callback) {
-		if (typeof callback !== "function") throw Error("Illegal callback: " + typeof callback);
-		_async(callback);
-	} else return new Promise(function(resolve, reject) {
-		_async(function(err, res) {
-			if (err) {
-				reject(err);
-				return;
-			}
-			resolve(res);
-		});
-	});
-}
-/**
-* Gets the number of rounds used to encrypt the specified hash.
-* @param {string} hash Hash to extract the used number of rounds from
-* @returns {number} Number of rounds used
-* @throws {Error} If `hash` is not a string
-*/
-function getRounds(hash) {
-	if (typeof hash !== "string") throw Error("Illegal arguments: " + typeof hash);
-	return parseInt(hash.split("$")[2], 10);
-}
-/**
-* Gets the salt portion from a hash. Does not validate the hash.
-* @param {string} hash Hash to extract the salt from
-* @returns {string} Extracted salt part
-* @throws {Error} If `hash` is not a string or otherwise invalid
-*/
-function getSalt(hash) {
-	if (typeof hash !== "string") throw Error("Illegal arguments: " + typeof hash);
-	if (hash.length !== 60) throw Error("Illegal hash length: " + hash.length + " != 60");
-	return hash.substring(0, 29);
-}
-/**
-* Tests if a password will be truncated when hashed, that is its length is
-* greater than 72 bytes when converted to UTF-8.
-* @param {string} password The password to test
-* @returns {boolean} `true` if truncated, otherwise `false`
-*/
-function truncates(password) {
-	if (typeof password !== "string") throw Error("Illegal arguments: " + typeof password);
-	return utf8Length(password) > 72;
-}
-/**
-* Continues with the callback after yielding to the event loop.
-* @function
-* @param {function(...[*])} callback Callback to execute
-* @inner
-*/
-var nextTick = typeof setImmediate === "function" ? setImmediate : typeof scheduler === "object" && typeof scheduler.postTask === "function" ? scheduler.postTask.bind(scheduler) : setTimeout;
-/** Calculates the byte length of a string encoded as UTF8. */
-function utf8Length(string) {
-	var len = 0, c = 0;
-	for (var i = 0; i < string.length; ++i) {
-		c = string.charCodeAt(i);
-		if (c < 128) len += 1;
-		else if (c < 2048) len += 2;
-		else if ((c & 64512) === 55296 && (string.charCodeAt(i + 1) & 64512) === 56320) {
-			++i;
-			len += 4;
-		} else len += 3;
-	}
-	return len;
-}
-/** Converts a string to an array of UTF8 bytes. */
-function utf8Array(string) {
-	var offset = 0, c1, c2;
-	var buffer = new Array(utf8Length(string));
-	for (var i = 0, k = string.length; i < k; ++i) {
-		c1 = string.charCodeAt(i);
-		if (c1 < 128) buffer[offset++] = c1;
-		else if (c1 < 2048) {
-			buffer[offset++] = c1 >> 6 | 192;
-			buffer[offset++] = c1 & 63 | 128;
-		} else if ((c1 & 64512) === 55296 && ((c2 = string.charCodeAt(i + 1)) & 64512) === 56320) {
-			c1 = 65536 + ((c1 & 1023) << 10) + (c2 & 1023);
-			++i;
-			buffer[offset++] = c1 >> 18 | 240;
-			buffer[offset++] = c1 >> 12 & 63 | 128;
-			buffer[offset++] = c1 >> 6 & 63 | 128;
-			buffer[offset++] = c1 & 63 | 128;
-		} else {
-			buffer[offset++] = c1 >> 12 | 224;
-			buffer[offset++] = c1 >> 6 & 63 | 128;
-			buffer[offset++] = c1 & 63 | 128;
-		}
-	}
-	return buffer;
-}
-/**
-* bcrypt's own non-standard base64 dictionary.
-* @type {!Array.<string>}
-* @const
-* @inner
-**/
-var BASE64_CODE = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("");
-/**
-* @type {!Array.<number>}
-* @const
-* @inner
-**/
-var BASE64_INDEX = [
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	0,
-	1,
-	54,
-	55,
-	56,
-	57,
-	58,
-	59,
-	60,
-	61,
-	62,
-	63,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	2,
-	3,
-	4,
-	5,
-	6,
-	7,
-	8,
-	9,
-	10,
-	11,
-	12,
-	13,
-	14,
-	15,
-	16,
-	17,
-	18,
-	19,
-	20,
-	21,
-	22,
-	23,
-	24,
-	25,
-	26,
-	27,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	28,
-	29,
-	30,
-	31,
-	32,
-	33,
-	34,
-	35,
-	36,
-	37,
-	38,
-	39,
-	40,
-	41,
-	42,
-	43,
-	44,
-	45,
-	46,
-	47,
-	48,
-	49,
-	50,
-	51,
-	52,
-	53,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1
-];
-/**
-* Encodes a byte array to base64 with up to len bytes of input.
-* @param {!Array.<number>} b Byte array
-* @param {number} len Maximum input length
-* @returns {string}
-* @inner
-*/
-function base64_encode(b, len) {
-	var off = 0, rs = [], c1, c2;
-	if (len <= 0 || len > b.length) throw Error("Illegal len: " + len);
-	while (off < len) {
-		c1 = b[off++] & 255;
-		rs.push(BASE64_CODE[c1 >> 2 & 63]);
-		c1 = (c1 & 3) << 4;
-		if (off >= len) {
-			rs.push(BASE64_CODE[c1 & 63]);
-			break;
-		}
-		c2 = b[off++] & 255;
-		c1 |= c2 >> 4 & 15;
-		rs.push(BASE64_CODE[c1 & 63]);
-		c1 = (c2 & 15) << 2;
-		if (off >= len) {
-			rs.push(BASE64_CODE[c1 & 63]);
-			break;
-		}
-		c2 = b[off++] & 255;
-		c1 |= c2 >> 6 & 3;
-		rs.push(BASE64_CODE[c1 & 63]);
-		rs.push(BASE64_CODE[c2 & 63]);
-	}
-	return rs.join("");
-}
-/**
-* Decodes a base64 encoded string to up to len bytes of output.
-* @param {string} s String to decode
-* @param {number} len Maximum output length
-* @returns {!Array.<number>}
-* @inner
-*/
-function base64_decode(s, len) {
-	var off = 0, slen = s.length, olen = 0, rs = [], c1, c2, c3, c4, o, code;
-	if (len <= 0) throw Error("Illegal len: " + len);
-	while (off < slen - 1 && olen < len) {
-		code = s.charCodeAt(off++);
-		c1 = code < BASE64_INDEX.length ? BASE64_INDEX[code] : -1;
-		code = s.charCodeAt(off++);
-		c2 = code < BASE64_INDEX.length ? BASE64_INDEX[code] : -1;
-		if (c1 == -1 || c2 == -1) break;
-		o = c1 << 2 >>> 0;
-		o |= (c2 & 48) >> 4;
-		rs.push(String.fromCharCode(o));
-		if (++olen >= len || off >= slen) break;
-		code = s.charCodeAt(off++);
-		c3 = code < BASE64_INDEX.length ? BASE64_INDEX[code] : -1;
-		if (c3 == -1) break;
-		o = (c2 & 15) << 4 >>> 0;
-		o |= (c3 & 60) >> 2;
-		rs.push(String.fromCharCode(o));
-		if (++olen >= len || off >= slen) break;
-		code = s.charCodeAt(off++);
-		c4 = code < BASE64_INDEX.length ? BASE64_INDEX[code] : -1;
-		o = (c3 & 3) << 6 >>> 0;
-		o |= c4;
-		rs.push(String.fromCharCode(o));
-		++olen;
-	}
-	var res = [];
-	for (off = 0; off < olen; off++) res.push(rs[off].charCodeAt(0));
-	return res;
-}
-/**
-* @type {number}
-* @const
-* @inner
-*/
-var BCRYPT_SALT_LEN = 16;
-/**
-* @type {number}
-* @const
-* @inner
-*/
-var GENSALT_DEFAULT_LOG2_ROUNDS = 10;
-/**
-* @type {number}
-* @const
-* @inner
-*/
-var BLOWFISH_NUM_ROUNDS = 16;
-/**
-* @type {number}
-* @const
-* @inner
-*/
-var MAX_EXECUTION_TIME = 100;
-/**
-* @type {Array.<number>}
-* @const
-* @inner
-*/
-var P_ORIG = [
-	608135816,
-	2242054355,
-	320440878,
-	57701188,
-	2752067618,
-	698298832,
-	137296536,
-	3964562569,
-	1160258022,
-	953160567,
-	3193202383,
-	887688300,
-	3232508343,
-	3380367581,
-	1065670069,
-	3041331479,
-	2450970073,
-	2306472731
-];
-/**
-* @type {Array.<number>}
-* @const
-* @inner
-*/
-var S_ORIG = [
-	3509652390,
-	2564797868,
-	805139163,
-	3491422135,
-	3101798381,
-	1780907670,
-	3128725573,
-	4046225305,
-	614570311,
-	3012652279,
-	134345442,
-	2240740374,
-	1667834072,
-	1901547113,
-	2757295779,
-	4103290238,
-	227898511,
-	1921955416,
-	1904987480,
-	2182433518,
-	2069144605,
-	3260701109,
-	2620446009,
-	720527379,
-	3318853667,
-	677414384,
-	3393288472,
-	3101374703,
-	2390351024,
-	1614419982,
-	1822297739,
-	2954791486,
-	3608508353,
-	3174124327,
-	2024746970,
-	1432378464,
-	3864339955,
-	2857741204,
-	1464375394,
-	1676153920,
-	1439316330,
-	715854006,
-	3033291828,
-	289532110,
-	2706671279,
-	2087905683,
-	3018724369,
-	1668267050,
-	732546397,
-	1947742710,
-	3462151702,
-	2609353502,
-	2950085171,
-	1814351708,
-	2050118529,
-	680887927,
-	999245976,
-	1800124847,
-	3300911131,
-	1713906067,
-	1641548236,
-	4213287313,
-	1216130144,
-	1575780402,
-	4018429277,
-	3917837745,
-	3693486850,
-	3949271944,
-	596196993,
-	3549867205,
-	258830323,
-	2213823033,
-	772490370,
-	2760122372,
-	1774776394,
-	2652871518,
-	566650946,
-	4142492826,
-	1728879713,
-	2882767088,
-	1783734482,
-	3629395816,
-	2517608232,
-	2874225571,
-	1861159788,
-	326777828,
-	3124490320,
-	2130389656,
-	2716951837,
-	967770486,
-	1724537150,
-	2185432712,
-	2364442137,
-	1164943284,
-	2105845187,
-	998989502,
-	3765401048,
-	2244026483,
-	1075463327,
-	1455516326,
-	1322494562,
-	910128902,
-	469688178,
-	1117454909,
-	936433444,
-	3490320968,
-	3675253459,
-	1240580251,
-	122909385,
-	2157517691,
-	634681816,
-	4142456567,
-	3825094682,
-	3061402683,
-	2540495037,
-	79693498,
-	3249098678,
-	1084186820,
-	1583128258,
-	426386531,
-	1761308591,
-	1047286709,
-	322548459,
-	995290223,
-	1845252383,
-	2603652396,
-	3431023940,
-	2942221577,
-	3202600964,
-	3727903485,
-	1712269319,
-	422464435,
-	3234572375,
-	1170764815,
-	3523960633,
-	3117677531,
-	1434042557,
-	442511882,
-	3600875718,
-	1076654713,
-	1738483198,
-	4213154764,
-	2393238008,
-	3677496056,
-	1014306527,
-	4251020053,
-	793779912,
-	2902807211,
-	842905082,
-	4246964064,
-	1395751752,
-	1040244610,
-	2656851899,
-	3396308128,
-	445077038,
-	3742853595,
-	3577915638,
-	679411651,
-	2892444358,
-	2354009459,
-	1767581616,
-	3150600392,
-	3791627101,
-	3102740896,
-	284835224,
-	4246832056,
-	1258075500,
-	768725851,
-	2589189241,
-	3069724005,
-	3532540348,
-	1274779536,
-	3789419226,
-	2764799539,
-	1660621633,
-	3471099624,
-	4011903706,
-	913787905,
-	3497959166,
-	737222580,
-	2514213453,
-	2928710040,
-	3937242737,
-	1804850592,
-	3499020752,
-	2949064160,
-	2386320175,
-	2390070455,
-	2415321851,
-	4061277028,
-	2290661394,
-	2416832540,
-	1336762016,
-	1754252060,
-	3520065937,
-	3014181293,
-	791618072,
-	3188594551,
-	3933548030,
-	2332172193,
-	3852520463,
-	3043980520,
-	413987798,
-	3465142937,
-	3030929376,
-	4245938359,
-	2093235073,
-	3534596313,
-	375366246,
-	2157278981,
-	2479649556,
-	555357303,
-	3870105701,
-	2008414854,
-	3344188149,
-	4221384143,
-	3956125452,
-	2067696032,
-	3594591187,
-	2921233993,
-	2428461,
-	544322398,
-	577241275,
-	1471733935,
-	610547355,
-	4027169054,
-	1432588573,
-	1507829418,
-	2025931657,
-	3646575487,
-	545086370,
-	48609733,
-	2200306550,
-	1653985193,
-	298326376,
-	1316178497,
-	3007786442,
-	2064951626,
-	458293330,
-	2589141269,
-	3591329599,
-	3164325604,
-	727753846,
-	2179363840,
-	146436021,
-	1461446943,
-	4069977195,
-	705550613,
-	3059967265,
-	3887724982,
-	4281599278,
-	3313849956,
-	1404054877,
-	2845806497,
-	146425753,
-	1854211946,
-	1266315497,
-	3048417604,
-	3681880366,
-	3289982499,
-	290971e4,
-	1235738493,
-	2632868024,
-	2414719590,
-	3970600049,
-	1771706367,
-	1449415276,
-	3266420449,
-	422970021,
-	1963543593,
-	2690192192,
-	3826793022,
-	1062508698,
-	1531092325,
-	1804592342,
-	2583117782,
-	2714934279,
-	4024971509,
-	1294809318,
-	4028980673,
-	1289560198,
-	2221992742,
-	1669523910,
-	35572830,
-	157838143,
-	1052438473,
-	1016535060,
-	1802137761,
-	1753167236,
-	1386275462,
-	3080475397,
-	2857371447,
-	1040679964,
-	2145300060,
-	2390574316,
-	1461121720,
-	2956646967,
-	4031777805,
-	4028374788,
-	33600511,
-	2920084762,
-	1018524850,
-	629373528,
-	3691585981,
-	3515945977,
-	2091462646,
-	2486323059,
-	586499841,
-	988145025,
-	935516892,
-	3367335476,
-	2599673255,
-	2839830854,
-	265290510,
-	3972581182,
-	2759138881,
-	3795373465,
-	1005194799,
-	847297441,
-	406762289,
-	1314163512,
-	1332590856,
-	1866599683,
-	4127851711,
-	750260880,
-	613907577,
-	1450815602,
-	3165620655,
-	3734664991,
-	3650291728,
-	3012275730,
-	3704569646,
-	1427272223,
-	778793252,
-	1343938022,
-	2676280711,
-	2052605720,
-	1946737175,
-	3164576444,
-	3914038668,
-	3967478842,
-	3682934266,
-	1661551462,
-	3294938066,
-	4011595847,
-	840292616,
-	3712170807,
-	616741398,
-	312560963,
-	711312465,
-	1351876610,
-	322626781,
-	1910503582,
-	271666773,
-	2175563734,
-	1594956187,
-	70604529,
-	3617834859,
-	1007753275,
-	1495573769,
-	4069517037,
-	2549218298,
-	2663038764,
-	504708206,
-	2263041392,
-	3941167025,
-	2249088522,
-	1514023603,
-	1998579484,
-	1312622330,
-	694541497,
-	2582060303,
-	2151582166,
-	1382467621,
-	776784248,
-	2618340202,
-	3323268794,
-	2497899128,
-	2784771155,
-	503983604,
-	4076293799,
-	907881277,
-	423175695,
-	432175456,
-	1378068232,
-	4145222326,
-	3954048622,
-	3938656102,
-	3820766613,
-	2793130115,
-	2977904593,
-	26017576,
-	3274890735,
-	3194772133,
-	1700274565,
-	1756076034,
-	4006520079,
-	3677328699,
-	720338349,
-	1533947780,
-	354530856,
-	688349552,
-	3973924725,
-	1637815568,
-	332179504,
-	3949051286,
-	53804574,
-	2852348879,
-	3044236432,
-	1282449977,
-	3583942155,
-	3416972820,
-	4006381244,
-	1617046695,
-	2628476075,
-	3002303598,
-	1686838959,
-	431878346,
-	2686675385,
-	1700445008,
-	1080580658,
-	1009431731,
-	832498133,
-	3223435511,
-	2605976345,
-	2271191193,
-	2516031870,
-	1648197032,
-	4164389018,
-	2548247927,
-	300782431,
-	375919233,
-	238389289,
-	3353747414,
-	2531188641,
-	2019080857,
-	1475708069,
-	455242339,
-	2609103871,
-	448939670,
-	3451063019,
-	1395535956,
-	2413381860,
-	1841049896,
-	1491858159,
-	885456874,
-	4264095073,
-	4001119347,
-	1565136089,
-	3898914787,
-	1108368660,
-	540939232,
-	1173283510,
-	2745871338,
-	3681308437,
-	4207628240,
-	3343053890,
-	4016749493,
-	1699691293,
-	1103962373,
-	3625875870,
-	2256883143,
-	3830138730,
-	1031889488,
-	3479347698,
-	1535977030,
-	4236805024,
-	3251091107,
-	2132092099,
-	1774941330,
-	1199868427,
-	1452454533,
-	157007616,
-	2904115357,
-	342012276,
-	595725824,
-	1480756522,
-	206960106,
-	497939518,
-	591360097,
-	863170706,
-	2375253569,
-	3596610801,
-	1814182875,
-	2094937945,
-	3421402208,
-	1082520231,
-	3463918190,
-	2785509508,
-	435703966,
-	3908032597,
-	1641649973,
-	2842273706,
-	3305899714,
-	1510255612,
-	2148256476,
-	2655287854,
-	3276092548,
-	4258621189,
-	236887753,
-	3681803219,
-	274041037,
-	1734335097,
-	3815195456,
-	3317970021,
-	1899903192,
-	1026095262,
-	4050517792,
-	356393447,
-	2410691914,
-	3873677099,
-	3682840055,
-	3913112168,
-	2491498743,
-	4132185628,
-	2489919796,
-	1091903735,
-	1979897079,
-	3170134830,
-	3567386728,
-	3557303409,
-	857797738,
-	1136121015,
-	1342202287,
-	507115054,
-	2535736646,
-	337727348,
-	3213592640,
-	1301675037,
-	2528481711,
-	1895095763,
-	1721773893,
-	3216771564,
-	62756741,
-	2142006736,
-	835421444,
-	2531993523,
-	1442658625,
-	3659876326,
-	2882144922,
-	676362277,
-	1392781812,
-	170690266,
-	3921047035,
-	1759253602,
-	3611846912,
-	1745797284,
-	664899054,
-	1329594018,
-	3901205900,
-	3045908486,
-	2062866102,
-	2865634940,
-	3543621612,
-	3464012697,
-	1080764994,
-	553557557,
-	3656615353,
-	3996768171,
-	991055499,
-	499776247,
-	1265440854,
-	648242737,
-	3940784050,
-	980351604,
-	3713745714,
-	1749149687,
-	3396870395,
-	4211799374,
-	3640570775,
-	1161844396,
-	3125318951,
-	1431517754,
-	545492359,
-	4268468663,
-	3499529547,
-	1437099964,
-	2702547544,
-	3433638243,
-	2581715763,
-	2787789398,
-	1060185593,
-	1593081372,
-	2418618748,
-	4260947970,
-	69676912,
-	2159744348,
-	86519011,
-	2512459080,
-	3838209314,
-	1220612927,
-	3339683548,
-	133810670,
-	1090789135,
-	1078426020,
-	1569222167,
-	845107691,
-	3583754449,
-	4072456591,
-	1091646820,
-	628848692,
-	1613405280,
-	3757631651,
-	526609435,
-	236106946,
-	48312990,
-	2942717905,
-	3402727701,
-	1797494240,
-	859738849,
-	992217954,
-	4005476642,
-	2243076622,
-	3870952857,
-	3732016268,
-	765654824,
-	3490871365,
-	2511836413,
-	1685915746,
-	3888969200,
-	1414112111,
-	2273134842,
-	3281911079,
-	4080962846,
-	172450625,
-	2569994100,
-	980381355,
-	4109958455,
-	2819808352,
-	2716589560,
-	2568741196,
-	3681446669,
-	3329971472,
-	1835478071,
-	660984891,
-	3704678404,
-	4045999559,
-	3422617507,
-	3040415634,
-	1762651403,
-	1719377915,
-	3470491036,
-	2693910283,
-	3642056355,
-	3138596744,
-	1364962596,
-	2073328063,
-	1983633131,
-	926494387,
-	3423689081,
-	2150032023,
-	4096667949,
-	1749200295,
-	3328846651,
-	309677260,
-	2016342300,
-	1779581495,
-	3079819751,
-	111262694,
-	1274766160,
-	443224088,
-	298511866,
-	1025883608,
-	3806446537,
-	1145181785,
-	168956806,
-	3641502830,
-	3584813610,
-	1689216846,
-	3666258015,
-	3200248200,
-	1692713982,
-	2646376535,
-	4042768518,
-	1618508792,
-	1610833997,
-	3523052358,
-	4130873264,
-	2001055236,
-	3610705100,
-	2202168115,
-	4028541809,
-	2961195399,
-	1006657119,
-	2006996926,
-	3186142756,
-	1430667929,
-	3210227297,
-	1314452623,
-	4074634658,
-	4101304120,
-	2273951170,
-	1399257539,
-	3367210612,
-	3027628629,
-	1190975929,
-	2062231137,
-	2333990788,
-	2221543033,
-	2438960610,
-	1181637006,
-	548689776,
-	2362791313,
-	3372408396,
-	3104550113,
-	3145860560,
-	296247880,
-	1970579870,
-	3078560182,
-	3769228297,
-	1714227617,
-	3291629107,
-	3898220290,
-	166772364,
-	1251581989,
-	493813264,
-	448347421,
-	195405023,
-	2709975567,
-	677966185,
-	3703036547,
-	1463355134,
-	2715995803,
-	1338867538,
-	1343315457,
-	2802222074,
-	2684532164,
-	233230375,
-	2599980071,
-	2000651841,
-	3277868038,
-	1638401717,
-	4028070440,
-	3237316320,
-	6314154,
-	819756386,
-	300326615,
-	590932579,
-	1405279636,
-	3267499572,
-	3150704214,
-	2428286686,
-	3959192993,
-	3461946742,
-	1862657033,
-	1266418056,
-	963775037,
-	2089974820,
-	2263052895,
-	1917689273,
-	448879540,
-	3550394620,
-	3981727096,
-	150775221,
-	3627908307,
-	1303187396,
-	508620638,
-	2975983352,
-	2726630617,
-	1817252668,
-	1876281319,
-	1457606340,
-	908771278,
-	3720792119,
-	3617206836,
-	2455994898,
-	1729034894,
-	1080033504,
-	976866871,
-	3556439503,
-	2881648439,
-	1522871579,
-	1555064734,
-	1336096578,
-	3548522304,
-	2579274686,
-	3574697629,
-	3205460757,
-	3593280638,
-	3338716283,
-	3079412587,
-	564236357,
-	2993598910,
-	1781952180,
-	1464380207,
-	3163844217,
-	3332601554,
-	1699332808,
-	1393555694,
-	1183702653,
-	3581086237,
-	1288719814,
-	691649499,
-	2847557200,
-	2895455976,
-	3193889540,
-	2717570544,
-	1781354906,
-	1676643554,
-	2592534050,
-	3230253752,
-	1126444790,
-	2770207658,
-	2633158820,
-	2210423226,
-	2615765581,
-	2414155088,
-	3127139286,
-	673620729,
-	2805611233,
-	1269405062,
-	4015350505,
-	3341807571,
-	4149409754,
-	1057255273,
-	2012875353,
-	2162469141,
-	2276492801,
-	2601117357,
-	993977747,
-	3918593370,
-	2654263191,
-	753973209,
-	36408145,
-	2530585658,
-	25011837,
-	3520020182,
-	2088578344,
-	530523599,
-	2918365339,
-	1524020338,
-	1518925132,
-	3760827505,
-	3759777254,
-	1202760957,
-	3985898139,
-	3906192525,
-	674977740,
-	4174734889,
-	2031300136,
-	2019492241,
-	3983892565,
-	4153806404,
-	3822280332,
-	352677332,
-	2297720250,
-	60907813,
-	90501309,
-	3286998549,
-	1016092578,
-	2535922412,
-	2839152426,
-	457141659,
-	509813237,
-	4120667899,
-	652014361,
-	1966332200,
-	2975202805,
-	55981186,
-	2327461051,
-	676427537,
-	3255491064,
-	2882294119,
-	3433927263,
-	1307055953,
-	942726286,
-	933058658,
-	2468411793,
-	3933900994,
-	4215176142,
-	1361170020,
-	2001714738,
-	2830558078,
-	3274259782,
-	1222529897,
-	1679025792,
-	2729314320,
-	3714953764,
-	1770335741,
-	151462246,
-	3013232138,
-	1682292957,
-	1483529935,
-	471910574,
-	1539241949,
-	458788160,
-	3436315007,
-	1807016891,
-	3718408830,
-	978976581,
-	1043663428,
-	3165965781,
-	1927990952,
-	4200891579,
-	2372276910,
-	3208408903,
-	3533431907,
-	1412390302,
-	2931980059,
-	4132332400,
-	1947078029,
-	3881505623,
-	4168226417,
-	2941484381,
-	1077988104,
-	1320477388,
-	886195818,
-	18198404,
-	3786409e3,
-	2509781533,
-	112762804,
-	3463356488,
-	1866414978,
-	891333506,
-	18488651,
-	661792760,
-	1628790961,
-	3885187036,
-	3141171499,
-	876946877,
-	2693282273,
-	1372485963,
-	791857591,
-	2686433993,
-	3759982718,
-	3167212022,
-	3472953795,
-	2716379847,
-	445679433,
-	3561995674,
-	3504004811,
-	3574258232,
-	54117162,
-	3331405415,
-	2381918588,
-	3769707343,
-	4154350007,
-	1140177722,
-	4074052095,
-	668550556,
-	3214352940,
-	367459370,
-	261225585,
-	2610173221,
-	4209349473,
-	3468074219,
-	3265815641,
-	314222801,
-	3066103646,
-	3808782860,
-	282218597,
-	3406013506,
-	3773591054,
-	379116347,
-	1285071038,
-	846784868,
-	2669647154,
-	3771962079,
-	3550491691,
-	2305946142,
-	453669953,
-	1268987020,
-	3317592352,
-	3279303384,
-	3744833421,
-	2610507566,
-	3859509063,
-	266596637,
-	3847019092,
-	517658769,
-	3462560207,
-	3443424879,
-	370717030,
-	4247526661,
-	2224018117,
-	4143653529,
-	4112773975,
-	2788324899,
-	2477274417,
-	1456262402,
-	2901442914,
-	1517677493,
-	1846949527,
-	2295493580,
-	3734397586,
-	2176403920,
-	1280348187,
-	1908823572,
-	3871786941,
-	846861322,
-	1172426758,
-	3287448474,
-	3383383037,
-	1655181056,
-	3139813346,
-	901632758,
-	1897031941,
-	2986607138,
-	3066810236,
-	3447102507,
-	1393639104,
-	373351379,
-	950779232,
-	625454576,
-	3124240540,
-	4148612726,
-	2007998917,
-	544563296,
-	2244738638,
-	2330496472,
-	2058025392,
-	1291430526,
-	424198748,
-	50039436,
-	29584100,
-	3605783033,
-	2429876329,
-	2791104160,
-	1057563949,
-	3255363231,
-	3075367218,
-	3463963227,
-	1469046755,
-	985887462
-];
-/**
-* @type {Array.<number>}
-* @const
-* @inner
-*/
-var C_ORIG = [
-	1332899944,
-	1700884034,
-	1701343084,
-	1684370003,
-	1668446532,
-	1869963892
-];
-/**
-* @param {Array.<number>} lr
-* @param {number} off
-* @param {Array.<number>} P
-* @param {Array.<number>} S
-* @returns {Array.<number>}
-* @inner
-*/
-function _encipher(lr, off, P, S) {
-	var n, l = lr[off], r = lr[off + 1];
-	l ^= P[0];
-	n = S[l >>> 24];
-	n += S[256 | l >> 16 & 255];
-	n ^= S[512 | l >> 8 & 255];
-	n += S[768 | l & 255];
-	r ^= n ^ P[1];
-	n = S[r >>> 24];
-	n += S[256 | r >> 16 & 255];
-	n ^= S[512 | r >> 8 & 255];
-	n += S[768 | r & 255];
-	l ^= n ^ P[2];
-	n = S[l >>> 24];
-	n += S[256 | l >> 16 & 255];
-	n ^= S[512 | l >> 8 & 255];
-	n += S[768 | l & 255];
-	r ^= n ^ P[3];
-	n = S[r >>> 24];
-	n += S[256 | r >> 16 & 255];
-	n ^= S[512 | r >> 8 & 255];
-	n += S[768 | r & 255];
-	l ^= n ^ P[4];
-	n = S[l >>> 24];
-	n += S[256 | l >> 16 & 255];
-	n ^= S[512 | l >> 8 & 255];
-	n += S[768 | l & 255];
-	r ^= n ^ P[5];
-	n = S[r >>> 24];
-	n += S[256 | r >> 16 & 255];
-	n ^= S[512 | r >> 8 & 255];
-	n += S[768 | r & 255];
-	l ^= n ^ P[6];
-	n = S[l >>> 24];
-	n += S[256 | l >> 16 & 255];
-	n ^= S[512 | l >> 8 & 255];
-	n += S[768 | l & 255];
-	r ^= n ^ P[7];
-	n = S[r >>> 24];
-	n += S[256 | r >> 16 & 255];
-	n ^= S[512 | r >> 8 & 255];
-	n += S[768 | r & 255];
-	l ^= n ^ P[8];
-	n = S[l >>> 24];
-	n += S[256 | l >> 16 & 255];
-	n ^= S[512 | l >> 8 & 255];
-	n += S[768 | l & 255];
-	r ^= n ^ P[9];
-	n = S[r >>> 24];
-	n += S[256 | r >> 16 & 255];
-	n ^= S[512 | r >> 8 & 255];
-	n += S[768 | r & 255];
-	l ^= n ^ P[10];
-	n = S[l >>> 24];
-	n += S[256 | l >> 16 & 255];
-	n ^= S[512 | l >> 8 & 255];
-	n += S[768 | l & 255];
-	r ^= n ^ P[11];
-	n = S[r >>> 24];
-	n += S[256 | r >> 16 & 255];
-	n ^= S[512 | r >> 8 & 255];
-	n += S[768 | r & 255];
-	l ^= n ^ P[12];
-	n = S[l >>> 24];
-	n += S[256 | l >> 16 & 255];
-	n ^= S[512 | l >> 8 & 255];
-	n += S[768 | l & 255];
-	r ^= n ^ P[13];
-	n = S[r >>> 24];
-	n += S[256 | r >> 16 & 255];
-	n ^= S[512 | r >> 8 & 255];
-	n += S[768 | r & 255];
-	l ^= n ^ P[14];
-	n = S[l >>> 24];
-	n += S[256 | l >> 16 & 255];
-	n ^= S[512 | l >> 8 & 255];
-	n += S[768 | l & 255];
-	r ^= n ^ P[15];
-	n = S[r >>> 24];
-	n += S[256 | r >> 16 & 255];
-	n ^= S[512 | r >> 8 & 255];
-	n += S[768 | r & 255];
-	l ^= n ^ P[16];
-	lr[off] = r ^ P[BLOWFISH_NUM_ROUNDS + 1];
-	lr[off + 1] = l;
-	return lr;
-}
-/**
-* @param {Array.<number>} data
-* @param {number} offp
-* @returns {{key: number, offp: number}}
-* @inner
-*/
-function _streamtoword(data, offp) {
-	for (var i = 0, word = 0; i < 4; ++i) word = word << 8 | data[offp] & 255, offp = (offp + 1) % data.length;
-	return {
-		key: word,
-		offp
-	};
-}
-/**
-* @param {Array.<number>} key
-* @param {Array.<number>} P
-* @param {Array.<number>} S
-* @inner
-*/
-function _key(key, P, S) {
-	var offset = 0, lr = [0, 0], plen = P.length, slen = S.length, sw;
-	for (var i = 0; i < plen; i++) sw = _streamtoword(key, offset), offset = sw.offp, P[i] = P[i] ^ sw.key;
-	for (i = 0; i < plen; i += 2) lr = _encipher(lr, 0, P, S), P[i] = lr[0], P[i + 1] = lr[1];
-	for (i = 0; i < slen; i += 2) lr = _encipher(lr, 0, P, S), S[i] = lr[0], S[i + 1] = lr[1];
-}
-/**
-* Expensive key schedule Blowfish.
-* @param {Array.<number>} data
-* @param {Array.<number>} key
-* @param {Array.<number>} P
-* @param {Array.<number>} S
-* @inner
-*/
-function _ekskey(data, key, P, S) {
-	var offp = 0, lr = [0, 0], plen = P.length, slen = S.length, sw;
-	for (var i = 0; i < plen; i++) sw = _streamtoword(key, offp), offp = sw.offp, P[i] = P[i] ^ sw.key;
-	offp = 0;
-	for (i = 0; i < plen; i += 2) sw = _streamtoword(data, offp), offp = sw.offp, lr[0] ^= sw.key, sw = _streamtoword(data, offp), offp = sw.offp, lr[1] ^= sw.key, lr = _encipher(lr, 0, P, S), P[i] = lr[0], P[i + 1] = lr[1];
-	for (i = 0; i < slen; i += 2) sw = _streamtoword(data, offp), offp = sw.offp, lr[0] ^= sw.key, sw = _streamtoword(data, offp), offp = sw.offp, lr[1] ^= sw.key, lr = _encipher(lr, 0, P, S), S[i] = lr[0], S[i + 1] = lr[1];
-}
-/**
-* Internaly crypts a string.
-* @param {Array.<number>} b Bytes to crypt
-* @param {Array.<number>} salt Salt bytes to use
-* @param {number} rounds Number of rounds
-* @param {function(Error, Array.<number>=)=} callback Callback receiving the error, if any, and the resulting bytes. If
-*  omitted, the operation will be performed synchronously.
-*  @param {function(number)=} progressCallback Callback called with the current progress
-* @returns {!Array.<number>|undefined} Resulting bytes if callback has been omitted, otherwise `undefined`
-* @inner
-*/
-function _crypt(b, salt, rounds, callback, progressCallback) {
-	var cdata = C_ORIG.slice(), clen = cdata.length, err;
-	if (rounds < 4 || rounds > 31) {
-		err = Error("Illegal number of rounds (4-31): " + rounds);
-		if (callback) {
-			nextTick(callback.bind(this, err));
-			return;
-		} else throw err;
-	}
-	if (salt.length !== BCRYPT_SALT_LEN) {
-		err = Error("Illegal salt length: " + salt.length + " != " + BCRYPT_SALT_LEN);
-		if (callback) {
-			nextTick(callback.bind(this, err));
-			return;
-		} else throw err;
-	}
-	rounds = 1 << rounds >>> 0;
-	var P, S, i = 0, j;
-	if (typeof Int32Array === "function") {
-		P = new Int32Array(P_ORIG);
-		S = new Int32Array(S_ORIG);
-	} else {
-		P = P_ORIG.slice();
-		S = S_ORIG.slice();
-	}
-	_ekskey(salt, b, P, S);
-	/**
-	* Calcualtes the next round.
-	* @returns {Array.<number>|undefined} Resulting array if callback has been omitted, otherwise `undefined`
-	* @inner
-	*/
-	function next() {
-		if (progressCallback) progressCallback(i / rounds);
-		if (i < rounds) {
-			var start = Date.now();
-			for (; i < rounds;) {
-				i = i + 1;
-				_key(b, P, S);
-				_key(salt, P, S);
-				if (Date.now() - start > MAX_EXECUTION_TIME) break;
-			}
-		} else {
-			for (i = 0; i < 64; i++) for (j = 0; j < clen >> 1; j++) _encipher(cdata, j << 1, P, S);
-			var ret = [];
-			for (i = 0; i < clen; i++) ret.push((cdata[i] >> 24 & 255) >>> 0), ret.push((cdata[i] >> 16 & 255) >>> 0), ret.push((cdata[i] >> 8 & 255) >>> 0), ret.push((cdata[i] & 255) >>> 0);
-			if (callback) {
-				callback(null, ret);
-				return;
-			} else return ret;
-		}
-		if (callback) nextTick(next);
-	}
-	if (typeof callback !== "undefined") next();
-	else {
-		var res;
-		while (true) if (typeof (res = next()) !== "undefined") return res || [];
-	}
-}
-/**
-* Internally hashes a password.
-* @param {string} password Password to hash
-* @param {?string} salt Salt to use, actually never null
-* @param {function(Error, string=)=} callback Callback receiving the error, if any, and the resulting hash. If omitted,
-*  hashing is performed synchronously.
-*  @param {function(number)=} progressCallback Callback called with the current progress
-* @returns {string|undefined} Resulting hash if callback has been omitted, otherwise `undefined`
-* @inner
-*/
-function _hash(password, salt, callback, progressCallback) {
-	var err;
-	if (typeof password !== "string" || typeof salt !== "string") {
-		err = Error("Invalid string / salt: Not a string");
-		if (callback) {
-			nextTick(callback.bind(this, err));
-			return;
-		} else throw err;
-	}
-	var minor, offset;
-	if (salt.charAt(0) !== "$" || salt.charAt(1) !== "2") {
-		err = Error("Invalid salt version: " + salt.substring(0, 2));
-		if (callback) {
-			nextTick(callback.bind(this, err));
-			return;
-		} else throw err;
-	}
-	if (salt.charAt(2) === "$") minor = String.fromCharCode(0), offset = 3;
-	else {
-		minor = salt.charAt(2);
-		if (minor !== "a" && minor !== "b" && minor !== "y" || salt.charAt(3) !== "$") {
-			err = Error("Invalid salt revision: " + salt.substring(2, 4));
-			if (callback) {
-				nextTick(callback.bind(this, err));
-				return;
-			} else throw err;
-		}
-		offset = 4;
-	}
-	if (salt.charAt(offset + 2) > "$") {
-		err = Error("Missing salt rounds");
-		if (callback) {
-			nextTick(callback.bind(this, err));
-			return;
-		} else throw err;
-	}
-	var rounds = parseInt(salt.substring(offset, offset + 1), 10) * 10 + parseInt(salt.substring(offset + 1, offset + 2), 10), real_salt = salt.substring(offset + 3, offset + 25);
-	password += minor >= "a" ? "\0" : "";
-	var passwordb = utf8Array(password), saltb = base64_decode(real_salt, BCRYPT_SALT_LEN);
-	/**
-	* Finishes hashing.
-	* @param {Array.<number>} bytes Byte array
-	* @returns {string}
-	* @inner
-	*/
-	function finish(bytes) {
-		var res = [];
-		res.push("$2");
-		if (minor >= "a") res.push(minor);
-		res.push("$");
-		if (rounds < 10) res.push("0");
-		res.push(rounds.toString());
-		res.push("$");
-		res.push(base64_encode(saltb, saltb.length));
-		res.push(base64_encode(bytes, C_ORIG.length * 4 - 1));
-		return res.join("");
-	}
-	if (typeof callback == "undefined") return finish(_crypt(passwordb, saltb, rounds));
-	else _crypt(passwordb, saltb, rounds, function(err, bytes) {
-		if (err) callback(err, null);
-		else callback(null, finish(bytes));
-	}, progressCallback);
-}
-/**
-* Encodes a byte array to base64 with up to len bytes of input, using the custom bcrypt alphabet.
-* @function
-* @param {!Array.<number>} bytes Byte array
-* @param {number} length Maximum input length
-* @returns {string}
-*/
-function encodeBase64(bytes, length) {
-	return base64_encode(bytes, length);
-}
-/**
-* Decodes a base64 encoded string to up to len bytes of output, using the custom bcrypt alphabet.
-* @function
-* @param {string} string String to decode
-* @param {number} length Maximum output length
-* @returns {!Array.<number>}
-*/
-function decodeBase64(string, length) {
-	return base64_decode(string, length);
-}
-var bcryptjs_default = {
-	setRandomFallback,
-	genSaltSync,
-	genSalt,
-	hashSync,
-	hash,
-	compareSync,
-	compare,
-	getRounds,
-	getSalt,
-	truncates,
-	encodeBase64,
-	decodeBase64
-};
-//#endregion
-//#region src/lib/recovery.ts
-function normalizeRecoveryEmail(value) {
-	return value?.trim().toLowerCase() || void 0;
-}
-function normalizeRecoveryPassword(value) {
-	const normalized = value?.trim();
-	if (!normalized) return void 0;
-	return normalized.startsWith("\"") && normalized.endsWith("\"") || normalized.startsWith("'") && normalized.endsWith("'") ? normalized.slice(1, -1) : normalized;
+async function getSupabaseProxySession(client) {
+	const { data, error } = await client.auth.getClaims();
+	if (error) return null;
+	const subject = typeof data?.claims?.sub === "string" ? data.claims.sub : "";
+	if (!subject) return null;
+	const { data: profile, error: profileError } = await client.from("profiles").select("name, role, active").eq("id", subject).eq("active", true).maybeSingle();
+	if (profileError) return null;
+	return mapSupabaseSession({ id: subject }, profile);
 }
 //#endregion
-//#region src/lib/db.ts
-function getBinding() {
-	const binding = env.DB;
-	if (!binding) throw new Error("O banco de dados do site não está disponível.");
-	return binding;
+//#region src/lib/supabase/proxy.ts
+function redirectToLogin(request, state) {
+	const url = request.nextUrl.clone();
+	url.pathname = "/login";
+	url.searchParams.set("next", request.nextUrl.pathname);
+	return applySupabaseCookieState(NextResponse.redirect(url), state);
 }
-function normalizeSql(text) {
-	return text.replace(/\$(\d+)/g, "?$1").replace(/now\(\)/gi, "CURRENT_TIMESTAMP");
-}
-function normalizeParam(value) {
-	if (value == null) return null;
-	if (typeof value === "boolean") return value ? 1 : 0;
-	if (Array.isArray(value)) return JSON.stringify(value);
-	if (typeof value === "string" || typeof value === "number") return value;
-	if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) return value;
-	return String(value);
-}
-function parseJsonList(value) {
-	if (Array.isArray(value)) return value.filter((item) => typeof item === "string");
-	if (typeof value !== "string") return [];
+async function proxySupabaseAuth(request, requiredRole) {
+	const state = createSupabaseCookieState();
 	try {
-		const parsed = JSON.parse(value);
-		return Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string") : [];
-	} catch {
-		return [];
+		const session = await getSupabaseProxySession(createSupabaseRequestClient(request, state));
+		if (!session) return redirectToLogin(request, state);
+		if (session.role !== requiredRole) {
+			const url = request.nextUrl.clone();
+			url.pathname = session.role === "admin" ? "/admin" : session.role === "familia" ? "/familia" : "/cuidador";
+			url.search = "";
+			return applySupabaseCookieState(NextResponse.redirect(url), state);
+		}
+		return applySupabaseCookieState(NextResponse.next({ request }), state);
+	} catch (error) {
+		console.error("[proxy] A sessão Supabase não pôde ser validada.", {
+			error: error instanceof Error ? error.message : "Erro desconhecido",
+			pathname: request.nextUrl.pathname
+		});
+		return redirectToLogin(request, state);
 	}
-}
-function normalizeRow(input) {
-	if (!input || typeof input !== "object") return input;
-	const row = { ...input };
-	if ("availability_days" in row) row.availability_days = parseJsonList(row.availability_days);
-	if ("availability_shifts" in row) row.availability_shifts = parseJsonList(row.availability_shifts);
-	if ("changed_fields" in row) row.changed_fields = parseJsonList(row.changed_fields);
-	if ("lgpd_consent" in row) row.lgpd_consent = Boolean(row.lgpd_consent);
-	return row;
-}
-function statement(text, params = []) {
-	return getBinding().prepare(normalizeSql(text)).bind(...params.map(normalizeParam));
-}
-async function bootstrapAdminIfConfigured() {
-	const email = runtimeValue("VELLORA_BOOTSTRAP_ADMIN_EMAIL")?.trim().toLowerCase();
-	const password = runtimeValue("VELLORA_BOOTSTRAP_ADMIN_PASSWORD");
-	if (!email || !password) return;
-	const existing = await getBinding().prepare("SELECT COUNT(*) AS total FROM users").first();
-	if (Number(existing?.total || 0) > 0) return;
-	await statement("INSERT INTO users (id, name, email, password_hash, role, phone) VALUES ($1,$2,$3,$4,'admin',$5)", [
-		randomUUID(),
-		runtimeValue("VELLORA_BOOTSTRAP_ADMIN_NAME")?.trim() || "Administrador Vellora",
-		email,
-		bcryptjs_default.hashSync(password, 10),
-		runtimeValue("VELLORA_BOOTSTRAP_ADMIN_PHONE")?.trim() || null
-	]).run();
-}
-async function recoverAdminIfConfigured() {
-	const email = normalizeRecoveryEmail(runtimeValue("VELLORA_ADMIN_RECOVERY_EMAIL"));
-	const password = normalizeRecoveryPassword(runtimeValue("VELLORA_ADMIN_RECOVERY_PASSWORD"));
-	const sessionSecret = runtimeValue("VELLORA_SESSION_SECRET");
-	if (!email && !password) return;
-	if (!email || !password || password.length < 12 || !sessionSecret) {
-		console.error("Recuperação administrativa não aplicada por configuração incompleta.");
-		return;
-	}
-	const deploymentScope = runtimeValue("CF_PAGES_COMMIT_SHA") || runtimeValue("VERCEL_DEPLOYMENT_ID") || "sites";
-	const recoveryHash = createHmac("sha256", sessionSecret).update(`${deploymentScope}\u0000${email}\u0000${password}`).digest("hex");
-	const binding = getBinding();
-	if (await binding.prepare("SELECT 1 FROM admin_recovery_events WHERE recovery_hash = ?1").bind(recoveryHash).first()) return;
-	const existingAdmin = await binding.prepare("SELECT id FROM users WHERE role = 'admin' ORDER BY created_at ASC LIMIT 1").first();
-	if (await binding.prepare("SELECT id FROM users WHERE email = ?1 AND id <> ?2 LIMIT 1").bind(email, existingAdmin?.id || "").first()) {
-		console.error("Recuperação administrativa não aplicada: e-mail já está em uso.");
-		return;
-	}
-	const adminUserId = existingAdmin?.id || randomUUID();
-	const passwordHash = bcryptjs_default.hashSync(password, 10);
-	const writes = [];
-	if (existingAdmin) writes.push(binding.prepare(`UPDATE users
-           SET email = ?1, password_hash = ?2, session_version = session_version + 1,
-               deleted_at = NULL
-           WHERE id = ?3`).bind(email, passwordHash, adminUserId));
-	else writes.push(binding.prepare(`INSERT INTO users (id, name, email, password_hash, role, phone)
-           VALUES (?1,?2,?3,?4,'admin',?5)`).bind(adminUserId, runtimeValue("VELLORA_BOOTSTRAP_ADMIN_NAME")?.trim() || "Administrador Vellora", email, passwordHash, runtimeValue("VELLORA_BOOTSTRAP_ADMIN_PHONE")?.trim() || null));
-	writes.push(binding.prepare("UPDATE password_reset_tokens SET used_at = COALESCE(used_at, CURRENT_TIMESTAMP) WHERE user_id = ?1").bind(adminUserId), binding.prepare("INSERT INTO admin_recovery_events (recovery_hash, admin_user_id) VALUES (?1,?2)").bind(recoveryHash, adminUserId));
-	await binding.batch(writes);
-}
-function ready() {
-	if (!global.__velloraReady) global.__velloraReady = bootstrapAdminIfConfigured().then(() => recoverAdminIfConfigured()).catch((error) => {
-		global.__velloraReady = void 0;
-		throw error;
-	});
-	return global.__velloraReady;
-}
-async function query(text, params = []) {
-	await ready();
-	const prepared = statement(text, params);
-	if (/^\s*(SELECT|WITH|PRAGMA)\b/i.test(text) || /\bRETURNING\b/i.test(text)) return ((await prepared.all()).results || []).map(normalizeRow);
-	await prepared.run();
-	return [];
-}
-async function queryOne(text, params = []) {
-	return (await query(text, params))[0];
-}
-async function executeBatch(commands) {
-	await ready();
-	await getBinding().batch(commands.map((command) => statement(command.text, command.params || [])));
 }
 //#endregion
 //#region src/proxy.ts
@@ -10246,7 +6521,7 @@ var proxy_exports = /* @__PURE__ */ __exportAll({
 	config: () => config,
 	proxy: () => proxy
 });
-var SESSION_COOKIE$1 = "vellora_session";
+var SESSION_COOKIE = "vellora_session";
 var ROLE_PREFIX = {
 	"/admin": "admin",
 	"/familia": "familia",
@@ -10262,7 +6537,9 @@ async function proxy(req) {
 		url.searchParams.set("preview", "segura");
 		return NextResponse.redirect(url);
 	}
-	const token = req.cookies.get(SESSION_COOKIE$1)?.value;
+	const requiredRole = ROLE_PREFIX[matchedPrefix];
+	if (getAuthProvider() === "supabase") return proxySupabaseAuth(req, requiredRole);
+	const token = req.cookies.get(SESSION_COOKIE)?.value;
 	if (!token) {
 		const url = req.nextUrl.clone();
 		url.pathname = "/login";
@@ -10273,13 +6550,13 @@ async function proxy(req) {
 		const secretValue = runtimeValue("VELLORA_SESSION_SECRET");
 		if (!secretValue) throw new Error("VELLORA_SESSION_SECRET não configurada.");
 		const { payload } = await jwtVerify(token, new TextEncoder().encode(secretValue));
-		const requiredRole = ROLE_PREFIX[matchedPrefix];
 		if (typeof payload.userId !== "string" || typeof payload.sessionVersion !== "number" || payload.role !== requiredRole) {
 			const url = req.nextUrl.clone();
 			url.pathname = "/login";
 			url.searchParams.set("next", pathname);
 			return NextResponse.redirect(url);
 		}
+		const { queryOne } = await import("./assets/db-DV2EKxv6.js");
 		const user = await queryOne("SELECT role, session_version FROM users WHERE id = $1 AND deleted_at IS NULL", [payload.userId]);
 		if (!user || user.role !== requiredRole || user.session_version !== payload.sessionVersion) {
 			const url = req.nextUrl.clone();
@@ -16213,7 +12490,7 @@ function buildCacheKey(prefix, pathname, suffix) {
 * The suffix mirrors Next.js's separate on-disk app artifacts while keeping the
 * Cloudflare KV key under its 512-byte limit for long pathnames.
 */
-function appIsrCacheKey(pathname, suffix, buildId = "b59c8ff8-33c5-4f28-bf7f-84e6681c311d") {
+function appIsrCacheKey(pathname, suffix, buildId = "84d2750a-5d3a-4cda-baf8-fb34eb0ffd5b") {
 	return buildCacheKey(buildId ? `app:${buildId}` : "app", pathname, suffix);
 }
 function appIsrHtmlKey(pathname) {
@@ -16542,7 +12819,7 @@ function createAppPageArtifactCompatibility(element, routePattern) {
 			routePattern,
 			rootBoundaryId
 		}),
-		deploymentVersion: "b59c8ff8-33c5-4f28-bf7f-84e6681c311d",
+		deploymentVersion: "84d2750a-5d3a-4cda-baf8-fb34eb0ffd5b",
 		rootBoundaryId
 	});
 }
@@ -17938,52 +14215,6 @@ function clearAppRequestContext() {
 	setAppNavigationContext(null);
 }
 //#endregion
-//#region src/lib/auth.ts
-var SESSION_COOKIE = "vellora_session";
-function sessionSecret() {
-	const secretValue = runtimeValue("VELLORA_SESSION_SECRET");
-	if (!secretValue) throw new Error("Configure VELLORA_SESSION_SECRET antes de habilitar o acesso restrito.");
-	return new TextEncoder().encode(secretValue);
-}
-function hashPassword(password) {
-	return bcryptjs_default.hashSync(password, 10);
-}
-function verifyPassword(password, hash) {
-	return bcryptjs_default.compareSync(password, hash);
-}
-async function createSessionToken(payload) {
-	return new SignJWT({ ...payload }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("7d").sign(sessionSecret());
-}
-async function verifySessionToken(token) {
-	try {
-		const { payload } = await jwtVerify(token, sessionSecret());
-		if (typeof payload.userId === "string" && typeof payload.name === "string" && typeof payload.sessionVersion === "number" && (payload.role === "admin" || payload.role === "familia" || payload.role === "cuidador")) return {
-			userId: payload.userId,
-			name: payload.name,
-			role: payload.role,
-			sessionVersion: payload.sessionVersion
-		};
-		return null;
-	} catch {
-		return null;
-	}
-}
-async function getSession() {
-	const token = (await cookies()).get(SESSION_COOKIE)?.value;
-	if (!token) return null;
-	const payload = await verifySessionToken(token);
-	if (!payload) return null;
-	const user = await queryOne("SELECT role, session_version FROM users WHERE id = $1 AND deleted_at IS NULL", [payload.userId]);
-	if (!user || user.role !== payload.role || user.session_version !== payload.sessionVersion) return null;
-	return payload;
-}
-var SESSION_COOKIE_NAME = SESSION_COOKIE;
-function roleHomePath(role) {
-	if (role === "admin") return "/admin";
-	if (role === "familia") return "/familia";
-	return "/cuidador";
-}
-//#endregion
 //#region src/lib/guard.ts
 async function requireRole(...roles) {
 	if (isSafePreview()) return { error: NextResponse.json({ error: "Área restrita indisponível nesta prévia sanitizada." }, { status: 403 }) };
@@ -17993,25 +14224,177 @@ async function requireRole(...roles) {
 	return { session };
 }
 //#endregion
+//#region src/lib/supabase/storage-paths.ts
+var STORAGE_BUCKETS = {
+	recordPhotos: "record-photos",
+	contracts: "contracts"
+};
+var STORAGE_LIMITS = {
+	photoBytes: 3 * 1024 * 1024,
+	contractBytes: 4 * 1024 * 1024
+};
+var STORAGE_MIME_TYPES = {
+	photos: [
+		"image/jpeg",
+		"image/png",
+		"image/webp"
+	],
+	contracts: ["application/pdf"]
+};
+var UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+var PHOTO_PATH = new RegExp(`^patients/(${UUID})/records/(${UUID})/(${UUID})\\.(jpg|jpeg|png|webp)$`, "");
+var CONTRACT_PATH = new RegExp(`^contracts/(${UUID})\\.pdf$`);
+/**
+* Storage keys are deliberately strict. The patient and record UUIDs are
+* part of a photo key so the database policies can authorize the object
+* without trusting a client-supplied role or JWT metadata claim.
+*/
+function classifyStoragePath(key) {
+	if (typeof key !== "string") return null;
+	const photo = PHOTO_PATH.exec(key);
+	if (photo) return {
+		kind: "photo",
+		bucket: STORAGE_BUCKETS.recordPhotos,
+		path: key,
+		patientId: photo[1],
+		recordId: photo[2],
+		fileId: photo[3],
+		extension: photo[4].toLowerCase()
+	};
+	const contract = CONTRACT_PATH.exec(key);
+	if (contract) return {
+		kind: "contract",
+		bucket: STORAGE_BUCKETS.contracts,
+		path: key,
+		contractId: contract[1],
+		extension: "pdf"
+	};
+	return null;
+}
+function assertStoragePath(key) {
+	const parsed = classifyStoragePath(key);
+	if (!parsed) throw new Error("Chave de armazenamento inválida. Use patients/<patient-uuid>/records/<record-uuid>/<file-uuid>.<ext> para fotos ou contracts/<contract-uuid>.pdf para contratos.");
+	return parsed;
+}
+function assertStorageContentType(object, contentType) {
+	const normalized = contentType.trim().toLowerCase();
+	if (!(object.kind === "photo" ? STORAGE_MIME_TYPES.photos : STORAGE_MIME_TYPES.contracts).includes(normalized)) throw new Error("Tipo de conteúdo não permitido para esta chave de armazenamento.");
+	if (object.kind === "photo" && ((object.extension === "jpg" || object.extension === "jpeg") && normalized !== "image/jpeg" || object.extension === "png" && normalized !== "image/png" || object.extension === "webp" && normalized !== "image/webp") || object.kind === "contract" && normalized !== "application/pdf") throw new Error("A extensão do arquivo não corresponde ao tipo de conteúdo informado.");
+	return normalized;
+}
+function maxBytesForStoragePath(object) {
+	return object.kind === "photo" ? STORAGE_LIMITS.photoBytes : STORAGE_LIMITS.contractBytes;
+}
+//#endregion
+//#region src/lib/supabase/storage.ts
+function storageErrorDetails(error) {
+	if (!error || typeof error !== "object") return {};
+	const details = error;
+	return {
+		status: typeof details.status === "number" ? details.status : void 0,
+		statusCode: typeof details.statusCode === "string" ? details.statusCode : void 0,
+		code: typeof details.code === "string" ? details.code : void 0
+	};
+}
+function isMissingObject(error) {
+	const details = storageErrorDetails(error);
+	return details.status === 404 || details.statusCode === "404" || details.code === "NoSuchKey";
+}
+async function storageClient() {
+	return createSupabaseServerClient();
+}
+function validateUpload(object, bytes, contentType) {
+	if (bytes.byteLength <= 0 || bytes.byteLength > maxBytesForStoragePath(object)) throw new Error("O arquivo excede o limite permitido para este armazenamento.");
+	return assertStorageContentType(object, contentType);
+}
+async function putSupabaseFile(key, bytes, contentType) {
+	const object = assertStoragePath(key);
+	const normalizedContentType = validateUpload(object, bytes, contentType);
+	const { error } = await (await storageClient()).storage.from(object.bucket).upload(object.path, bytes, {
+		contentType: normalizedContentType,
+		upsert: true
+	});
+	if (error) throw error;
+}
+async function getSupabaseFile(key) {
+	const object = assertStoragePath(key);
+	const { data, error } = await (await storageClient()).storage.from(object.bucket).download(object.path);
+	if (error) {
+		if (isMissingObject(error)) return null;
+		throw error;
+	}
+	if (!data) return null;
+	return new Uint8Array(await data.arrayBuffer());
+}
+async function deleteSupabaseFile(key) {
+	const object = assertStoragePath(key);
+	const { error } = await (await storageClient()).storage.from(object.bucket).remove([object.path]);
+	if (error) throw error;
+}
+async function deleteSupabaseFiles(keys) {
+	if (keys.length === 0) return;
+	const objects = keys.map(assertStoragePath);
+	const byBucket = /* @__PURE__ */ new Map();
+	for (const object of objects) {
+		const paths = byBucket.get(object.bucket) || [];
+		paths.push(object.path);
+		byBucket.set(object.bucket, paths);
+	}
+	const client = await storageClient();
+	for (const [bucket, paths] of byBucket) {
+		const { error } = await client.storage.from(bucket).remove(paths);
+		if (error) throw error;
+	}
+}
+//#endregion
+//#region src/lib/supabase/storage-config.ts
+/**
+* Resolves the storage backend without ever falling back between providers.
+* An unset value intentionally keeps the existing R2 implementation active
+* until the production data/runtime cutover is complete.
+*/
+function resolveStorageProvider(value) {
+	const provider = value?.trim().toLowerCase();
+	if (!provider || provider === "legacy") return "legacy";
+	if (provider === "supabase") return "supabase";
+	throw new Error("VELLORA_STORAGE_PROVIDER deve ser legacy ou supabase.");
+}
+//#endregion
 //#region src/lib/storage.ts
 function getBucket() {
 	const bucket = env.BUCKET;
 	if (!bucket) throw new Error("O armazenamento de documentos do site não está disponível.");
 	return bucket;
 }
+function isSupabaseStorageProvider() {
+	return resolveStorageProvider(runtimeValue("VELLORA_STORAGE_PROVIDER")) === "supabase";
+}
 async function putStoredFile(key, bytes, contentType) {
+	if (isSupabaseStorageProvider()) {
+		await putSupabaseFile(key, bytes, contentType);
+		return;
+	}
 	await getBucket().put(key, bytes, { httpMetadata: { contentType } });
 }
 async function getStoredFile(key) {
+	if (isSupabaseStorageProvider()) return getSupabaseFile(key);
 	const object = await getBucket().get(key);
 	if (!object) return null;
 	return new Uint8Array(await object.arrayBuffer());
 }
 async function deleteStoredFile(key) {
+	if (isSupabaseStorageProvider()) {
+		await deleteSupabaseFile(key);
+		return;
+	}
 	await getBucket().delete(key);
 }
 async function deleteStoredFiles(keys) {
 	if (keys.length === 0) return;
+	if (isSupabaseStorageProvider()) {
+		await deleteSupabaseFiles(keys);
+		return;
+	}
 	await getBucket().delete(keys);
 }
 //#endregion
@@ -18087,21 +14470,1075 @@ function saoPauloDateTime(date = /* @__PURE__ */ new Date()) {
 	};
 }
 //#endregion
+//#region src/lib/supabase/data.ts
+var SupabaseDataError = class extends Error {
+	constructor(message) {
+		super(message);
+		this.name = "SupabaseDataError";
+	}
+};
+/**
+* Resolves the data backend without enabling Supabase accidentally. The empty
+* value is deliberately compatible with the existing D1 runtime.
+*/
+function resolveDataProvider(value) {
+	return value?.trim().toLowerCase() === "supabase" ? "supabase" : "legacy";
+}
+function getDataProvider() {
+	return resolveDataProvider(runtimeValue("VELLORA_DATA_PROVIDER"));
+}
+var UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+var ROLE_VALUES = new Set([
+	"admin",
+	"familia",
+	"cuidador"
+]);
+var PROFESSIONAL_STATUS_VALUES = new Set([
+	"novo",
+	"em_analise",
+	"aprovado",
+	"recusado"
+]);
+var PROFESSIONAL_VALUES = new Set([
+	"cuidador",
+	"tecnico_enfermagem",
+	"enfermeiro",
+	"outros"
+]);
+var LEAD_STATUS_VALUES = new Set([
+	"novo",
+	"em_contato",
+	"convertido",
+	"recusado"
+]);
+var CAREGIVER_STATUS_VALUES = new Set([
+	"aguardando_acesso",
+	"ativo",
+	"inativo"
+]);
+function serverOnly$1() {
+	if (typeof window !== "undefined") throw new SupabaseDataError("O adapter de dados Supabase só pode ser usado no servidor.");
+}
+function assertUuid(value, label) {
+	if (!UUID_PATTERN.test(value)) throw new SupabaseDataError(`${label} não é um UUID Supabase válido.`);
+	return value;
+}
+function assertAuthAndDataProviders() {
+	if (resolveAuthProvider(runtimeValue("VELLORA_AUTH_PROVIDER")) !== "supabase") throw new SupabaseDataError("VELLORA_DATA_PROVIDER=supabase exige VELLORA_AUTH_PROVIDER=supabase para evitar misturar IDs D1 e Supabase.");
+}
+function publicConfig() {
+	return validateSupabaseConfig(runtimeValue("NEXT_PUBLIC_SUPABASE_URL") || runtimeValue("SUPABASE_URL"), runtimeValue("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY") || runtimeValue("SUPABASE_PUBLISHABLE_KEY") || runtimeValue("NEXT_PUBLIC_SUPABASE_ANON_KEY") || runtimeValue("SUPABASE_ANON_KEY"));
+}
+async function requestClient() {
+	serverOnly$1();
+	assertAuthAndDataProviders();
+	return createSupabaseServerClient();
+}
+function serviceClient$1() {
+	serverOnly$1();
+	assertAuthAndDataProviders();
+	const config = publicConfig();
+	const serviceKey = runtimeValue("SUPABASE_SECRET_KEY") || runtimeValue("SUPABASE_SERVICE_ROLE_KEY");
+	if (!serviceKey?.trim()) throw new SupabaseDataError("Configure SUPABASE_SECRET_KEY (ou SUPABASE_SERVICE_ROLE_KEY) somente no servidor para operações internas Supabase.");
+	return createClient(config.url, serviceKey, { auth: {
+		autoRefreshToken: false,
+		persistSession: false,
+		detectSessionInUrl: false
+	} });
+}
+function operationError$1(context, error) {
+	return new SupabaseDataError(`${context}: ${error && typeof error === "object" && "message" in error && typeof error.message === "string" ? error.message : "erro desconhecido"}`);
+}
+function requireNoError(context, error) {
+	if (error) throw operationError$1(context, error);
+}
+function requireValue(context, data, error) {
+	requireNoError(context, error);
+	if (data == null) throw new SupabaseDataError(`${context}: nenhum registro retornado.`);
+	return data;
+}
+function asString(value, fallback = "") {
+	return typeof value === "string" ? value : fallback;
+}
+function asNullableString(value) {
+	return typeof value === "string" && value.length > 0 ? value : null;
+}
+function asNumber(value) {
+	if (typeof value === "number" && Number.isFinite(value)) return value;
+	if (typeof value === "string" && value.trim() !== "") {
+		const parsed = Number(value);
+		return Number.isFinite(parsed) ? parsed : null;
+	}
+	return null;
+}
+function asBoolean(value) {
+	return value === true || value === 1 || value === "1" || value === "true";
+}
+function asStringArray(value) {
+	if (Array.isArray(value)) return value.filter((item) => typeof item === "string");
+	if (typeof value === "string") try {
+		const parsed = JSON.parse(value);
+		return Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string") : [];
+	} catch {
+		return [];
+	}
+	return [];
+}
+function asJsonString(value) {
+	if (value == null) return null;
+	if (typeof value === "string") return value;
+	try {
+		return JSON.stringify(value);
+	} catch {
+		return null;
+	}
+}
+function asRole(value) {
+	if (typeof value === "string" && ROLE_VALUES.has(value)) return value;
+	throw new SupabaseDataError("Perfil Supabase contém um papel inválido.");
+}
+function asLeadStatus(value) {
+	if (typeof value === "string" && LEAD_STATUS_VALUES.has(value)) return value;
+	throw new SupabaseDataError("Lead Supabase contém um status inválido.");
+}
+function asProfessionalStatus(value) {
+	if (typeof value === "string" && PROFESSIONAL_STATUS_VALUES.has(value)) return value;
+	throw new SupabaseDataError("Candidatura Supabase contém um status inválido.");
+}
+function asProfession(value) {
+	if (typeof value === "string" && PROFESSIONAL_VALUES.has(value)) return value;
+	throw new SupabaseDataError("Perfil profissional Supabase contém uma profissão inválida.");
+}
+function asCaregiverStatus(value) {
+	if (typeof value === "string" && CAREGIVER_STATUS_VALUES.has(value)) return value;
+	throw new SupabaseDataError("Perfil de cuidador Supabase contém um status inválido.");
+}
+function normalizeTime(value) {
+	const result = asNullableString(value);
+	return result ? result.slice(0, 5) : null;
+}
+function mapProfile(row, authUser) {
+	const active = asBoolean(row.active);
+	return {
+		id: assertUuid(asString(row.id), "Perfil"),
+		name: asString(row.name, authUser?.email || "Usuário Vellora"),
+		email: asString(authUser?.email),
+		password_hash: "",
+		role: asRole(row.role),
+		phone: asNullableString(row.phone),
+		session_version: 0,
+		deleted_at: active ? null : asNullableString(row.updated_at) || asNullableString(row.created_at),
+		created_at: asString(row.created_at)
+	};
+}
+function mapPatient(row) {
+	const status = asString(row.status);
+	if (status !== "pendente" && status !== "ativo" && status !== "inativo") throw new SupabaseDataError("Paciente Supabase contém um status inválido.");
+	return {
+		id: assertUuid(asString(row.id), "Paciente"),
+		name: asString(row.name),
+		birth_date: asNullableString(row.birth_date),
+		address: asNullableString(row.address),
+		care_level: asNullableString(row.care_level),
+		condition_summary: asNullableString(row.condition_summary),
+		family_user_id: asNullableString(row.family_user_id),
+		status,
+		notes: asNullableString(row.notes),
+		created_at: asString(row.created_at)
+	};
+}
+function mapAssignment(row) {
+	return {
+		id: assertUuid(asString(row.id), "Assignment"),
+		patient_id: assertUuid(asString(row.patient_id), "Paciente do assignment"),
+		caregiver_user_id: assertUuid(asString(row.caregiver_user_id), "Cuidador do assignment"),
+		start_date: asString(row.start_date),
+		end_date: asNullableString(row.end_date),
+		active: asBoolean(row.active) ? 1 : 0,
+		created_at: asString(row.created_at)
+	};
+}
+function mapLead(row) {
+	return {
+		id: assertUuid(asString(row.id), "Lead"),
+		name: asString(row.name),
+		email: asString(row.email),
+		phone: asString(row.phone),
+		patient_name: asNullableString(row.patient_name),
+		care_type: asNullableString(row.care_type),
+		message: asNullableString(row.message),
+		status: asLeadStatus(row.status),
+		created_at: asString(row.created_at)
+	};
+}
+function mapProfessionalApplication(row) {
+	return {
+		id: assertUuid(asString(row.id), "Candidatura"),
+		name: asString(row.name),
+		email: asString(row.email),
+		phone: asString(row.phone),
+		city: asNullableString(row.city),
+		profession: asProfession(row.profession),
+		coren: asNullableString(row.coren),
+		experience: asNullableString(row.experience),
+		availability_days: asStringArray(row.availability_days),
+		availability_shifts: asStringArray(row.availability_shifts),
+		available_from: asNullableString(row.available_from),
+		notes: asNullableString(row.notes),
+		status: asProfessionalStatus(row.status),
+		lgpd_consent: asBoolean(row.lgpd_consent),
+		lgpd_consent_at: asNullableString(row.lgpd_consent_at),
+		privacy_notice_version: asNullableString(row.privacy_notice_version),
+		reviewed_at: asNullableString(row.reviewed_at),
+		reviewed_by: asNullableString(row.reviewed_by),
+		created_at: asString(row.created_at)
+	};
+}
+function mapCaregiverProfile(row, accessEmail) {
+	return {
+		id: assertUuid(asString(row.id), "Perfil de cuidador"),
+		application_id: asNullableString(row.application_id),
+		user_id: asNullableString(row.user_id),
+		name: asString(row.name),
+		contact_email: asString(row.contact_email),
+		access_email: accessEmail || null,
+		phone: asString(row.phone),
+		city: asNullableString(row.city),
+		profession: asProfession(row.profession),
+		coren: asNullableString(row.coren),
+		experience: asNullableString(row.experience),
+		availability_days: asStringArray(row.availability_days),
+		availability_shifts: asStringArray(row.availability_shifts),
+		available_from: asNullableString(row.available_from),
+		notes: asNullableString(row.notes),
+		account_status: asCaregiverStatus(row.account_status),
+		approved_at: asString(row.approved_at),
+		created_at: asString(row.created_at)
+	};
+}
+function mapContract(row) {
+	return {
+		id: assertUuid(asString(row.id), "Contrato"),
+		family_user_id: asNullableString(row.family_user_id),
+		caregiver_profile_id: asNullableString(row.caregiver_profile_id),
+		caregiver_user_id: asNullableString(row.caregiver_user_id),
+		file_name: asString(row.file_name),
+		mime_type: asString(row.mime_type),
+		file_size: asNumber(row.file_size) || 0,
+		uploaded_by: asNullableString(row.uploaded_by),
+		created_at: asString(row.created_at)
+	};
+}
+function mapDailyRecord(row) {
+	return {
+		id: assertUuid(asString(row.id), "Registro diário"),
+		patient_id: assertUuid(asString(row.patient_id), "Paciente do registro"),
+		caregiver_user_id: assertUuid(asString(row.caregiver_user_id), "Cuidador do registro"),
+		record_date: asString(row.record_date),
+		record_time: normalizeTime(row.record_time),
+		bp_systolic: asNumber(row.bp_systolic),
+		bp_diastolic: asNumber(row.bp_diastolic),
+		heart_rate: asNumber(row.heart_rate),
+		temperature: asNumber(row.temperature),
+		spo2: asNumber(row.spo2),
+		glucose: asNumber(row.glucose),
+		medications: asNullableString(row.medications),
+		feeding: asNullableString(row.feeding),
+		hygiene: asNullableString(row.hygiene),
+		mobility: asNullableString(row.mobility),
+		mood: asNullableString(row.mood),
+		pain_level: asNumber(row.pain_level),
+		notes: asNullableString(row.notes),
+		incident: asBoolean(row.incident) ? 1 : 0,
+		incident_description: asNullableString(row.incident_description),
+		photo_data: null,
+		created_at: asString(row.created_at),
+		updated_at: asString(row.updated_at)
+	};
+}
+function mapAuditEvent(row) {
+	if (row.action !== "created" && row.action !== "updated") throw new SupabaseDataError("Auditoria Supabase contém uma ação inválida.");
+	return {
+		id: assertUuid(asString(row.id), "Auditoria"),
+		record_id: assertUuid(asString(row.record_id), "Registro da auditoria"),
+		patient_id: assertUuid(asString(row.patient_id), "Paciente da auditoria"),
+		actor_user_id: asNullableString(row.actor_user_id),
+		actor_name: asString(row.actor_name),
+		action: row.action,
+		changed_fields: asStringArray(row.changed_fields),
+		before_data: asJsonString(row.before_data),
+		after_data: asJsonString(row.after_data),
+		created_at: asString(row.created_at)
+	};
+}
+function storageEnabled() {
+	if (runtimeValue("VELLORA_STORAGE_PROVIDER")?.trim().toLowerCase() !== "supabase") throw new SupabaseDataError("VELLORA_DATA_PROVIDER=supabase exige VELLORA_STORAGE_PROVIDER=supabase antes de manipular arquivos.");
+}
+function photoExtension(contentType) {
+	if (contentType === "image/png") return "png";
+	if (contentType === "image/webp") return "webp";
+	return "jpg";
+}
+function parsePhotoDataUri(value) {
+	const match = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=\r\n]+)$/.exec(value);
+	if (!match) throw new SupabaseDataError("Foto inválida para o provider Supabase; envie uma imagem ou deixe o campo vazio.");
+	const bytes = new Uint8Array(Buffer.from(match[2], "base64"));
+	if (bytes.length === 0) throw new SupabaseDataError("Foto vazia.");
+	return {
+		contentType: match[1],
+		bytes
+	};
+}
+async function uploadRecordPhoto(patientId, recordId, value) {
+	if (!value) return null;
+	storageEnabled();
+	const parsed = parsePhotoDataUri(value);
+	const key = `patients/${assertUuid(patientId, "Paciente")}/records/${assertUuid(recordId, "Registro")}/${randomUUID()}.${photoExtension(parsed.contentType)}`;
+	await putStoredFile(key, parsed.bytes, parsed.contentType);
+	return key;
+}
+function contentTypeFromStorageKey(key) {
+	if (/\.png$/i.test(key)) return "image/png";
+	if (/\.webp$/i.test(key)) return "image/webp";
+	return "image/jpeg";
+}
+async function hydratePhoto(record, row) {
+	const key = asNullableString(row.photo_storage_key);
+	if (!key) return record;
+	storageEnabled();
+	const bytes = await getStoredFile(key);
+	if (!bytes) return record;
+	return {
+		...record,
+		photo_data: `data:${contentTypeFromStorageKey(key)};base64,${Buffer.from(bytes).toString("base64")}`
+	};
+}
+async function hydratePhotos(rows) {
+	return Promise.all(rows.map(async (row) => hydratePhoto(mapDailyRecord(row), row)));
+}
+async function listAuthUsers(client) {
+	const users = [];
+	let page = 1;
+	const perPage = 1e3;
+	while (true) {
+		const { data, error } = await client.auth.admin.listUsers({
+			page,
+			perPage
+		});
+		requireNoError("Não foi possível listar usuários Auth Supabase", error);
+		const pageUsers = data?.users || [];
+		users.push(...pageUsers);
+		if (pageUsers.length < perPage) break;
+		page += 1;
+	}
+	return users;
+}
+async function profilesWithAuth(ids) {
+	const client = serviceClient$1();
+	let query = client.from("profiles").select("*");
+	if (ids && ids.length > 0) query = query.in("id", ids.map((id) => assertUuid(id, "Perfil")));
+	const { data, error } = await query;
+	requireNoError("Não foi possível consultar perfis Supabase", error);
+	const authUsers = await listAuthUsers(client);
+	const authById = new Map(authUsers.map((user) => [user.id, user]));
+	return (data || []).map((profile) => ({
+		profile,
+		authUser: authById.get(asString(profile.id)) || null
+	}));
+}
+async function profileWithAuth(id) {
+	return (await profilesWithAuth([id]))[0];
+}
+async function activeAuthUserByEmail(email) {
+	const normalized = email.trim().toLowerCase();
+	return (await profilesWithAuth()).find(({ profile, authUser }) => asBoolean(profile.active) && authUser?.email?.trim().toLowerCase() === normalized);
+}
+async function createAuthProfile(client, input) {
+	const email = input.email.trim().toLowerCase();
+	if (!email || !input.password) throw new SupabaseDataError("E-mail e senha são obrigatórios.");
+	const { data: authData, error: authError } = await client.auth.admin.createUser({
+		email,
+		password: input.password,
+		email_confirm: true
+	});
+	requireNoError("Não foi possível criar usuário no Supabase Auth", authError);
+	if (!authData.user) throw new SupabaseDataError("Supabase Auth não retornou o usuário criado.");
+	const { data: profile, error: profileError } = await client.from("profiles").insert({
+		id: authData.user.id,
+		name: input.name,
+		role: input.role,
+		phone: input.phone?.trim() || null,
+		active: true
+	}).select("*").single();
+	if (profileError || !profile) {
+		await client.auth.admin.deleteUser(authData.user.id).catch(() => void 0);
+		throw operationError$1("Não foi possível criar perfil de aplicação Supabase", profileError);
+	}
+	return mapProfile(profile, authData.user);
+}
+async function deactivateProfile(client, id, name) {
+	const profileId = assertUuid(id, "Perfil");
+	const { error } = await client.from("profiles").update({
+		name,
+		phone: null,
+		active: false,
+		updated_at: (/* @__PURE__ */ new Date()).toISOString()
+	}).eq("id", profileId);
+	requireNoError("Não foi possível desativar perfil Supabase", error);
+	const anonymizedEmail = `removido-${profileId}@anonimo.vellora.invalid`;
+	const { error: authError } = await client.auth.admin.updateUserById(profileId, {
+		email: anonymizedEmail,
+		email_confirm: true
+	});
+	if (authError) console.error("[supabase-data] Perfil desativado, mas não foi possível anonimizar o e-mail Auth.", { error: authError.message });
+}
+async function contractKeys(client, column, id) {
+	const { data, error } = await client.from("contract_documents").select("storage_key").eq(column, assertUuid(id, "Proprietário do contrato"));
+	requireNoError("Não foi possível consultar arquivos de contrato", error);
+	return (data || []).map((row) => asNullableString(row.storage_key)).filter((key) => Boolean(key));
+}
+async function cleanupContracts(keys) {
+	if (!keys.length) return;
+	try {
+		storageEnabled();
+		await deleteStoredFiles(keys);
+	} catch (error) {
+		console.error("[supabase-data] Metadados removidos, mas arquivos não puderam ser limpos.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
+	}
+}
+async function getUserByEmail$1(email) {
+	const match = await activeAuthUserByEmail(email);
+	return match ? mapProfile(match.profile, match.authUser) : void 0;
+}
+async function getUserById$1(id) {
+	const match = await profileWithAuth(assertUuid(id, "Usuário"));
+	return match ? mapProfile(match.profile, match.authUser) : void 0;
+}
+async function getUsersByIds$1(ids) {
+	if (!ids.length) return [];
+	const uniqueIds = [...new Set(ids.map((id) => assertUuid(id, "Usuário")))];
+	const rows = await profilesWithAuth(uniqueIds);
+	const byId = new Map(rows.map((row) => [asString(row.profile.id), row]));
+	return uniqueIds.map((id) => byId.get(id)).filter((row) => Boolean(row)).map((row) => mapProfile(row.profile, row.authUser));
+}
+async function listUsersByRole$1(role) {
+	const normalizedRole = asRole(role.trim().toLowerCase());
+	return (await profilesWithAuth()).filter(({ profile }) => asBoolean(profile.active) && profile.role === normalizedRole).sort((a, b) => asString(a.profile.name).localeCompare(asString(b.profile.name))).map((row) => mapProfile(row.profile, row.authUser));
+}
+async function createUser$1(input) {
+	return createAuthProfile(serviceClient$1(), input);
+}
+async function listPatients$1() {
+	const { data, error } = await (await requestClient()).from("patients").select("*").order("created_at", { ascending: false });
+	requireNoError("Não foi possível listar pacientes Supabase", error);
+	return (data || []).map(mapPatient);
+}
+async function getPatient$1(id) {
+	const { data, error } = await (await requestClient()).from("patients").select("*").eq("id", assertUuid(id, "Paciente")).maybeSingle();
+	requireNoError("Não foi possível consultar paciente Supabase", error);
+	return data ? mapPatient(data) : void 0;
+}
+async function listPatientsByFamily$1(familyUserId) {
+	const { data, error } = await (await requestClient()).from("patients").select("*").eq("family_user_id", assertUuid(familyUserId, "Família")).order("created_at", { ascending: false });
+	requireNoError("Não foi possível listar pacientes da família", error);
+	return (data || []).map(mapPatient);
+}
+async function listPatientsByCaregiver$1(caregiverUserId) {
+	const client = await requestClient();
+	const caregiverId = assertUuid(caregiverUserId, "Cuidador");
+	const { data: assignments, error: assignmentError } = await client.from("caregiver_assignments").select("patient_id").eq("caregiver_user_id", caregiverId).eq("active", true);
+	requireNoError("Não foi possível consultar assignments do cuidador", assignmentError);
+	const patientIds = (assignments || []).map((row) => asNullableString(row.patient_id)).filter((id) => Boolean(id));
+	if (!patientIds.length) return [];
+	const { data, error } = await client.from("patients").select("*").in("id", patientIds).order("name");
+	requireNoError("Não foi possível listar pacientes do cuidador", error);
+	return (data || []).map(mapPatient);
+}
+async function createPatient$1(input) {
+	const client = await requestClient();
+	const row = {
+		id: randomUUID(),
+		name: input.name,
+		birth_date: input.birth_date || null,
+		address: input.address || null,
+		care_level: input.care_level || null,
+		condition_summary: input.condition_summary || null,
+		family_user_id: input.family_user_id ? assertUuid(input.family_user_id, "Família") : null,
+		status: input.status || "pendente",
+		notes: input.notes || null
+	};
+	const { data, error } = await client.from("patients").insert(row).select("*").single();
+	return mapPatient(requireValue("Não foi possível criar paciente Supabase", data, error));
+}
+async function updatePatient$1(id, fields) {
+	const client = await requestClient();
+	const allowed = [
+		"name",
+		"birth_date",
+		"address",
+		"care_level",
+		"condition_summary",
+		"family_user_id",
+		"status",
+		"notes"
+	];
+	const update = {};
+	for (const key of allowed) if (key in fields) update[key] = key === "family_user_id" && fields[key] ? assertUuid(fields[key], "Família") : fields[key] ?? null;
+	if (!Object.keys(update).length) return;
+	const { error } = await client.from("patients").update(update).eq("id", assertUuid(id, "Paciente"));
+	requireNoError("Não foi possível atualizar paciente Supabase", error);
+}
+async function deletePatient$1(id) {
+	const { error } = await (await requestClient()).from("patients").delete().eq("id", assertUuid(id, "Paciente"));
+	requireNoError("Não foi possível excluir paciente Supabase", error);
+}
+async function listAssignmentsForPatient$1(patientId) {
+	const { data, error } = await (await requestClient()).from("caregiver_assignments").select("*").eq("patient_id", assertUuid(patientId, "Paciente")).order("active", { ascending: false }).order("start_date", { ascending: false });
+	requireNoError("Não foi possível listar assignments Supabase", error);
+	return (data || []).map(mapAssignment);
+}
+async function createAssignment$1(input) {
+	const { data, error } = await (await requestClient()).from("caregiver_assignments").insert({
+		id: randomUUID(),
+		patient_id: assertUuid(input.patient_id, "Paciente"),
+		caregiver_user_id: assertUuid(input.caregiver_user_id, "Cuidador"),
+		start_date: input.start_date,
+		active: true
+	}).select("*").single();
+	return mapAssignment(requireValue("Não foi possível criar assignment Supabase", data, error));
+}
+async function deactivateAssignment$1(id) {
+	const { error } = await (await requestClient()).from("caregiver_assignments").update({
+		active: false,
+		end_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10)
+	}).eq("id", assertUuid(id, "Assignment"));
+	requireNoError("Não foi possível desativar assignment Supabase", error);
+}
+async function isCaregiverAssignedToPatient$1(caregiverUserId, patientId) {
+	const { data, error } = await (await requestClient()).from("caregiver_assignments").select("id").eq("caregiver_user_id", assertUuid(caregiverUserId, "Cuidador")).eq("patient_id", assertUuid(patientId, "Paciente")).eq("active", true).limit(1);
+	requireNoError("Não foi possível verificar assignment Supabase", error);
+	return (data || []).length > 0;
+}
+async function listLeads$1() {
+	const { data, error } = await (await requestClient()).from("leads").select("*").order("created_at", { ascending: false });
+	requireNoError("Não foi possível listar leads Supabase", error);
+	return (data || []).map(mapLead);
+}
+async function createLead$1(input) {
+	const { data, error } = await serviceClient$1().from("leads").insert({
+		id: randomUUID(),
+		name: input.name,
+		email: input.email.trim().toLowerCase(),
+		phone: input.phone,
+		patient_name: input.patient_name || null,
+		care_type: input.care_type || null,
+		message: input.message || null,
+		status: "novo"
+	}).select("*").single();
+	return mapLead(requireValue("Não foi possível criar lead Supabase", data, error));
+}
+async function updateLeadStatus$1(id, status) {
+	const { error } = await (await requestClient()).from("leads").update({ status }).eq("id", assertUuid(id, "Lead"));
+	requireNoError("Não foi possível atualizar status do lead Supabase", error);
+}
+async function deleteLead$1(id) {
+	const { error } = await (await requestClient()).from("leads").delete().eq("id", assertUuid(id, "Lead"));
+	requireNoError("Não foi possível excluir lead Supabase", error);
+}
+async function listProfessionalApplications$1() {
+	const { data, error } = await (await requestClient()).from("professional_applications").select("*").order("created_at", { ascending: false });
+	requireNoError("Não foi possível listar candidaturas Supabase", error);
+	return (data || []).map(mapProfessionalApplication);
+}
+async function createProfessionalApplication$1(input) {
+	const { data, error } = await serviceClient$1().from("professional_applications").insert({
+		id: randomUUID(),
+		name: input.name,
+		email: input.email.trim().toLowerCase(),
+		phone: input.phone,
+		city: input.city || null,
+		profession: input.profession,
+		coren: input.coren || null,
+		experience: input.experience || null,
+		availability_days: input.availability_days,
+		availability_shifts: input.availability_shifts,
+		available_from: input.available_from || null,
+		notes: input.notes || null,
+		status: "novo",
+		lgpd_consent: input.lgpd_consent,
+		lgpd_consent_at: (/* @__PURE__ */ new Date()).toISOString(),
+		privacy_notice_version: input.privacy_notice_version
+	}).select("*").single();
+	return mapProfessionalApplication(requireValue("Não foi possível criar candidatura Supabase", data, error));
+}
+async function updateProfessionalApplicationStatus$1(id, status, reviewedBy) {
+	const client = await requestClient();
+	const applicationId = assertUuid(id, "Candidatura");
+	const reviewerId = assertUuid(reviewedBy, "Revisor");
+	if (status === "aprovado") {
+		const { data: application, error: applicationError } = await client.from("professional_applications").select("*").eq("id", applicationId).maybeSingle();
+		const app = requireValue("Não foi possível consultar candidatura Supabase", application, applicationError);
+		const { error: updateError } = await client.from("professional_applications").update({
+			status,
+			reviewed_at: (/* @__PURE__ */ new Date()).toISOString(),
+			reviewed_by: reviewerId
+		}).eq("id", applicationId);
+		requireNoError("Não foi possível aprovar candidatura Supabase", updateError);
+		const { data: existing, error: existingError } = await client.from("caregiver_profiles").select("*").eq("application_id", applicationId).maybeSingle();
+		requireNoError("Não foi possível consultar perfil profissional Supabase", existingError);
+		const existingRow = existing;
+		const caregiverRow = {
+			id: asString(existingRow?.id) || randomUUID(),
+			application_id: applicationId,
+			name: asString(app.name),
+			contact_email: asString(app.email),
+			phone: asString(app.phone),
+			city: asNullableString(app.city),
+			profession: asProfession(app.profession),
+			coren: asNullableString(app.coren),
+			experience: asNullableString(app.experience),
+			availability_days: asStringArray(app.availability_days),
+			availability_shifts: asStringArray(app.availability_shifts),
+			available_from: asNullableString(app.available_from),
+			notes: asNullableString(app.notes),
+			account_status: existingRow && asNullableString(existingRow.user_id) ? asCaregiverStatus(existingRow.account_status) : "aguardando_acesso",
+			approved_at: asString(existingRow?.approved_at) || (/* @__PURE__ */ new Date()).toISOString()
+		};
+		const { error: profileError } = await client.from("caregiver_profiles").upsert(caregiverRow, { onConflict: "application_id" });
+		requireNoError("Não foi possível criar perfil profissional Supabase", profileError);
+		return;
+	}
+	const { error } = await client.from("professional_applications").update({
+		status,
+		reviewed_at: (/* @__PURE__ */ new Date()).toISOString(),
+		reviewed_by: reviewerId
+	}).eq("id", applicationId);
+	requireNoError("Não foi possível atualizar candidatura Supabase", error);
+	if (status === "recusado") {
+		const { error: profileError } = await client.from("caregiver_profiles").update({ account_status: "inativo" }).eq("application_id", applicationId);
+		requireNoError("Não foi possível inativar perfil profissional Supabase", profileError);
+	}
+}
+async function deleteProfessionalApplication$1(id) {
+	const { error } = await (await requestClient()).from("professional_applications").delete().eq("id", assertUuid(id, "Candidatura"));
+	requireNoError("Não foi possível excluir candidatura Supabase", error);
+}
+async function caregiverRows(query) {
+	const result = await query;
+	requireNoError("Não foi possível consultar perfis de cuidadores Supabase", result.error);
+	const rows = result.data || [];
+	const userIds = rows.map((row) => asNullableString(row.user_id)).filter((id) => Boolean(id));
+	const authRows = userIds.length ? await profilesWithAuth(userIds) : [];
+	const emails = new Map(authRows.map(({ profile, authUser }) => [asString(profile.id), authUser?.email || null]));
+	return rows.map((row) => mapCaregiverProfile(row, emails.get(asString(row.user_id))));
+}
+async function listCaregiverProfiles$1() {
+	return caregiverRows((await requestClient()).from("caregiver_profiles").select("*").order("approved_at", { ascending: false }).order("name"));
+}
+async function getCaregiverProfile$1(id) {
+	const result = await (await requestClient()).from("caregiver_profiles").select("*").eq("id", assertUuid(id, "Perfil de cuidador")).maybeSingle();
+	requireNoError("Não foi possível consultar perfil de cuidador Supabase", result.error);
+	if (!result.data) return void 0;
+	const row = result.data;
+	return mapCaregiverProfile(row, (row.user_id ? await profilesWithAuth([asString(row.user_id)]) : [])[0]?.authUser?.email || null);
+}
+async function createCaregiverAccess$1(input) {
+	const client = serviceClient$1();
+	const profileId = assertUuid(input.profileId, "Perfil de cuidador");
+	const { data: profile, error: profileError } = await client.from("caregiver_profiles").select("*").eq("id", profileId).maybeSingle();
+	requireNoError("Não foi possível consultar perfil de cuidador Supabase", profileError);
+	const row = profile;
+	if (!row || row.user_id || asString(row.account_status) !== "aguardando_acesso") throw new SupabaseDataError("Perfil não encontrado ou acesso já criado.");
+	if (await activeAuthUserByEmail(input.email)) throw new SupabaseDataError("Este e-mail já está vinculado a outra conta.");
+	const user = await createAuthProfile(client, {
+		name: asString(row.name),
+		email: input.email,
+		password: input.password,
+		role: "cuidador",
+		phone: asNullableString(row.phone) || void 0
+	});
+	const { error: updateError } = await client.from("caregiver_profiles").update({
+		user_id: user.id,
+		account_status: "ativo"
+	}).eq("id", profileId).is("user_id", null).eq("account_status", "aguardando_acesso");
+	if (updateError) {
+		await client.auth.admin.deleteUser(user.id).catch(() => void 0);
+		throw operationError$1("Não foi possível vincular acesso ao perfil Supabase", updateError);
+	}
+	return user;
+}
+async function deleteCaregiverProfile$1(id) {
+	const client = serviceClient$1();
+	const profileId = assertUuid(id, "Perfil de cuidador");
+	const { data: profile, error: profileError } = await client.from("caregiver_profiles").select("*").eq("id", profileId).maybeSingle();
+	requireNoError("Não foi possível consultar perfil de cuidador Supabase", profileError);
+	if (!profile) return;
+	const userId = asNullableString(profile.user_id);
+	const keys = await contractKeys(client, "caregiver_profile_id", profileId);
+	if (userId) keys.push(...await contractKeys(client, "caregiver_user_id", userId));
+	const { error: contractError } = await client.from("contract_documents").delete().or(`caregiver_profile_id.eq.${profileId}${userId ? `,caregiver_user_id.eq.${userId}` : ""}`);
+	requireNoError("Não foi possível excluir contratos do perfil Supabase", contractError);
+	if (userId) {
+		const { error: assignmentError } = await client.from("caregiver_assignments").delete().eq("caregiver_user_id", userId);
+		requireNoError("Não foi possível excluir assignments do cuidador Supabase", assignmentError);
+	}
+	const { error: deleteError } = await client.from("caregiver_profiles").delete().eq("id", profileId);
+	requireNoError("Não foi possível excluir perfil de cuidador Supabase", deleteError);
+	if (userId) await deactivateProfile(client, userId, "Profissional removido");
+	await cleanupContracts(keys);
+}
+async function deleteCaregiverUser$1(id) {
+	const client = serviceClient$1();
+	const userId = assertUuid(id, "Cuidador");
+	const keys = await contractKeys(client, "caregiver_user_id", userId);
+	const { error: contractError } = await client.from("contract_documents").delete().eq("caregiver_user_id", userId);
+	requireNoError("Não foi possível excluir contratos do cuidador Supabase", contractError);
+	const { error: assignmentError } = await client.from("caregiver_assignments").delete().eq("caregiver_user_id", userId);
+	requireNoError("Não foi possível excluir assignments do cuidador Supabase", assignmentError);
+	const { error: caregiverError } = await client.from("caregiver_profiles").update({
+		user_id: null,
+		account_status: "inativo"
+	}).eq("user_id", userId);
+	requireNoError("Não foi possível desassociar perfil do cuidador Supabase", caregiverError);
+	await deactivateProfile(client, userId, "Profissional removido");
+	await cleanupContracts(keys);
+}
+async function deleteFamilyUser$1(id) {
+	const client = serviceClient$1();
+	const userId = assertUuid(id, "Família");
+	const keys = await contractKeys(client, "family_user_id", userId);
+	const { error: patientError } = await client.from("patients").update({ family_user_id: null }).eq("family_user_id", userId);
+	requireNoError("Não foi possível desvincular pacientes da família Supabase", patientError);
+	const { error: contractError } = await client.from("contract_documents").delete().eq("family_user_id", userId);
+	requireNoError("Não foi possível excluir contratos da família Supabase", contractError);
+	await deactivateProfile(client, userId, "Conta de família removida");
+	await cleanupContracts(keys);
+}
+function contractColumn(ownerType) {
+	if (ownerType === "family") return "family_user_id";
+	if (ownerType === "caregiver_profile") return "caregiver_profile_id";
+	return "caregiver_user_id";
+}
+async function listContractDocuments$1(ownerType, ownerId) {
+	const client = await requestClient();
+	const column = contractColumn(ownerType);
+	const { data, error } = await client.from("contract_documents").select("id, family_user_id, caregiver_profile_id, caregiver_user_id, file_name, mime_type, file_size, uploaded_by, created_at").eq(column, assertUuid(ownerId, "Proprietário do contrato")).order("created_at", { ascending: false });
+	requireNoError("Não foi possível listar contratos Supabase", error);
+	return (data || []).map(mapContract);
+}
+async function listContractDocumentsForCaregiver$1(userId) {
+	const client = await requestClient();
+	const caregiverId = assertUuid(userId, "Cuidador");
+	const { data: profiles, error: profileError } = await client.from("caregiver_profiles").select("id").eq("user_id", caregiverId);
+	requireNoError("Não foi possível consultar perfis do cuidador Supabase", profileError);
+	const profileIds = (profiles || []).map((row) => asNullableString(row.id)).filter((id) => Boolean(id));
+	const ownership = [`caregiver_user_id.eq.${caregiverId}`];
+	if (profileIds.length) ownership.push(`caregiver_profile_id.in.(${profileIds.join(",")})`);
+	const { data, error } = await client.from("contract_documents").select("id, family_user_id, caregiver_profile_id, caregiver_user_id, file_name, mime_type, file_size, uploaded_by, created_at").or(ownership.join(",")).order("created_at", { ascending: false });
+	requireNoError("Não foi possível listar contratos do cuidador Supabase", error);
+	return (data || []).map(mapContract);
+}
+async function getContractDocument$1(id) {
+	const { data, error } = await (await requestClient()).from("contract_documents").select("id, family_user_id, caregiver_profile_id, caregiver_user_id, file_name, mime_type, file_size, uploaded_by, created_at").eq("id", assertUuid(id, "Contrato")).maybeSingle();
+	requireNoError("Não foi possível consultar contrato Supabase", error);
+	return data ? mapContract(data) : void 0;
+}
+async function getContractFileData$1(id) {
+	const { data, error } = await (await requestClient()).from("contract_documents").select("storage_key").eq("id", assertUuid(id, "Contrato")).maybeSingle();
+	requireNoError("Não foi possível consultar arquivo de contrato Supabase", error);
+	const key = asNullableString(data?.storage_key);
+	if (!key) return null;
+	storageEnabled();
+	return getStoredFile(key);
+}
+async function createContractDocument$1(input) {
+	const client = await requestClient();
+	storageEnabled();
+	const id = randomUUID();
+	const storageKey = `contracts/${id}.pdf`;
+	const column = contractColumn(input.ownerType);
+	const ownerId = assertUuid(input.ownerId, "Proprietário do contrato");
+	const uploadedBy = assertUuid(input.uploadedBy, "Autor do upload");
+	await putStoredFile(storageKey, input.fileData, input.mimeType);
+	const { data, error } = await client.from("contract_documents").insert({
+		id,
+		family_user_id: column === "family_user_id" ? ownerId : null,
+		caregiver_profile_id: column === "caregiver_profile_id" ? ownerId : null,
+		caregiver_user_id: column === "caregiver_user_id" ? ownerId : null,
+		file_name: input.fileName,
+		mime_type: input.mimeType,
+		file_size: input.fileSize,
+		storage_key: storageKey,
+		uploaded_by: uploadedBy
+	}).select("id, family_user_id, caregiver_profile_id, caregiver_user_id, file_name, mime_type, file_size, uploaded_by, created_at").single();
+	if (error || !data) {
+		await deleteStoredFile(storageKey).catch(() => void 0);
+		throw operationError$1("Não foi possível criar metadados do contrato Supabase", error);
+	}
+	return mapContract(data);
+}
+async function deleteContractDocument$1(id) {
+	const client = await requestClient();
+	const contractId = assertUuid(id, "Contrato");
+	const { data, error } = await client.from("contract_documents").select("storage_key").eq("id", contractId).maybeSingle();
+	requireNoError("Não foi possível consultar contrato Supabase", error);
+	const key = asNullableString(data?.storage_key);
+	const { error: deleteError } = await client.from("contract_documents").delete().eq("id", contractId);
+	requireNoError("Não foi possível excluir contrato Supabase", deleteError);
+	if (key) await cleanupContracts([key]);
+}
+async function listRecordsForPatient$1(patientId, limit = 90) {
+	const { data, error } = await (await requestClient()).from("daily_records").select("*").eq("patient_id", assertUuid(patientId, "Paciente")).order("record_date", { ascending: false }).order("record_time", {
+		ascending: false,
+		nullsFirst: false
+	}).order("created_at", { ascending: false }).limit(Math.max(1, Math.min(limit, 365)));
+	requireNoError("Não foi possível listar registros diários Supabase", error);
+	return hydratePhotos(data || []);
+}
+async function getRecord$1(id) {
+	const { data, error } = await (await requestClient()).from("daily_records").select("*").eq("id", assertUuid(id, "Registro")).maybeSingle();
+	requireNoError("Não foi possível consultar registro diário Supabase", error);
+	return data ? hydratePhoto(mapDailyRecord(data), data) : void 0;
+}
+async function getRecordForCaregiverOnDate$1(patientId, caregiverUserId, recordDate) {
+	const { data, error } = await (await requestClient()).from("daily_records").select("*").eq("patient_id", assertUuid(patientId, "Paciente")).eq("caregiver_user_id", assertUuid(caregiverUserId, "Cuidador")).eq("record_date", recordDate).order("record_time", {
+		ascending: false,
+		nullsFirst: false
+	}).order("created_at", { ascending: false }).limit(1);
+	requireNoError("Não foi possível consultar registro diário Supabase", error);
+	const row = (data || [])[0];
+	return row ? hydratePhoto(mapDailyRecord(row), row) : void 0;
+}
+async function createRecord$1(input, actor = {
+	userId: input.caregiver_user_id,
+	name: "Cuidador"
+}) {
+	const client = await requestClient();
+	const auditClient = serviceClient$1();
+	const id = randomUUID();
+	assertUuid(input.patient_id, "Paciente");
+	assertUuid(input.caregiver_user_id, "Cuidador");
+	assertUuid(actor.userId, "Autor da auditoria");
+	let photoKey = null;
+	const row = {
+		id,
+		patient_id: input.patient_id,
+		caregiver_user_id: input.caregiver_user_id,
+		record_date: input.record_date,
+		record_time: input.record_time,
+		bp_systolic: input.bp_systolic,
+		bp_diastolic: input.bp_diastolic,
+		heart_rate: input.heart_rate,
+		temperature: input.temperature,
+		spo2: input.spo2,
+		glucose: input.glucose,
+		medications: input.medications,
+		feeding: input.feeding,
+		hygiene: input.hygiene,
+		mobility: input.mobility,
+		mood: input.mood,
+		pain_level: input.pain_level,
+		notes: input.notes,
+		incident: input.incident === 1,
+		incident_description: input.incident_description,
+		photo_storage_key: null
+	};
+	const { data: insertedData, error } = await client.from("daily_records").insert(row).select("*").single();
+	if (error || !insertedData) throw operationError$1("Não foi possível criar registro diário Supabase", error);
+	let persistedData = insertedData;
+	try {
+		if (input.photo_data) {
+			photoKey = await uploadRecordPhoto(input.patient_id, id, input.photo_data);
+			const { data: linkedData, error: linkError } = await client.from("daily_records").update({ photo_storage_key: photoKey }).eq("id", id).select("*").single();
+			if (linkError || !linkedData) throw operationError$1("Não foi possível vincular foto ao registro Supabase", linkError);
+			persistedData = linkedData;
+		}
+	} catch (error) {
+		if (photoKey) await deleteStoredFile(photoKey).catch(() => void 0);
+		try {
+			await auditClient.from("daily_records").delete().eq("id", id);
+		} catch {}
+		throw error;
+	}
+	const snapshot = snapshotDailyRecord(input);
+	const { error: auditError } = await auditClient.from("daily_record_audit_events").insert({
+		id: randomUUID(),
+		record_id: id,
+		patient_id: input.patient_id,
+		actor_user_id: actor.userId,
+		actor_name: actor.name.slice(0, 160),
+		action: "created",
+		changed_fields: Object.keys(snapshot),
+		after_data: snapshot
+	});
+	if (auditError) {
+		try {
+			await auditClient.from("daily_records").delete().eq("id", id);
+		} catch {}
+		if (photoKey) await deleteStoredFile(photoKey).catch(() => void 0);
+		throw operationError$1("Não foi possível registrar auditoria do registro Supabase", auditError);
+	}
+	return hydratePhoto(mapDailyRecord(persistedData), persistedData);
+}
+async function updateRecord$1(id, fields, actor) {
+	const client = await requestClient();
+	const auditClient = serviceClient$1();
+	const recordId = assertUuid(id, "Registro");
+	const { data: existingData, error: existingError } = await client.from("daily_records").select("*").eq("id", recordId).maybeSingle();
+	requireNoError("Não foi possível consultar registro diário Supabase", existingError);
+	if (!existingData) return void 0;
+	const existingRow = existingData;
+	const existing = await hydratePhoto(mapDailyRecord(existingRow), existingRow);
+	const merged = {
+		...existing,
+		...fields
+	};
+	const changedFields = diffDailyRecord(existing, merged);
+	if (!changedFields.length) return existing;
+	assertUuid(actor.userId, "Autor da auditoria");
+	let newPhotoKey = asNullableString(existingRow.photo_storage_key);
+	let uploadedPhotoKey = null;
+	if ("photo_data" in fields) if (fields.photo_data) {
+		uploadedPhotoKey = await uploadRecordPhoto(existing.patient_id, recordId, fields.photo_data);
+		newPhotoKey = uploadedPhotoKey;
+	} else {
+		storageEnabled();
+		newPhotoKey = null;
+	}
+	const update = {};
+	const allowed = [
+		"record_date",
+		"record_time",
+		"bp_systolic",
+		"bp_diastolic",
+		"heart_rate",
+		"temperature",
+		"spo2",
+		"glucose",
+		"medications",
+		"feeding",
+		"hygiene",
+		"mobility",
+		"mood",
+		"pain_level",
+		"notes",
+		"incident",
+		"incident_description"
+	];
+	for (const key of allowed) if (key in fields) update[key] = key === "incident" ? fields[key] === 1 : fields[key] ?? null;
+	if ("photo_data" in fields) update.photo_storage_key = newPhotoKey;
+	update.updated_at = (/* @__PURE__ */ new Date()).toISOString();
+	const { data: updatedData, error: updateError } = await client.from("daily_records").update(update).eq("id", recordId).select("*").single();
+	if (updateError || !updatedData) {
+		if (uploadedPhotoKey) await deleteStoredFile(uploadedPhotoKey).catch(() => void 0);
+		throw operationError$1("Não foi possível atualizar registro diário Supabase", updateError);
+	}
+	const { error: auditError } = await auditClient.from("daily_record_audit_events").insert({
+		id: randomUUID(),
+		record_id: recordId,
+		patient_id: existing.patient_id,
+		actor_user_id: actor.userId,
+		actor_name: actor.name.slice(0, 160),
+		action: "updated",
+		changed_fields: changedFields,
+		before_data: snapshotDailyRecord(existing),
+		after_data: snapshotDailyRecord(merged)
+	});
+	if (auditError) {
+		try {
+			await client.from("daily_records").update({
+				...Object.fromEntries(allowed.filter((key) => key in existing).map((key) => [key, key === "incident" ? existing[key] === 1 : existing[key] ?? null])),
+				photo_storage_key: existingRow.photo_storage_key ?? null,
+				updated_at: existing.updated_at
+			}).eq("id", recordId);
+		} catch {}
+		if (uploadedPhotoKey) await deleteStoredFile(uploadedPhotoKey).catch(() => void 0);
+		throw operationError$1("Não foi possível registrar auditoria da atualização Supabase", auditError);
+	}
+	const oldPhotoKey = asNullableString(existingRow.photo_storage_key);
+	if (oldPhotoKey && oldPhotoKey !== newPhotoKey) await deleteStoredFile(oldPhotoKey).catch(() => void 0);
+	return hydratePhoto(mapDailyRecord(updatedData), updatedData);
+}
+async function listRecordAuditForPatient$1(patientId, limit = 50) {
+	const { data, error } = await (await requestClient()).from("daily_record_audit_events").select("*").eq("patient_id", assertUuid(patientId, "Paciente")).order("created_at", { ascending: false }).limit(Math.max(1, Math.min(limit, 200)));
+	requireNoError("Não foi possível listar auditoria Supabase", error);
+	return (data || []).map(mapAuditEvent);
+}
+async function getCaregiverNamesMap$1(ids) {
+	const users = await getUsersByIds$1([...new Set(ids)]);
+	return Object.fromEntries(users.map((user) => [user.id, user.name]));
+}
+//#endregion
 //#region src/lib/data.ts
+var data_exports = /* @__PURE__ */ __exportAll({
+	createAssignment: () => createAssignment,
+	createCaregiverAccess: () => createCaregiverAccess,
+	createContractDocument: () => createContractDocument,
+	createLead: () => createLead,
+	createPatient: () => createPatient,
+	createProfessionalApplication: () => createProfessionalApplication,
+	createRecord: () => createRecord,
+	createUser: () => createUser,
+	deactivateAssignment: () => deactivateAssignment,
+	deleteCaregiverProfile: () => deleteCaregiverProfile,
+	deleteCaregiverUser: () => deleteCaregiverUser,
+	deleteContractDocument: () => deleteContractDocument,
+	deleteFamilyUser: () => deleteFamilyUser,
+	deleteLead: () => deleteLead,
+	deletePatient: () => deletePatient,
+	deleteProfessionalApplication: () => deleteProfessionalApplication,
+	getCaregiverNamesMap: () => getCaregiverNamesMap,
+	getCaregiverProfile: () => getCaregiverProfile,
+	getContractDocument: () => getContractDocument,
+	getContractFileData: () => getContractFileData,
+	getPatient: () => getPatient,
+	getRecord: () => getRecord,
+	getRecordForCaregiverOnDate: () => getRecordForCaregiverOnDate,
+	getUserByEmail: () => getUserByEmail,
+	getUserById: () => getUserById,
+	getUsersByIds: () => getUsersByIds,
+	isCaregiverAssignedToPatient: () => isCaregiverAssignedToPatient,
+	listAssignmentsForPatient: () => listAssignmentsForPatient,
+	listCaregiverProfiles: () => listCaregiverProfiles,
+	listContractDocuments: () => listContractDocuments,
+	listContractDocumentsForCaregiver: () => listContractDocumentsForCaregiver,
+	listLeads: () => listLeads,
+	listPatients: () => listPatients,
+	listPatientsByCaregiver: () => listPatientsByCaregiver,
+	listPatientsByFamily: () => listPatientsByFamily,
+	listProfessionalApplications: () => listProfessionalApplications,
+	listRecordAuditForPatient: () => listRecordAuditForPatient,
+	listRecordsForPatient: () => listRecordsForPatient,
+	listUsersByRole: () => listUsersByRole,
+	updateLeadStatus: () => updateLeadStatus,
+	updatePatient: () => updatePatient,
+	updateProfessionalApplicationStatus: () => updateProfessionalApplicationStatus,
+	updateRecord: () => updateRecord
+});
+function shouldUseSupabaseData() {
+	const provider = getDataProvider();
+	if (resolveAuthProvider(runtimeValue("VELLORA_AUTH_PROVIDER")) === "supabase" && provider !== "supabase") throw new SupabaseDataError("VELLORA_AUTH_PROVIDER=supabase exige VELLORA_DATA_PROVIDER=supabase para evitar misturar dados D1 e Supabase.");
+	return provider === "supabase";
+}
 async function getUserByEmail(email) {
+	if (shouldUseSupabaseData()) return getUserByEmail$1(email);
 	return queryOne("SELECT * FROM users WHERE email = $1 AND deleted_at IS NULL", [email]);
 }
 async function getUserById(id) {
+	if (shouldUseSupabaseData()) return getUserById$1(id);
 	return queryOne("SELECT * FROM users WHERE id = $1", [id]);
 }
 async function getUsersByIds(ids) {
+	if (shouldUseSupabaseData()) return getUsersByIds$1(ids);
 	if (ids.length === 0) return [];
 	return query(`SELECT * FROM users WHERE id IN (${ids.map((_, index) => `$${index + 1}`).join(",")})`, ids);
 }
 async function listUsersByRole(role) {
+	if (shouldUseSupabaseData()) return listUsersByRole$1(role);
 	return query("SELECT * FROM users WHERE role = $1 AND deleted_at IS NULL ORDER BY name", [role]);
 }
 async function createUser(input) {
+	if (shouldUseSupabaseData()) return createUser$1(input);
 	const id = randomUUID();
 	await query("INSERT INTO users (id, name, email, password_hash, role, phone) VALUES ($1,$2,$3,$4,$5,$6)", [
 		id,
@@ -18114,21 +15551,26 @@ async function createUser(input) {
 	return await getUserById(id);
 }
 async function listPatients() {
+	if (shouldUseSupabaseData()) return listPatients$1();
 	return query("SELECT * FROM patients ORDER BY created_at DESC");
 }
 async function getPatient(id) {
+	if (shouldUseSupabaseData()) return getPatient$1(id);
 	return queryOne("SELECT * FROM patients WHERE id = $1", [id]);
 }
 async function listPatientsByFamily(familyUserId) {
+	if (shouldUseSupabaseData()) return listPatientsByFamily$1(familyUserId);
 	return query("SELECT * FROM patients WHERE family_user_id = $1 ORDER BY created_at DESC", [familyUserId]);
 }
 async function listPatientsByCaregiver(caregiverUserId) {
+	if (shouldUseSupabaseData()) return listPatientsByCaregiver$1(caregiverUserId);
 	return query(`SELECT p.* FROM patients p
      JOIN caregiver_assignments a ON a.patient_id = p.id
      WHERE a.caregiver_user_id = $1 AND a.active = 1
      ORDER BY p.name`, [caregiverUserId]);
 }
 async function createPatient(input) {
+	if (shouldUseSupabaseData()) return createPatient$1(input);
 	const id = randomUUID();
 	await query(`INSERT INTO patients (id, name, birth_date, address, care_level, condition_summary, family_user_id, status, notes)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`, [
@@ -18145,6 +15587,7 @@ async function createPatient(input) {
 	return await getPatient(id);
 }
 async function updatePatient(id, fields) {
+	if (shouldUseSupabaseData()) return updatePatient$1(id, fields);
 	const allowed = [
 		"name",
 		"birth_date",
@@ -18168,12 +15611,15 @@ async function updatePatient(id, fields) {
 	await query(`UPDATE patients SET ${sets.join(", ")} WHERE id = $${i}`, values);
 }
 async function deletePatient(id) {
+	if (shouldUseSupabaseData()) return deletePatient$1(id);
 	await query("DELETE FROM patients WHERE id = $1", [id]);
 }
 async function listAssignmentsForPatient(patientId) {
+	if (shouldUseSupabaseData()) return listAssignmentsForPatient$1(patientId);
 	return query("SELECT * FROM caregiver_assignments WHERE patient_id = $1 ORDER BY active DESC, start_date DESC", [patientId]);
 }
 async function createAssignment(input) {
+	if (shouldUseSupabaseData()) return createAssignment$1(input);
 	const id = randomUUID();
 	await query(`INSERT INTO caregiver_assignments (id, patient_id, caregiver_user_id, start_date, active) VALUES ($1,$2,$3,$4,1)`, [
 		id,
@@ -18184,15 +15630,19 @@ async function createAssignment(input) {
 	return await queryOne("SELECT * FROM caregiver_assignments WHERE id = $1", [id]);
 }
 async function deactivateAssignment(id) {
+	if (shouldUseSupabaseData()) return deactivateAssignment$1(id);
 	await query("UPDATE caregiver_assignments SET active = 0, end_date = strftime('%Y-%m-%d','now') WHERE id = $1", [id]);
 }
 async function isCaregiverAssignedToPatient(caregiverUserId, patientId) {
+	if (shouldUseSupabaseData()) return isCaregiverAssignedToPatient$1(caregiverUserId, patientId);
 	return !!await queryOne("SELECT 1 FROM caregiver_assignments WHERE caregiver_user_id = $1 AND patient_id = $2 AND active = 1", [caregiverUserId, patientId]);
 }
 async function listLeads() {
+	if (shouldUseSupabaseData()) return listLeads$1();
 	return query("SELECT * FROM leads ORDER BY created_at DESC");
 }
 async function createLead(input) {
+	if (shouldUseSupabaseData()) return createLead$1(input);
 	const lead = {
 		id: randomUUID(),
 		name: input.name,
@@ -18220,15 +15670,19 @@ async function createLead(input) {
 	return lead;
 }
 async function updateLeadStatus(id, status) {
+	if (shouldUseSupabaseData()) return updateLeadStatus$1(id, status);
 	await query("UPDATE leads SET status = $1 WHERE id = $2", [status, id]);
 }
 async function deleteLead(id) {
+	if (shouldUseSupabaseData()) return deleteLead$1(id);
 	await query("DELETE FROM leads WHERE id = $1", [id]);
 }
 async function listProfessionalApplications() {
+	if (shouldUseSupabaseData()) return listProfessionalApplications$1();
 	return query("SELECT * FROM professional_applications ORDER BY created_at DESC");
 }
 async function createProfessionalApplication(input) {
+	if (shouldUseSupabaseData()) return createProfessionalApplication$1(input);
 	const id = randomUUID();
 	await query(`INSERT INTO professional_applications
       (id, name, email, phone, city, profession, coren, experience, availability_days,
@@ -18253,6 +15707,7 @@ async function createProfessionalApplication(input) {
 	return await queryOne("SELECT * FROM professional_applications WHERE id = $1", [id]);
 }
 async function updateProfessionalApplicationStatus(id, status, reviewedBy) {
+	if (shouldUseSupabaseData()) return updateProfessionalApplicationStatus$1(id, status, reviewedBy);
 	if (status === "aprovado") {
 		const application = await queryOne("SELECT * FROM professional_applications WHERE id = $1", [id]);
 		if (!application) throw new Error("Candidatura não encontrada.");
@@ -18319,21 +15774,25 @@ async function updateProfessionalApplicationStatus(id, status, reviewedBy) {
 	]);
 }
 async function deleteProfessionalApplication(id) {
+	if (shouldUseSupabaseData()) return deleteProfessionalApplication$1(id);
 	await query("DELETE FROM professional_applications WHERE id = $1", [id]);
 }
 async function listCaregiverProfiles() {
+	if (shouldUseSupabaseData()) return listCaregiverProfiles$1();
 	return query(`SELECT cp.*, u.email AS access_email
      FROM caregiver_profiles cp
      LEFT JOIN users u ON u.id = cp.user_id
      ORDER BY cp.approved_at DESC, cp.name`);
 }
 async function getCaregiverProfile(id) {
+	if (shouldUseSupabaseData()) return getCaregiverProfile$1(id);
 	return queryOne(`SELECT cp.*, u.email AS access_email
      FROM caregiver_profiles cp
      LEFT JOIN users u ON u.id = cp.user_id
      WHERE cp.id = $1`, [id]);
 }
 async function createCaregiverAccess(input) {
+	if (shouldUseSupabaseData()) return createCaregiverAccess$1(input);
 	const profile = await getCaregiverProfile(input.profileId);
 	if (!profile || profile.user_id || profile.account_status !== "aguardando_acesso") throw new Error("Perfil não encontrado ou acesso já criado.");
 	if (await getUserByEmail(input.email.toLowerCase().trim())) throw new Error("Este e-mail já está vinculado a outra conta.");
@@ -18367,6 +15826,7 @@ async function cleanupStoredContracts(keys) {
 	}
 }
 async function deleteCaregiverProfile(id) {
+	if (shouldUseSupabaseData()) return deleteCaregiverProfile$1(id);
 	const profile = await getCaregiverProfile(id);
 	if (!profile) return;
 	const keys = await contractKeysOwnedBy("caregiver_profile_id", id);
@@ -18404,6 +15864,7 @@ async function deleteCaregiverProfile(id) {
 	await cleanupStoredContracts(keys);
 }
 async function deleteCaregiverUser(id) {
+	if (shouldUseSupabaseData()) return deleteCaregiverUser$1(id);
 	const keys = await contractKeysOwnedBy("caregiver_user_id", id);
 	await executeBatch([
 		{
@@ -18433,6 +15894,7 @@ async function deleteCaregiverUser(id) {
 	await cleanupStoredContracts(keys);
 }
 async function deleteFamilyUser(id) {
+	if (shouldUseSupabaseData()) return deleteFamilyUser$1(id);
 	const keys = await contractKeysOwnedBy("family_user_id", id);
 	await executeBatch([
 		{
@@ -18467,6 +15929,7 @@ function contractOwnerWhere(ownerType) {
 	return "caregiver_user_id";
 }
 async function listContractDocuments(ownerType, ownerId) {
+	if (shouldUseSupabaseData()) return listContractDocuments$1(ownerType, ownerId);
 	return query(`SELECT id, family_user_id, caregiver_profile_id, caregiver_user_id,
             file_name, mime_type, file_size, uploaded_by, created_at
      FROM contract_documents
@@ -18474,6 +15937,7 @@ async function listContractDocuments(ownerType, ownerId) {
      ORDER BY created_at DESC`, [ownerId]);
 }
 async function listContractDocumentsForCaregiver(userId) {
+	if (shouldUseSupabaseData()) return listContractDocumentsForCaregiver$1(userId);
 	return query(`SELECT cd.id, cd.family_user_id, cd.caregiver_profile_id, cd.caregiver_user_id,
             cd.file_name, cd.mime_type, cd.file_size, cd.uploaded_by, cd.created_at
      FROM contract_documents cd
@@ -18482,15 +15946,18 @@ async function listContractDocumentsForCaregiver(userId) {
      ORDER BY cd.created_at DESC`, [userId]);
 }
 async function getContractDocument(id) {
+	if (shouldUseSupabaseData()) return getContractDocument$1(id);
 	return queryOne(`SELECT id, family_user_id, caregiver_profile_id, caregiver_user_id,
             file_name, mime_type, file_size, uploaded_by, created_at
      FROM contract_documents WHERE id = $1`, [id]);
 }
 async function getContractFileData(id) {
+	if (shouldUseSupabaseData()) return getContractFileData$1(id);
 	const contract = await queryOne("SELECT * FROM contract_documents WHERE id = $1", [id]);
 	return contract ? getStoredFile(contract.storage_key) : null;
 }
 async function createContractDocument(input) {
+	if (shouldUseSupabaseData()) return createContractDocument$1(input);
 	const id = randomUUID();
 	const storageKey = `contracts/${id}.pdf`;
 	const familyUserId = input.ownerType === "family" ? input.ownerId : null;
@@ -18521,17 +15988,21 @@ async function createContractDocument(input) {
      FROM contract_documents WHERE id = $1`, [id]);
 }
 async function deleteContractDocument(id) {
+	if (shouldUseSupabaseData()) return deleteContractDocument$1(id);
 	const contract = await queryOne("SELECT storage_key FROM contract_documents WHERE id = $1", [id]);
 	await query("DELETE FROM contract_documents WHERE id = $1", [id]);
 	if (contract) await cleanupStoredContracts([contract.storage_key]);
 }
 async function listRecordsForPatient(patientId, limit = 90) {
+	if (shouldUseSupabaseData()) return listRecordsForPatient$1(patientId, limit);
 	return query("SELECT * FROM daily_records WHERE patient_id = $1 ORDER BY record_date DESC, record_time DESC NULLS LAST, created_at DESC LIMIT $2", [patientId, limit]);
 }
 async function getRecord(id) {
+	if (shouldUseSupabaseData()) return getRecord$1(id);
 	return queryOne("SELECT * FROM daily_records WHERE id = $1", [id]);
 }
 async function getRecordForCaregiverOnDate(patientId, caregiverUserId, recordDate) {
+	if (shouldUseSupabaseData()) return getRecordForCaregiverOnDate$1(patientId, caregiverUserId, recordDate);
 	return queryOne(`SELECT * FROM daily_records
      WHERE patient_id = $1 AND caregiver_user_id = $2 AND record_date = $3
      ORDER BY record_time DESC, created_at DESC
@@ -18545,6 +16016,7 @@ async function createRecord(input, actor = {
 	userId: input.caregiver_user_id,
 	name: "Cuidador"
 }) {
+	if (shouldUseSupabaseData()) return createRecord$1(input, actor);
 	const id = randomUUID();
 	await executeBatch([{
 		text: `INSERT INTO daily_records
@@ -18591,6 +16063,7 @@ async function createRecord(input, actor = {
 	return await getRecord(id);
 }
 async function updateRecord(id, fields, actor) {
+	if (shouldUseSupabaseData()) return updateRecord$1(id, fields, actor);
 	const existing = await getRecord(id);
 	if (!existing) return void 0;
 	const merged = {
@@ -18651,6 +16124,7 @@ async function updateRecord(id, fields, actor) {
 	return await getRecord(id);
 }
 async function listRecordAuditForPatient(patientId, limit = 50) {
+	if (shouldUseSupabaseData()) return listRecordAuditForPatient$1(patientId, limit);
 	return query(`SELECT * FROM daily_record_audit_events
      WHERE patient_id = $1
      ORDER BY created_at DESC
@@ -18658,6 +16132,7 @@ async function listRecordAuditForPatient(patientId, limit = 50) {
 }
 /** Busca vários usuários de uma vez e devolve um mapa id -> nome (evita N chamadas em loops). */
 async function getCaregiverNamesMap(ids) {
+	if (shouldUseSupabaseData()) return getCaregiverNamesMap$1(ids);
 	const users = await getUsersByIds([...new Set(ids)]);
 	const map = {};
 	for (const u of users) map[u.id] = u.name;
@@ -18665,7 +16140,7 @@ async function getCaregiverNamesMap(ids) {
 }
 //#endregion
 //#region src/app/api/admin/caregivers/[id]/access/route.ts
-var route_exports$21 = /* @__PURE__ */ __exportAll({ POST: () => POST$12 });
+var route_exports$22 = /* @__PURE__ */ __exportAll({ POST: () => POST$12 });
 async function POST$12(req, { params }) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -19262,7 +16737,7 @@ function apiError(error, context, publicMessage) {
 }
 //#endregion
 //#region src/app/api/admin/assignments/[id]/route.ts
-var route_exports$20 = /* @__PURE__ */ __exportAll({ PATCH: () => PATCH$4 });
+var route_exports$21 = /* @__PURE__ */ __exportAll({ PATCH: () => PATCH$4 });
 async function PATCH$4(_req, { params }) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -19276,7 +16751,7 @@ async function PATCH$4(_req, { params }) {
 }
 //#endregion
 //#region src/app/api/admin/caregiver-users/[id]/route.ts
-var route_exports$19 = /* @__PURE__ */ __exportAll({ DELETE: () => DELETE$6 });
+var route_exports$20 = /* @__PURE__ */ __exportAll({ DELETE: () => DELETE$6 });
 async function DELETE$6(_req, { params }) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -19290,7 +16765,7 @@ async function DELETE$6(_req, { params }) {
 }
 //#endregion
 //#region src/app/api/admin/caregivers/[id]/route.ts
-var route_exports$18 = /* @__PURE__ */ __exportAll({ DELETE: () => DELETE$5 });
+var route_exports$19 = /* @__PURE__ */ __exportAll({ DELETE: () => DELETE$5 });
 async function DELETE$5(_req, { params }) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -19304,7 +16779,7 @@ async function DELETE$5(_req, { params }) {
 }
 //#endregion
 //#region src/app/api/admin/contracts/[id]/route.ts
-var route_exports$17 = /* @__PURE__ */ __exportAll({ DELETE: () => DELETE$4 });
+var route_exports$18 = /* @__PURE__ */ __exportAll({ DELETE: () => DELETE$4 });
 async function DELETE$4(_req, { params }) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -19318,7 +16793,7 @@ async function DELETE$4(_req, { params }) {
 }
 //#endregion
 //#region src/app/api/admin/families/[id]/route.ts
-var route_exports$16 = /* @__PURE__ */ __exportAll({ DELETE: () => DELETE$3 });
+var route_exports$17 = /* @__PURE__ */ __exportAll({ DELETE: () => DELETE$3 });
 async function DELETE$3(_req, { params }) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -19332,7 +16807,7 @@ async function DELETE$3(_req, { params }) {
 }
 //#endregion
 //#region src/app/api/admin/leads/[id]/route.ts
-var route_exports$15 = /* @__PURE__ */ __exportAll({
+var route_exports$16 = /* @__PURE__ */ __exportAll({
 	DELETE: () => DELETE$2,
 	PATCH: () => PATCH$3
 });
@@ -19367,7 +16842,7 @@ async function DELETE$2(_req, { params }) {
 }
 //#endregion
 //#region src/app/api/admin/patients/[id]/route.ts
-var route_exports$14 = /* @__PURE__ */ __exportAll({
+var route_exports$15 = /* @__PURE__ */ __exportAll({
 	DELETE: () => DELETE$1,
 	PATCH: () => PATCH$2
 });
@@ -19410,7 +16885,7 @@ async function DELETE$1(_req, { params }) {
 }
 //#endregion
 //#region src/app/api/admin/professionals/[id]/route.ts
-var route_exports$13 = /* @__PURE__ */ __exportAll({
+var route_exports$14 = /* @__PURE__ */ __exportAll({
 	DELETE: () => DELETE,
 	PATCH: () => PATCH$1
 });
@@ -20783,7 +18258,7 @@ async function AdminLeadsPage() {
 	const leads = await listLeads();
 	return /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("p", {
 		className: "text-sm text-[var(--muted)] mb-6",
-		children: "Solicitações recebidas pelo site. Atualize o status conforme o contato avança e converta em paciente quando o serviço for contratado."
+		children: "Novas solicitações ficam disponíveis aqui. Este painel é a fonte oficial para acompanhar o contato, atualizar o status e converter em paciente quando o serviço for contratado."
 	}), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(LeadsTable, { leads })] });
 }
 //#endregion
@@ -20933,13 +18408,13 @@ async function AdminProfessionalsPage() {
 			children: "Candidaturas profissionais"
 		}), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("p", {
 			className: "mt-2 text-sm leading-6 text-[var(--muted)]",
-			children: "Analise experiência, COREN e disponibilidade. Ao marcar uma candidatura como aprovada, o perfil é incluído automaticamente no banco de cuidadores; depois, basta criar o e-mail e a senha de acesso."
+			children: "Novas candidaturas ficam disponíveis neste painel, que é a fonte oficial para acompanhar cada processo. Analise experiência, COREN e disponibilidade. Ao marcar uma candidatura como aprovada, o perfil é incluído automaticamente no banco de cuidadores; depois, basta criar o e-mail e a senha de acesso."
 		})]
 	}), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(ProfessionalApplicationsTable, { applications })] });
 }
 //#endregion
 //#region src/app/api/admin/assignments/route.ts
-var route_exports$12 = /* @__PURE__ */ __exportAll({ POST: () => POST$11 });
+var route_exports$13 = /* @__PURE__ */ __exportAll({ POST: () => POST$11 });
 async function POST$11(req) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -20964,7 +18439,7 @@ async function POST$11(req) {
 }
 //#endregion
 //#region src/app/api/admin/caregivers/route.ts
-var route_exports$11 = /* @__PURE__ */ __exportAll({ POST: () => POST$10 });
+var route_exports$12 = /* @__PURE__ */ __exportAll({ POST: () => POST$10 });
 async function POST$10(req) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -20990,7 +18465,7 @@ async function POST$10(req) {
 }
 //#endregion
 //#region src/app/api/admin/contracts/route.ts
-var route_exports$10 = /* @__PURE__ */ __exportAll({ POST: () => POST$9 });
+var route_exports$11 = /* @__PURE__ */ __exportAll({ POST: () => POST$9 });
 var MAX_FILE_SIZE = 4 * 1024 * 1024;
 var OWNER_TYPES = [
 	"family",
@@ -21038,7 +18513,7 @@ async function POST$9(req) {
 }
 //#endregion
 //#region src/app/api/admin/patients/route.ts
-var route_exports$9 = /* @__PURE__ */ __exportAll({ POST: () => POST$8 });
+var route_exports$10 = /* @__PURE__ */ __exportAll({ POST: () => POST$8 });
 async function POST$8(req) {
 	const guard = await requireRole("admin");
 	if ("error" in guard) return guard.error;
@@ -21074,109 +18549,109 @@ async function POST$8(req) {
 	});
 }
 //#endregion
-//#region src/lib/password-reset.ts
-var TOKEN_TTL_MINUTES = 30;
-var REQUEST_COOLDOWN_MINUTES = 10;
-function hashResetToken(token) {
-	return createHash("sha256").update(token).digest("hex");
+//#region src/lib/supabase/rate-limit-policy.ts
+/**
+* Keep the provider switch deliberately compatible with the other adapters:
+* only the explicit Supabase value enables the new backend.
+*/
+function resolveRateLimitProvider(value) {
+	return value?.trim().toLowerCase() === "supabase" ? "supabase" : "legacy";
 }
-async function createPasswordResetToken(userId) {
-	if (await queryOne(`SELECT 1 FROM password_reset_tokens
-     WHERE user_id = $1
-       AND used_at IS NULL
-       AND expires_at > CURRENT_TIMESTAMP
-       AND created_at > datetime('now', '-' || $2 || ' minutes')
-     LIMIT 1`, [userId, REQUEST_COOLDOWN_MINUTES])) return null;
-	await query("UPDATE password_reset_tokens SET used_at = COALESCE(used_at, CURRENT_TIMESTAMP) WHERE user_id = $1 AND used_at IS NULL", [userId]);
-	const id = randomUUID();
-	const token = randomBytes(32).toString("base64url");
-	await query(`INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at)
-     VALUES ($1,$2,$3,datetime('now', '+' || $4 || ' minutes'))`, [
-		id,
-		userId,
-		hashResetToken(token),
-		TOKEN_TTL_MINUTES
-	]);
-	return {
-		token,
-		id
-	};
+function parseBooleanFlag(value) {
+	const normalized = value?.trim().toLowerCase();
+	if (!normalized) return void 0;
+	if ([
+		"1",
+		"true",
+		"yes",
+		"on"
+	].includes(normalized)) return true;
+	if ([
+		"0",
+		"false",
+		"no",
+		"off"
+	].includes(normalized)) return false;
 }
-async function discardPasswordResetToken(id) {
-	await query("DELETE FROM password_reset_tokens WHERE id = $1", [id]);
-}
-async function resetPasswordWithToken(token, newPassword) {
-	const userId = (await query(`UPDATE password_reset_tokens
-     SET used_at = CURRENT_TIMESTAMP
-     WHERE token_hash = $1
-       AND used_at IS NULL
-       AND expires_at > CURRENT_TIMESTAMP
-     RETURNING user_id`, [hashResetToken(token)]))[0]?.user_id;
-	if (!userId) return false;
-	await query(`UPDATE users
-     SET password_hash = $1, session_version = session_version + 1
-     WHERE id = $2`, [hashPassword(newPassword), userId]);
-	await query("UPDATE password_reset_tokens SET used_at = COALESCE(used_at, CURRENT_TIMESTAMP) WHERE user_id = $1", [userId]);
-	return true;
+/**
+* Supabase-backed public intake must have a server-verifiable challenge. In
+* legacy mode the historical opt-in behavior remains available, but an
+* explicit requirement always wins. A false flag cannot turn protection off
+* after the Supabase provider has been selected.
+*/
+function resolveTurnstileRequired(dataProvider, requiredFlag) {
+	if (parseBooleanFlag(requiredFlag) === true) return true;
+	return resolveRateLimitProvider(dataProvider) === "supabase";
 }
 //#endregion
-//#region src/lib/email.ts
-function configuredAppUrl() {
-	const value = runtimeValue("VELLORA_APP_URL")?.trim();
-	if (!value) throw new Error("VELLORA_APP_URL não configurada.");
-	const url = new URL(value);
-	const local = url.hostname === "localhost" || url.hostname === "127.0.0.1";
-	if (url.protocol !== "https:" && !(local && url.protocol === "http:")) throw new Error("VELLORA_APP_URL deve usar HTTPS.");
-	return url.origin;
-}
-function isPasswordEmailConfigured() {
-	if (!runtimeValue("RESEND_API_KEY") || !runtimeValue("VELLORA_EMAIL_FROM")?.trim()) return false;
-	try {
-		configuredAppUrl();
-		return true;
-	} catch {
-		return false;
+//#region src/lib/supabase/rate-limit.ts
+var SupabaseRateLimitError = class extends Error {
+	constructor(message) {
+		super(message);
+		this.name = "SupabaseRateLimitError";
 	}
+};
+function serverOnly() {
+	if (typeof window !== "undefined") throw new SupabaseRateLimitError("O rate limit Supabase só pode ser usado no servidor.");
 }
-async function sendPasswordResetEmail(input) {
-	const apiKey = runtimeValue("RESEND_API_KEY");
-	const from = runtimeValue("VELLORA_EMAIL_FROM")?.trim();
-	if (!apiKey || !from) throw new Error("Serviço de e-mail não configurado.");
-	const resetUrl = new URL("/redefinir-senha", configuredAppUrl());
-	resetUrl.searchParams.set("token", input.token);
-	const link = resetUrl.toString();
-	const response = await fetch("https://api.resend.com/emails", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${apiKey}`,
-			"Content-Type": "application/json",
-			"Idempotency-Key": `password-reset-${input.requestId}`
-		},
-		body: JSON.stringify({
-			from,
-			to: input.to,
-			subject: "Redefinição de senha — Vellora Saúde",
-			text: `Recebemos uma solicitação para redefinir sua senha na Vellora Saúde.\n\nUse este link em até 30 minutos: ${link}\n\nSe você não fez esta solicitação, ignore este e-mail.`,
-			html: `
-        <div style="background:#f4f7f5;padding:32px 16px;font-family:Arial,sans-serif;color:#143b37">
-          <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #dce7e3;border-radius:20px;padding:32px">
-            <p style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8a682f">Vellora Saúde</p>
-            <h1 style="font-size:26px;line-height:1.2;margin:12px 0 16px">Redefina sua senha</h1>
-            <p style="font-size:16px;line-height:1.6;color:#4e6562">Recebemos uma solicitação para trocar a senha da sua área exclusiva.</p>
-            <p style="margin:28px 0">
-              <a href="${link}" style="display:inline-block;background:#15554e;color:#fff;text-decoration:none;font-weight:700;padding:14px 22px;border-radius:999px">Criar nova senha</a>
-            </p>
-            <p style="font-size:14px;line-height:1.6;color:#6b7c79">Este link é válido por 30 minutos e pode ser usado uma única vez. Se você não fez esta solicitação, ignore este e-mail.</p>
-          </div>
-        </div>`
-		})
+function serviceConfig() {
+	const url = (runtimeValue("SUPABASE_URL") || runtimeValue("NEXT_PUBLIC_SUPABASE_URL"))?.trim();
+	const key = (runtimeValue("SUPABASE_SECRET_KEY") || runtimeValue("SUPABASE_SERVICE_ROLE_KEY"))?.trim();
+	if (!url || !key) throw new SupabaseRateLimitError("Rate limit Supabase exige SUPABASE_URL e uma chave administrativa somente no servidor.");
+	try {
+		const parsed = new URL(url);
+		if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("URL inválida");
+	} catch {
+		throw new SupabaseRateLimitError("SUPABASE_URL deve ser uma URL HTTP(S) válida.");
+	}
+	return {
+		url,
+		key
+	};
+}
+function serviceClient() {
+	serverOnly();
+	const { url, key } = serviceConfig();
+	return createClient(url, key, { auth: {
+		autoRefreshToken: false,
+		persistSession: false,
+		detectSessionInUrl: false
+	} });
+}
+function assertRpcParameters(bucketKey, windowSeconds) {
+	if (typeof bucketKey !== "string" || bucketKey.length < 1 || bucketKey.length > 200 || /[\u0000-\u001f\u007f]/.test(bucketKey)) throw new SupabaseRateLimitError("A chave do bucket de rate limit não é válida.");
+	if (!Number.isInteger(windowSeconds) || windowSeconds < 1 || windowSeconds > 86400) throw new SupabaseRateLimitError("A janela do rate limit está fora dos limites permitidos.");
+}
+function operationError(error) {
+	return new SupabaseRateLimitError(`N\u00e3o foi poss\u00edvel incrementar o bucket Supabase: ${error && typeof error === "object" && "message" in error && typeof error.message === "string" ? error.message : "erro desconhecido"}`);
+}
+/**
+* Calls the atomic SECURITY DEFINER RPC. It intentionally never reads and
+* writes the bucket in separate requests, and it never uses a browser client.
+*/
+async function incrementSupabaseRateLimitBucket(bucketKey, windowSeconds) {
+	assertRpcParameters(bucketKey, windowSeconds);
+	const { data, error } = await serviceClient().rpc("increment_rate_limit_bucket", {
+		p_bucket_key: bucketKey,
+		p_window_seconds: windowSeconds
 	});
-	if (!response.ok) throw new Error(`Falha no envio do e-mail (${response.status}).`);
+	if (error) throw operationError(error);
+	const row = Array.isArray(data) ? data[0] : data;
+	const count = Number(row?.count);
+	if (!Number.isSafeInteger(count) || count < 1 || typeof row?.expires_at !== "string") throw new SupabaseRateLimitError("A RPC de rate limit retornou um bucket inválido.");
+	if (!Number.isFinite(Date.parse(row.expires_at))) throw new SupabaseRateLimitError("A RPC de rate limit retornou uma expiração inválida.");
+	return {
+		count,
+		expiresAt: row.expires_at
+	};
 }
 //#endregion
 //#region src/lib/abuse-prevention.ts
 var memoryBuckets = /* @__PURE__ */ new Map();
 var MAX_MEMORY_BUCKETS = 5e3;
+var MAX_RATE_LIMIT_SCOPE_LENGTH = 80;
+var MAX_RATE_LIMIT_LIMIT = 1e4;
+var MAX_RATE_LIMIT_WINDOW_SECONDS = 86400;
 function getClientAddress(request) {
 	const headers = request.headers;
 	const direct = headers.get("cf-connecting-ip") || headers.get("x-real-ip");
@@ -21209,15 +18684,47 @@ function memoryRateLimit(key, options) {
 		retryAfterSeconds: Math.max(1, Math.ceil((bucket.resetAt - now) / 1e3))
 	};
 }
+function assertRateLimitOptions(scope, options) {
+	const normalizedScope = scope.trim();
+	if (!normalizedScope || normalizedScope.length > MAX_RATE_LIMIT_SCOPE_LENGTH || /[\u0000-\u001f\u007f]/.test(normalizedScope)) throw new Error("O escopo do rate limit não é válido.");
+	if (!Number.isInteger(options.limit) || options.limit < 1 || options.limit > MAX_RATE_LIMIT_LIMIT) throw new Error("O limite do rate limit não é válido.");
+	if (!Number.isInteger(options.windowSeconds) || options.windowSeconds < 1 || options.windowSeconds > MAX_RATE_LIMIT_WINDOW_SECONDS) throw new Error("A janela do rate limit não é válida.");
+	return normalizedScope;
+}
+function failClosedRateLimit(options, retryAfterSeconds) {
+	return {
+		allowed: false,
+		limit: options.limit,
+		remaining: 0,
+		retryAfterSeconds: Math.max(1, retryAfterSeconds)
+	};
+}
 /**
 * Uses D1 when available and falls back to a bounded process-local bucket while
 * a migration is being rolled out. The database key contains only a hash of the
 * client address, avoiding storage of a raw IP address.
 */
 async function consumeRateLimit(request, scope, options, discriminator = "") {
+	const normalizedScope = assertRateLimitOptions(scope, options);
 	const windowIndex = Math.floor(Date.now() / (options.windowSeconds * 1e3));
-	const bucketKey = `${scope}:${hashKey(`${getClientAddress(request)}\u0000${discriminator}`)}:${windowIndex}`;
+	const bucketKey = `${normalizedScope}:${hashKey(`${getClientAddress(request)}\u0000${discriminator}`)}:${windowIndex}`;
 	const retryAfterSeconds = Math.max(1, Math.ceil((windowIndex * options.windowSeconds * 1e3 + options.windowSeconds * 1e3 - Date.now()) / 1e3));
+	if (resolveRateLimitProvider(runtimeValue("VELLORA_DATA_PROVIDER")) === "supabase") try {
+		const bucket = await incrementSupabaseRateLimitBucket(bucketKey, options.windowSeconds);
+		const databaseRetryAfter = Math.max(1, Math.ceil((Date.parse(bucket.expiresAt) - Date.now()) / 1e3));
+		return {
+			allowed: bucket.count <= options.limit,
+			limit: options.limit,
+			remaining: Math.max(0, options.limit - bucket.count),
+			retryAfterSeconds: databaseRetryAfter
+		};
+	} catch (error) {
+		console.error("[rate-limit] Supabase indisponível; bloqueando a solicitação.", {
+			scope: normalizedScope,
+			error: error instanceof Error ? error.message : "Erro desconhecido"
+		});
+		return failClosedRateLimit(options, retryAfterSeconds);
+	}
 	try {
 		const row = await queryOne(`INSERT INTO rate_limit_buckets (bucket_key, count, expires_at)
        VALUES ($1, 1, datetime('now', '+' || $2 || ' seconds'))
@@ -21248,15 +18755,26 @@ function isSameOriginRequest(request) {
 		return false;
 	}
 }
+function turnstileSiteKey() {
+	return runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY")?.trim() || "";
+}
+function isTurnstileRequired() {
+	return resolveTurnstileRequired(runtimeValue("VELLORA_DATA_PROVIDER"), runtimeValue("VELLORA_TURNSTILE_REQUIRED"));
+}
 async function verifyTurnstileToken(request, token) {
 	const secret = runtimeValue("CLOUDFLARE_TURNSTILE_SECRET_KEY")?.trim();
-	if (!secret) return {
-		ok: true,
-		configured: false
+	const siteKey = turnstileSiteKey();
+	const required = isTurnstileRequired();
+	const partiallyConfigured = Boolean(secret || siteKey);
+	if (!secret || !siteKey) return {
+		ok: !required && !partiallyConfigured,
+		configured: false,
+		required
 	};
 	if (typeof token !== "string" || token.length < 10 || token.length > 2048) return {
 		ok: false,
-		configured: true
+		configured: true,
+		required
 	};
 	const body = new URLSearchParams({
 		secret,
@@ -21272,17 +18790,20 @@ async function verifyTurnstileToken(request, token) {
 		});
 		if (!response.ok) return {
 			ok: false,
-			configured: true
+			configured: true,
+			required
 		};
 		return {
 			ok: (await response.json()).success === true,
-			configured: true
+			configured: true,
+			required
 		};
 	} catch (error) {
 		console.error("[turnstile] Não foi possível validar o desafio.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
 		return {
 			ok: false,
-			configured: true
+			configured: true,
+			required
 		};
 	}
 }
@@ -21330,7 +18851,7 @@ function normalizedPhoneDigits(value) {
 }
 //#endregion
 //#region src/app/api/auth/forgot-password/route.ts
-var route_exports$8 = /* @__PURE__ */ __exportAll({ POST: () => POST$7 });
+var route_exports$9 = /* @__PURE__ */ __exportAll({ POST: () => POST$7 });
 var GENERIC_MESSAGE = "Se houver uma conta com este e-mail, enviaremos as instruções para criar uma nova senha.";
 async function POST$7(req) {
 	if (!isSameOriginRequest(req)) return NextResponse.json({ error: "Origem da solicitação não autorizada." }, { status: 403 });
@@ -21349,6 +18870,24 @@ async function POST$7(req) {
 		ok: true,
 		message: GENERIC_MESSAGE
 	});
+	if (getAuthProvider() === "supabase") try {
+		const state = createSupabaseCookieState();
+		const error = await requestSupabasePasswordReset(req, email, getSupabasePasswordResetRedirectUrl(req.url), state);
+		if (error) {
+			console.error("[api/auth/forgot-password] Não foi possível solicitar recuperação Supabase.", { error: error.message });
+			return NextResponse.json({ error: "A recuperação por e-mail está temporariamente indisponível. Tente novamente mais tarde." }, { status: 503 });
+		}
+		return applySupabaseCookieState(NextResponse.json({
+			ok: true,
+			message: GENERIC_MESSAGE
+		}), state);
+	} catch (error) {
+		console.error("[api/auth/forgot-password] Configuração Supabase indisponível.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
+		return NextResponse.json({ error: "A recuperação por e-mail está temporariamente indisponível. Tente novamente mais tarde." }, { status: 503 });
+	}
+	const { getUserByEmail } = await Promise.resolve().then(() => data_exports);
+	const { createPasswordResetToken, discardPasswordResetToken } = await import("./assets/password-reset-ytzJRabd.js");
+	const { isPasswordEmailConfigured, sendPasswordResetEmail } = await import("./assets/email-DtZJmBe2.js");
 	if (!isPasswordEmailConfigured()) return NextResponse.json({ error: "A recuperação por e-mail está temporariamente indisponível. Fale com a equipe da Vellora Saúde." }, { status: 503 });
 	try {
 		const user = await getUserByEmail(email);
@@ -21375,7 +18914,7 @@ async function POST$7(req) {
 }
 //#endregion
 //#region src/app/api/auth/login/route.ts
-var route_exports$7 = /* @__PURE__ */ __exportAll({ POST: () => POST$6 });
+var route_exports$8 = /* @__PURE__ */ __exportAll({ POST: () => POST$6 });
 async function POST$6(req) {
 	if (isSafePreview()) return NextResponse.json({ error: "Área restrita indisponível nesta prévia sanitizada." }, { status: 403 });
 	if (!isSameOriginRequest(req)) return NextResponse.json({ error: "Origem da solicitação não autorizada." }, { status: 403 });
@@ -21392,6 +18931,17 @@ async function POST$6(req) {
 		headers: { "Retry-After": String(rate.retryAfterSeconds) }
 	});
 	try {
+		if (getAuthProvider() === "supabase") {
+			const state = createSupabaseCookieState();
+			const result = await signInWithSupabase(req, email, password, state);
+			if (!result.session) return applySupabaseCookieState(NextResponse.json({ error: "E-mail ou senha inválidos." }, { status: 401 }), state);
+			return applySupabaseCookieState(NextResponse.json({
+				ok: true,
+				role: result.session.role,
+				redirect: roleHomePath(result.session.role)
+			}), state);
+		}
+		const { getUserByEmail } = await Promise.resolve().then(() => data_exports);
 		const user = await getUserByEmail(email);
 		if (!user || !verifyPassword(password, user.password_hash)) return NextResponse.json({ error: "E-mail ou senha inválidos." }, { status: 401 });
 		const token = await createSessionToken({
@@ -21421,9 +18971,18 @@ async function POST$6(req) {
 }
 //#endregion
 //#region src/app/api/auth/logout/route.ts
-var route_exports$6 = /* @__PURE__ */ __exportAll({ POST: () => POST$5 });
+var route_exports$7 = /* @__PURE__ */ __exportAll({ POST: () => POST$5 });
 async function POST$5(req) {
 	if (!isSameOriginRequest(req)) return NextResponse.json({ error: "Origem da solicitação não autorizada." }, { status: 403 });
+	if (getAuthProvider() === "supabase") try {
+		const state = createSupabaseCookieState();
+		const error = await signOutWithSupabase(req, state);
+		if (error) console.error("[api/auth/logout] Não foi possível encerrar a sessão Supabase.", { error: error.message });
+		return applySupabaseCookieState(NextResponse.json({ ok: true }), state);
+	} catch (error) {
+		console.error("[api/auth/logout] Configuração Supabase indisponível.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
+		return NextResponse.json({ error: "Não foi possível encerrar a sessão. Tente novamente." }, { status: 503 });
+	}
 	const res = NextResponse.json({ ok: true });
 	res.cookies.set(SESSION_COOKIE_NAME, "", {
 		httpOnly: true,
@@ -21436,14 +18995,12 @@ async function POST$5(req) {
 }
 //#endregion
 //#region src/app/api/auth/reset-password/route.ts
-var route_exports$5 = /* @__PURE__ */ __exportAll({ POST: () => POST$4 });
+var route_exports$6 = /* @__PURE__ */ __exportAll({ POST: () => POST$4 });
 async function POST$4(req) {
 	if (isSafePreview()) return NextResponse.json({ error: "A redefinição real está desativada nesta prévia segura." }, { status: 403 });
 	if (!isSameOriginRequest(req)) return NextResponse.json({ error: "Origem da solicitação não autorizada." }, { status: 403 });
 	const body = await req.json().catch(() => null);
-	const token = typeof body?.token === "string" ? body.token.trim() : "";
 	const password = typeof body?.password === "string" ? body.password : "";
-	if (!token || token.length > 256) return NextResponse.json({ error: "Link inválido ou expirado." }, { status: 400 });
 	if (password.length < 12 || password.length > 128) return NextResponse.json({ error: "A nova senha deve ter entre 12 e 128 caracteres." }, { status: 400 });
 	const rate = await consumeRateLimit(req, "auth-reset-password", {
 		limit: 8,
@@ -21453,43 +19010,19 @@ async function POST$4(req) {
 		status: 429,
 		headers: { "Retry-After": String(rate.retryAfterSeconds) }
 	});
+	if (getAuthProvider() === "supabase") try {
+		const state = createSupabaseCookieState();
+		if (!(await updateSupabasePassword(req, password, state)).ok) return applySupabaseCookieState(NextResponse.json({ error: "Link inválido ou expirado." }, { status: 400 }), state);
+		return applySupabaseCookieState(NextResponse.json({ ok: true }), state);
+	} catch (error) {
+		console.error("[api/auth/reset-password] Configuração Supabase indisponível.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
+		return NextResponse.json({ error: "A redefinição está temporariamente indisponível. Tente novamente mais tarde." }, { status: 503 });
+	}
+	const token = typeof body?.token === "string" ? body.token.trim() : "";
+	if (!token || token.length > 256) return NextResponse.json({ error: "Link inválido ou expirado." }, { status: 400 });
+	const { resetPasswordWithToken } = await import("./assets/password-reset-ytzJRabd.js");
 	if (!await resetPasswordWithToken(token, password)) return NextResponse.json({ error: "Link inválido ou expirado." }, { status: 400 });
 	return NextResponse.json({ ok: true });
-}
-//#endregion
-//#region src/lib/notifications.ts
-function recipients() {
-	return (runtimeValue("VELLORA_NOTIFICATION_EMAIL") || "").split(",").map((value) => value.trim().toLowerCase()).filter((value) => /^\S+@\S+\.\S+$/.test(value));
-}
-/** Sends a short operational alert without putting application secrets in the browser. */
-async function sendOperationalNotification(input) {
-	const apiKey = runtimeValue("RESEND_API_KEY");
-	const from = runtimeValue("VELLORA_EMAIL_FROM")?.trim();
-	const to = recipients();
-	if (!apiKey || !from || to.length === 0) return false;
-	const response = await fetch("https://api.resend.com/emails", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${apiKey}`,
-			"Content-Type": "application/json",
-			"Idempotency-Key": `vellora-${input.idempotencyKey}`
-		},
-		body: JSON.stringify({
-			from,
-			to,
-			subject: input.subject,
-			text: input.text
-		})
-	});
-	if (!response.ok) throw new Error(`Falha no envio da notificação (${response.status}).`);
-	return true;
-}
-async function notifySafely(input, context) {
-	try {
-		await sendOperationalNotification(input);
-	} catch (error) {
-		console.error(`[notifications] ${context}`, { error: error instanceof Error ? error.message : "Erro desconhecido" });
-	}
 }
 //#endregion
 //#region src/lib/public-lead-request.ts
@@ -21516,7 +19049,11 @@ async function handlePublicLeadRequest(req, logLabel) {
 	if (!isValidEmail(email)) return NextResponse.json({ error: "Informe um e-mail válido." }, { status: 400 });
 	if (normalizedPhoneDigits(phone).length < 10) return NextResponse.json({ error: "Informe um telefone com DDD." }, { status: 400 });
 	if (body.consent !== true) return NextResponse.json({ error: "É necessário autorizar o uso dos dados para enviar a solicitação." }, { status: 400 });
-	if (!(await verifyTurnstileToken(req, body.turnstile_token)).ok) return NextResponse.json({ error: "Confirme a verificação de segurança e tente novamente." }, { status: 400 });
+	const turnstile = await verifyTurnstileToken(req, body.turnstile_token);
+	if (!turnstile.ok) {
+		if (turnstile.configured === false) return NextResponse.json({ error: "A proteção de segurança está indisponível. A solicitação não pode ser enviada agora." }, { status: 503 });
+		return NextResponse.json({ error: "A verificação de segurança expirou ou é inválida. Conclua-a novamente e tente enviar." }, { status: 400 });
+	}
 	if (isSafePreview()) return NextResponse.json({
 		ok: true,
 		preview: true
@@ -21530,11 +19067,6 @@ async function handlePublicLeadRequest(req, logLabel) {
 			care_type: careType,
 			message: message || void 0
 		});
-		await notifySafely({
-			idempotencyKey: `lead-${lead.id}`,
-			subject: "Nova solicitação de cuidado — Vellora Saúde",
-			text: `Nova solicitação recebida.\n\nNome: ${lead.name}\nPaciente: ${lead.patient_name || "Não informado"}\nTelefone: ${lead.phone}\nE-mail: ${lead.email}\nTipo de cuidado: ${lead.care_type || "Não informado"}\n\n${lead.message || "Sem mensagem adicional."}`
-		}, "Não foi possível enviar o alerta de nova solicitação.");
 		return NextResponse.json({
 			ok: true,
 			id: lead.id
@@ -21546,13 +19078,13 @@ async function handlePublicLeadRequest(req, logLabel) {
 }
 //#endregion
 //#region src/app/api/leads/route.ts
-var route_exports$4 = /* @__PURE__ */ __exportAll({ POST: () => POST$3 });
+var route_exports$5 = /* @__PURE__ */ __exportAll({ POST: () => POST$3 });
 async function POST$3(req) {
 	return handlePublicLeadRequest(req, "api/leads");
 }
 //#endregion
 //#region src/app/api/professionals/route.ts
-var route_exports$3 = /* @__PURE__ */ __exportAll({ POST: () => POST$2 });
+var route_exports$4 = /* @__PURE__ */ __exportAll({ POST: () => POST$2 });
 var VALID_PROFESSIONS = new Set([
 	"cuidador",
 	"tecnico_enfermagem",
@@ -21613,7 +19145,11 @@ async function POST$2(req) {
 	if (availabilityDays.length === 0 || availabilityShifts.length === 0) return NextResponse.json({ error: "Selecione ao menos um dia e um horário disponível." }, { status: 400 });
 	if (availableFrom && !/^\d{4}-\d{2}-\d{2}$/.test(availableFrom)) return NextResponse.json({ error: "Informe uma data de disponibilidade válida." }, { status: 400 });
 	if (body.consent !== true) return NextResponse.json({ error: "É necessário autorizar o uso dos dados para concluir o cadastro." }, { status: 400 });
-	if (!(await verifyTurnstileToken(req, body.turnstile_token)).ok) return NextResponse.json({ error: "Confirme a verificação de segurança e tente novamente." }, { status: 400 });
+	const turnstile = await verifyTurnstileToken(req, body.turnstile_token);
+	if (!turnstile.ok) {
+		if (turnstile.configured === false) return NextResponse.json({ error: "A proteção de segurança está indisponível. O cadastro não pode ser enviado agora." }, { status: 503 });
+		return NextResponse.json({ error: "A verificação de segurança expirou ou é inválida. Conclua-a novamente e tente enviar." }, { status: 400 });
+	}
 	if (isSafePreview()) return NextResponse.json({
 		ok: true,
 		preview: true
@@ -21634,11 +19170,6 @@ async function POST$2(req) {
 			lgpd_consent: true,
 			privacy_notice_version: PRIVACY_NOTICE_VERSION
 		});
-		await notifySafely({
-			idempotencyKey: `professional-application-${application.id}`,
-			subject: "Nova candidatura profissional — Vellora Saúde",
-			text: `Nova candidatura recebida.\n\nNome: ${application.name}\nProfissão: ${application.profession}\nCidade: ${application.city || "Não informada"}\nTelefone: ${application.phone}\nE-mail: ${application.email}\nExperiência: ${application.experience || "Não informada"}`
-		}, "Não foi possível enviar o alerta de nova candidatura.");
 		return NextResponse.json({
 			ok: true,
 			id: application.id
@@ -21649,8 +19180,43 @@ async function POST$2(req) {
 	}
 }
 //#endregion
+//#region src/lib/notifications.ts
+function recipients() {
+	return (runtimeValue("VELLORA_NOTIFICATION_EMAIL") || "").split(",").map((value) => value.trim().toLowerCase()).filter((value) => /^\S+@\S+\.\S+$/.test(value));
+}
+/** Sends a short operational alert without putting application secrets in the browser. */
+async function sendOperationalNotification(input) {
+	const apiKey = runtimeValue("RESEND_API_KEY");
+	const from = runtimeValue("VELLORA_EMAIL_FROM")?.trim();
+	const to = recipients();
+	if (!apiKey || !from || to.length === 0) return false;
+	const response = await fetch("https://api.resend.com/emails", {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${apiKey}`,
+			"Content-Type": "application/json",
+			"Idempotency-Key": `vellora-${input.idempotencyKey}`
+		},
+		body: JSON.stringify({
+			from,
+			to,
+			subject: input.subject,
+			text: input.text
+		})
+	});
+	if (!response.ok) throw new Error(`Falha no envio da notificação (${response.status}).`);
+	return true;
+}
+async function notifySafely(input, context) {
+	try {
+		await sendOperationalNotification(input);
+	} catch (error) {
+		console.error(`[notifications] ${context}`, { error: error instanceof Error ? error.message : "Erro desconhecido" });
+	}
+}
+//#endregion
 //#region src/app/api/records/route.ts
-var route_exports$2 = /* @__PURE__ */ __exportAll({
+var route_exports$3 = /* @__PURE__ */ __exportAll({
 	PATCH: () => PATCH,
 	POST: () => POST$1
 });
@@ -21773,9 +19339,17 @@ function parseRecordFields(form) {
 		pain_level: numbers.pain_level ?? null,
 		notes: limitedText(form, "notes", 3e3),
 		incident,
-		incident_description: incident ? incidentDescription : null,
-		photo_data: null
+		incident_description: incident ? incidentDescription : null
 	} };
+}
+function isPhotoRemovalRequested(form) {
+	const value = form.get("remove_photo");
+	return value === "on" || value === "true";
+}
+function photoFieldsForPatch(form, photo) {
+	if (photo.provided) return { photo_data: photo.data };
+	if (isPhotoRemovalRequested(form)) return { photo_data: null };
+	return {};
 }
 function rateLimitedResponse(retryAfterSeconds) {
 	return NextResponse.json({ error: "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente." }, {
@@ -21845,7 +19419,7 @@ async function saveRecord(req, mode) {
 		if (!existing || existing.patient_id !== patientId || existing.caregiver_user_id !== session.userId) return NextResponse.json({ error: "Registro não encontrado ou sem permissão para edição." }, { status: 404 });
 		const updated = await updateRecord(recordId, {
 			...parsed.values,
-			...photo.provided ? { photo_data: photo.data } : form.get("remove_photo") === "on" || form.get("remove_photo") === "true" ? { photo_data: null } : {}
+			...photoFieldsForPatch(form, photo)
 		}, {
 			userId: session.userId,
 			name: session.name
@@ -21871,9 +19445,55 @@ async function saveRecord(req, mode) {
 }
 //#endregion
 //#region src/app/api/solicitacoes/route.ts
-var route_exports$1 = /* @__PURE__ */ __exportAll({ POST: () => POST });
+var route_exports$2 = /* @__PURE__ */ __exportAll({ POST: () => POST });
 async function POST(req) {
 	return handlePublicLeadRequest(req, "api/solicitacoes");
+}
+//#endregion
+//#region src/app/auth/callback/route.ts
+var route_exports$1 = /* @__PURE__ */ __exportAll({ GET: () => GET$1 });
+function safeNextPath(value, requestUrl) {
+	if (!value || !value.startsWith("/") || value.startsWith("//")) return "/";
+	try {
+		const target = new URL(value, requestUrl);
+		if (target.origin !== new URL(requestUrl).origin) return "/";
+		return `${target.pathname}${target.search}${target.hash}`;
+	} catch {
+		return "/";
+	}
+}
+function isRecoveryFlow(request, next) {
+	if (request.nextUrl.searchParams.get("flow") === "recovery") return true;
+	try {
+		return new URL(next, request.url).pathname === "/redefinir-senha";
+	} catch {
+		return false;
+	}
+}
+function redirectAfterCallback(request, recovery, error) {
+	const url = new URL(recovery ? "/redefinir-senha" : "/login", request.url);
+	if (error) url.searchParams.set(recovery ? "recovery" : "auth", "erro");
+	return url;
+}
+async function GET$1(request) {
+	if (getAuthProvider() !== "supabase") return NextResponse.redirect(new URL("/login", request.url));
+	const code = request.nextUrl.searchParams.get("code");
+	const next = safeNextPath(request.nextUrl.searchParams.get("next"), request.url);
+	const recovery = isRecoveryFlow(request, next);
+	const providerReportedError = Boolean(request.nextUrl.searchParams.get("error") || request.nextUrl.searchParams.get("error_code"));
+	if (!code || providerReportedError) return NextResponse.redirect(redirectAfterCallback(request, recovery, true));
+	const state = createSupabaseCookieState();
+	try {
+		const { error } = await createSupabaseRequestClient(request, state).auth.exchangeCodeForSession(code);
+		if (error) {
+			console.error("[auth/callback] Não foi possível concluir o callback Supabase.", { error: error.message });
+			return applySupabaseCookieState(NextResponse.redirect(redirectAfterCallback(request, recovery, true)), state);
+		}
+		return applySupabaseCookieState(NextResponse.redirect(new URL(recovery ? "/redefinir-senha" : next, request.url)), state);
+	} catch (error) {
+		console.error("[auth/callback] Configuração Supabase indisponível.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
+		return applySupabaseCookieState(NextResponse.redirect(redirectAfterCallback(request, recovery, true)), state);
+	}
 }
 //#endregion
 //#region src/components/ContractList.tsx
@@ -22335,6 +19955,8 @@ var page_exports$5 = /* @__PURE__ */ __exportAll({ default: () => ResetPasswordP
 async function ResetPasswordPage({ searchParams }) {
 	const params = await searchParams;
 	const token = typeof params.token === "string" ? params.token : "";
+	const recoveryError = params.recovery === "erro";
+	const provider = getAuthProvider();
 	return /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("main", {
 		className: "flex min-h-screen items-center justify-center bg-[var(--surface-alt)] px-5 py-12",
 		children: /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("div", {
@@ -22361,7 +19983,11 @@ async function ResetPasswordPage({ searchParams }) {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("div", {
 							className: "mt-7",
-							children: /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(ResetPasswordForm, { token })
+							children: /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(ResetPasswordForm, {
+								token,
+								provider,
+								initialError: recoveryError ? "Este link de recuperação é inválido ou expirou. Solicite um novo e-mail." : void 0
+							})
 						})
 					]
 				}),
@@ -22470,7 +20096,10 @@ function RequestCarePage() {
 							className: "mt-1 text-sm text-[var(--muted)]",
 							children: "Campos com * são obrigatórios."
 						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(ContactForm, { turnstileSiteKey: runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY") })]
+					}), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(ContactForm, {
+						turnstileSiteKey: runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY"),
+						turnstileRequired: isTurnstileRequired()
+					})]
 				})]
 			})]
 		}),
@@ -22713,7 +20342,10 @@ function WorkWithUsPage() {
 							className: "mt-1 text-sm text-[var(--muted)]",
 							children: "Campos com * são obrigatórios."
 						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(ProfessionalApplicationForm, { turnstileSiteKey: runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY") })]
+					}), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(ProfessionalApplicationForm, {
+						turnstileSiteKey: runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY"),
+						turnstileRequired: isTurnstileRequired()
+					})]
 				})]
 			})]
 		}),
@@ -23075,7 +20707,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$21,
+		routeHandler: route_exports$22,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23217,7 +20849,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$20,
+		routeHandler: route_exports$21,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23264,7 +20896,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$19,
+		routeHandler: route_exports$20,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23311,7 +20943,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$18,
+		routeHandler: route_exports$19,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23358,7 +20990,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$17,
+		routeHandler: route_exports$18,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23405,7 +21037,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$16,
+		routeHandler: route_exports$17,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23452,7 +21084,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$15,
+		routeHandler: route_exports$16,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23499,7 +21131,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$14,
+		routeHandler: route_exports$15,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23546,7 +21178,7 @@ var routes = [
 		params: ["id"],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$13,
+		routeHandler: route_exports$14,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23896,7 +21528,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$12,
+		routeHandler: route_exports$13,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23941,7 +21573,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$11,
+		routeHandler: route_exports$12,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -23986,7 +21618,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$10,
+		routeHandler: route_exports$11,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -24031,7 +21663,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$9,
+		routeHandler: route_exports$10,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -24076,7 +21708,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$8,
+		routeHandler: route_exports$9,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -24121,7 +21753,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$7,
+		routeHandler: route_exports$8,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -24166,7 +21798,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$6,
+		routeHandler: route_exports$7,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -24211,7 +21843,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$5,
+		routeHandler: route_exports$6,
 		layouts: [layout_exports$3],
 		routeSegments: [
 			"api",
@@ -24252,7 +21884,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$4,
+		routeHandler: route_exports$5,
 		layouts: [layout_exports$3],
 		routeSegments: ["api", "leads"],
 		templateTreePositions: [],
@@ -24289,7 +21921,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$3,
+		routeHandler: route_exports$4,
 		layouts: [layout_exports$3],
 		routeSegments: ["api", "professionals"],
 		templateTreePositions: [],
@@ -24326,7 +21958,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$2,
+		routeHandler: route_exports$3,
 		layouts: [layout_exports$3],
 		routeSegments: ["api", "records"],
 		templateTreePositions: [],
@@ -24363,7 +21995,7 @@ var routes = [
 		params: [],
 		rootParamNames: [],
 		page: null,
-		routeHandler: route_exports$1,
+		routeHandler: route_exports$2,
 		layouts: [layout_exports$3],
 		routeSegments: ["api", "solicitacoes"],
 		templateTreePositions: [],
@@ -24385,6 +22017,43 @@ var routes = [
 	{
 		__buildTimeClassifications: __VINEXT_CLASS(31),
 		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(31) : null,
+		ids: {
+			"route": "route:/auth/callback",
+			"page": null,
+			"routeHandler": "route-handler:/auth/callback",
+			"rootBoundary": "root-boundary:/",
+			"layouts": ["layout:/"],
+			"templates": [],
+			"slots": {}
+		},
+		pattern: "/auth/callback",
+		patternParts: ["auth", "callback"],
+		isDynamic: false,
+		params: [],
+		rootParamNames: [],
+		page: null,
+		routeHandler: route_exports$1,
+		layouts: [layout_exports$3],
+		routeSegments: ["auth", "callback"],
+		templateTreePositions: [],
+		layoutTreePositions: [0],
+		templates: [],
+		errors: [null],
+		errorPaths: [],
+		errorTreePositions: [],
+		slots: {},
+		loading: null,
+		error: null,
+		notFound: null,
+		notFounds: [null],
+		forbidden: null,
+		forbiddens: [null],
+		unauthorized: null,
+		unauthorizeds: [null]
+	},
+	{
+		__buildTimeClassifications: __VINEXT_CLASS(32),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(32) : null,
 		ids: {
 			"route": "route:/cuidador",
 			"page": "page:/cuidador",
@@ -24420,8 +22089,8 @@ var routes = [
 		unauthorizeds: [null, null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(32),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(32) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(33),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(33) : null,
 		ids: {
 			"route": "route:/esqueci-senha",
 			"page": "page:/esqueci-senha",
@@ -24457,8 +22126,8 @@ var routes = [
 		unauthorizeds: [null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(33),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(33) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(34),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(34) : null,
 		ids: {
 			"route": "route:/familia",
 			"page": "page:/familia",
@@ -24494,8 +22163,8 @@ var routes = [
 		unauthorizeds: [null, null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(34),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(34) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(35),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(35) : null,
 		ids: {
 			"route": "route:/login",
 			"page": "page:/login",
@@ -24531,8 +22200,8 @@ var routes = [
 		unauthorizeds: [null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(35),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(35) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(36),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(36) : null,
 		ids: {
 			"route": "route:/privacidade",
 			"page": "page:/privacidade",
@@ -24568,8 +22237,8 @@ var routes = [
 		unauthorizeds: [null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(36),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(36) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(37),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(37) : null,
 		ids: {
 			"route": "route:/redefinir-senha",
 			"page": "page:/redefinir-senha",
@@ -24605,8 +22274,8 @@ var routes = [
 		unauthorizeds: [null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(37),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(37) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(38),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(38) : null,
 		ids: {
 			"route": "route:/solicitar-cuidado",
 			"page": "page:/solicitar-cuidado",
@@ -24642,8 +22311,8 @@ var routes = [
 		unauthorizeds: [null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(38),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(38) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(39),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(39) : null,
 		ids: {
 			"route": "route:/termos",
 			"page": "page:/termos",
@@ -24679,8 +22348,8 @@ var routes = [
 		unauthorizeds: [null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(39),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(39) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(40),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(40) : null,
 		ids: {
 			"route": "route:/trabalhe-conosco",
 			"page": "page:/trabalhe-conosco",
@@ -24716,8 +22385,8 @@ var routes = [
 		unauthorizeds: [null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(40),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(40) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(41),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(41) : null,
 		ids: {
 			"route": "route:/admin/pacientes/:id",
 			"page": "page:/admin/pacientes/:id",
@@ -24761,8 +22430,8 @@ var routes = [
 		unauthorizeds: [null, null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(41),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(41) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(42),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(42) : null,
 		ids: {
 			"route": "route:/api/contracts/:id",
 			"page": null,
@@ -24806,8 +22475,8 @@ var routes = [
 		unauthorizeds: [null]
 	},
 	{
-		__buildTimeClassifications: __VINEXT_CLASS(42),
-		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(42) : null,
+		__buildTimeClassifications: __VINEXT_CLASS(43),
+		__buildTimeReasons: __classDebug ? __VINEXT_CLASS_REASONS(43) : null,
 		ids: {
 			"route": "route:/familia/paciente/:id",
 			"page": "page:/familia/paciente/:id",
