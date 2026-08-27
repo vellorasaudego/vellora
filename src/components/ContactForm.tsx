@@ -34,10 +34,18 @@ function formValue(data: FormData, key: string): string {
   return String(data.get(key) || "").trim();
 }
 
-export function ContactForm({ turnstileSiteKey = "" }: { turnstileSiteKey?: string }) {
+export function ContactForm({
+  turnstileSiteKey = "",
+  turnstileRequired = false,
+}: {
+  turnstileSiteKey?: string;
+  turnstileRequired?: boolean;
+}) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "sent-preview" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileUnavailable = turnstileRequired && !turnstileSiteKey;
+  const turnstilePending = Boolean(turnstileSiteKey) && !turnstileToken;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,6 +53,16 @@ export function ContactForm({ turnstileSiteKey = "" }: { turnstileSiteKey?: stri
     setError(null);
 
     const form = event.currentTarget;
+    if (turnstileUnavailable) {
+      setError("A proteção de segurança está indisponível. A solicitação não pode ser enviada agora.");
+      setStatus("error");
+      return;
+    }
+    if (turnstilePending) {
+      setError("Conclua a verificação de segurança para liberar o envio.");
+      setStatus("error");
+      return;
+    }
     const data = new FormData(form);
     const structuredDetails = [
       ["Idade do paciente", formValue(data, "patient_age")],
@@ -189,17 +207,30 @@ export function ContactForm({ turnstileSiteKey = "" }: { turnstileSiteKey?: stri
           Autorizo o uso destes dados exclusivamente para que a Vellora entre em contato sobre esta solicitação. Consulte a <Link className="font-semibold text-[var(--brand)] underline" href="/privacidade">Política de Privacidade</Link>.
         </span>
       </label>
-      <TurnstileWidget siteKey={turnstileSiteKey} onToken={setTurnstileToken} />
+      <TurnstileWidget siteKey={turnstileSiteKey} required={turnstileRequired} onToken={setTurnstileToken} />
       {turnstileSiteKey && <input type="hidden" name="turnstile_token" value={turnstileToken} readOnly />}
       {error ? <p className="sm:col-span-2 text-sm text-[var(--status-critical)]" role="alert" aria-live="polite">{error}</p> : null}
       <div className="sm:col-span-2">
         <button
           type="submit"
-          disabled={status === "sending"}
-          className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-[var(--brand-dark)] px-7 text-sm font-semibold text-white hover:bg-[var(--brand-deep)] disabled:opacity-50"
+          disabled={status === "sending" || turnstileUnavailable || turnstilePending}
+          aria-disabled={status === "sending" || turnstileUnavailable || turnstilePending}
+          title={
+            turnstileUnavailable
+              ? "A proteção de segurança está temporariamente indisponível"
+              : turnstilePending
+                ? "Conclua a verificação de segurança para enviar"
+                : undefined
+          }
+          className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-[var(--brand-dark)] px-7 text-sm font-semibold text-white hover:bg-[var(--brand-deep)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {status === "sending" ? "Enviando..." : "Enviar solicitação"}
         </button>
+        {turnstileUnavailable ? (
+          <p className="mt-2 text-xs font-medium text-[var(--status-critical)]" role="status">
+            O envio ficará disponível quando a proteção de segurança for configurada.
+          </p>
+        ) : null}
         <p className="mt-3 text-xs leading-5 text-[var(--muted-2)]">
           Evite compartilhar informações clínicas sensíveis neste primeiro contato.
         </p>

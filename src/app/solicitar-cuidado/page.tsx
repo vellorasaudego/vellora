@@ -3,6 +3,7 @@ import { ContactForm } from "@/components/ContactForm";
 import { LineIcon } from "@/components/LineIcon";
 import { PublicFooter } from "@/components/PublicFooter";
 import { PublicNav } from "@/components/PublicNav";
+import { isTurnstileRequired } from "@/lib/abuse-prevention";
 import { runtimeValue } from "@/lib/runtime-config";
 
 export const metadata: Metadata = {
@@ -69,7 +70,10 @@ export default function RequestCarePage() {
               <h2 className="text-xl font-semibold text-[var(--foreground)]">Formulário de solicitação</h2>
               <p className="mt-1 text-sm text-[var(--muted)]">Campos com * são obrigatórios.</p>
             </div>
-            <ContactForm turnstileSiteKey={runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY")} />
+            <ContactForm
+              turnstileSiteKey={runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY")}
+              turnstileRequired={isTurnstileRequired()}
+            />
           </div>
         </section>
       </main>

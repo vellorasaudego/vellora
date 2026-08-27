@@ -2,12 +2,21 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { AuthProvider } from "@/lib/auth-provider";
 
-export function ResetPasswordForm({ token }: { token: string }) {
+export function ResetPasswordForm({
+  token,
+  provider = "legacy",
+  initialError,
+}: {
+  token: string;
+  provider?: AuthProvider;
+  initialError?: string;
+}) {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError ?? null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -23,23 +32,30 @@ export function ResetPasswordForm({ token }: { token: string }) {
       const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({
+          ...(provider === "legacy" ? { token } : {}),
+          password,
+        }),
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => null) as { error?: unknown } | null;
       if (!response.ok) {
-        setError(data.error || "Não foi possível redefinir a senha.");
+        setError(
+          typeof data?.error === "string"
+            ? data.error
+            : "Não foi possível redefinir a senha. Tente novamente mais tarde.",
+        );
         setLoading(false);
         return;
       }
       router.replace("/login?senha=redefinida");
       router.refresh();
     } catch {
-      setError("Erro de conexão. Tente novamente.");
+      setError("Não foi possível conectar ao serviço. Verifique sua conexão e tente novamente.");
       setLoading(false);
     }
   }
 
-  if (!token) {
+  if (provider === "legacy" && !token) {
     return (
       <p className="rounded-xl bg-[var(--brand-light)] p-4 text-sm leading-6 text-[var(--brand-deep)]" role="alert">
         Este link está incompleto. Solicite um novo e-mail de recuperação.

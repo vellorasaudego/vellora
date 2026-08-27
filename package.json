@@ -10,9 +10,14 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "supabase:provision-user": "node --env-file-if-exists=.env scripts/provision-supabase-user.mjs",
+    "supabase:smoke": "node --env-file-if-exists=.env scripts/supabase-smoke.mjs",
+    "route:smoke": "node --env-file-if-exists=.env scripts/route-smoke.mjs",
     "check": "npm run typecheck && npm run lint && npm test"
   },
   "dependencies": {
+    "@supabase/ssr": "0.12.5",
+    "@supabase/supabase-js": "2.112.4",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",

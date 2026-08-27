@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Turnstile = {
   render: (
@@ -49,9 +49,18 @@ function loadTurnstile(): Promise<void> {
   return scriptPromise;
 }
 
-export function TurnstileWidget({ siteKey, onToken }: { siteKey: string; onToken: (token: string) => void }) {
+export function TurnstileWidget({
+  siteKey,
+  required = false,
+  onToken,
+}: {
+  siteKey: string;
+  required?: boolean;
+  onToken: (token: string) => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onTokenRef = useRef(onToken);
+  const [status, setStatus] = useState<"loading" | "ready" | "verified" | "expired" | "error">("loading");
 
   useEffect(() => {
     onTokenRef.current = onToken;
@@ -62,17 +71,37 @@ export function TurnstileWidget({ siteKey, onToken }: { siteKey: string; onToken
     let widgetId: string | undefined;
     let cancelled = false;
 
+    setStatus("loading");
+
     loadTurnstile()
       .then(() => {
-        if (cancelled || !containerRef.current || !window.turnstile) return;
+        if (cancelled) return;
+        if (!containerRef.current || !window.turnstile) {
+          setStatus("error");
+          onTokenRef.current("");
+          return;
+        }
         widgetId = window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
-          callback: (token) => onTokenRef.current(token),
-          "expired-callback": () => onTokenRef.current(""),
-          "error-callback": () => onTokenRef.current(""),
+          callback: (token) => {
+            setStatus("verified");
+            onTokenRef.current(token);
+          },
+          "expired-callback": () => {
+            setStatus("expired");
+            onTokenRef.current("");
+          },
+          "error-callback": () => {
+            setStatus("error");
+            onTokenRef.current("");
+          },
         });
+        setStatus("ready");
       })
-      .catch(() => onTokenRef.current(""));
+      .catch(() => {
+        setStatus("error");
+        onTokenRef.current("");
+      });
 
     return () => {
       cancelled = true;
@@ -80,11 +109,32 @@ export function TurnstileWidget({ siteKey, onToken }: { siteKey: string; onToken
     };
   }, [siteKey]);
 
-  if (!siteKey) return null;
+  if (!siteKey) {
+    if (!required) return null;
+    return (
+      <div
+        className="sm:col-span-2 rounded-lg border border-[var(--status-critical)]/40 bg-[var(--surface-soft)] p-3"
+        role="alert"
+        aria-live="polite"
+      >
+        <p className="text-sm font-semibold text-[var(--status-critical)]">Proteção de segurança indisponível</p>
+        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+          O envio está temporariamente bloqueado porque a verificação de segurança ainda não foi configurada.
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="sm:col-span-2 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] p-3">
       <p className="mb-2 text-xs text-[var(--muted)]">Confirmação de segurança</p>
       <div ref={containerRef} aria-label="Desafio de segurança" />
+      <p className="mt-2 text-xs text-[var(--muted)]" role="status" aria-live="polite">
+        {status === "loading" ? "Carregando a proteção de segurança..." : null}
+        {status === "ready" ? "Conclua a verificação para liberar o envio." : null}
+        {status === "verified" ? "Verificação concluída." : null}
+        {status === "expired" ? "A verificação expirou. Conclua-a novamente para enviar." : null}
+        {status === "error" ? "Não foi possível carregar a verificação. Atualize a página e tente novamente." : null}
+      </p>
     </div>
   );
 }

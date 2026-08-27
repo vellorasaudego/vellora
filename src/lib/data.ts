@@ -8,6 +8,9 @@ import {
   putStoredFile,
 } from "./storage";
 import { diffDailyRecord, snapshotDailyRecord } from "./record-utils";
+import * as supabaseData from "./supabase/data";
+import { resolveAuthProvider } from "./auth-provider";
+import { runtimeValue } from "./runtime-config";
 
 export type User = {
   id: string;
@@ -158,21 +161,38 @@ export type RecordAuditActor = {
 };
 
 // ---------- Users ----------
+function shouldUseSupabaseData(): boolean {
+  const provider = supabaseData.getDataProvider();
+  if (
+    resolveAuthProvider(runtimeValue("VELLORA_AUTH_PROVIDER")) === "supabase" &&
+    provider !== "supabase"
+  ) {
+    throw new supabaseData.SupabaseDataError(
+      "VELLORA_AUTH_PROVIDER=supabase exige VELLORA_DATA_PROVIDER=supabase para evitar misturar dados D1 e Supabase.",
+    );
+  }
+  return provider === "supabase";
+}
+
 export async function getUserByEmail(email: string): Promise<User | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getUserByEmail(email);
   return queryOne<User>("SELECT * FROM users WHERE email = $1 AND deleted_at IS NULL", [email]);
 }
 
 export async function getUserById(id: string): Promise<User | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getUserById(id);
   return queryOne<User>("SELECT * FROM users WHERE id = $1", [id]);
 }
 
 export async function getUsersByIds(ids: string[]): Promise<User[]> {
+  if (shouldUseSupabaseData()) return supabaseData.getUsersByIds(ids);
   if (ids.length === 0) return [];
   const placeholders = ids.map((_, index) => `$${index + 1}`).join(",");
   return query<User>(`SELECT * FROM users WHERE id IN (${placeholders})`, ids);
 }
 
 export async function listUsersByRole(role: string): Promise<User[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listUsersByRole(role);
   return query<User>("SELECT * FROM users WHERE role = $1 AND deleted_at IS NULL ORDER BY name", [role]);
 }
 
@@ -183,6 +203,7 @@ export async function createUser(input: {
   role: "admin" | "familia" | "cuidador";
   phone?: string;
 }): Promise<User> {
+  if (shouldUseSupabaseData()) return supabaseData.createUser(input);
   const id = randomUUID();
   await query(
     "INSERT INTO users (id, name, email, password_hash, role, phone) VALUES ($1,$2,$3,$4,$5,$6)",
@@ -193,18 +214,22 @@ export async function createUser(input: {
 
 // ---------- Patients ----------
 export async function listPatients(): Promise<Patient[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listPatients();
   return query<Patient>("SELECT * FROM patients ORDER BY created_at DESC");
 }
 
 export async function getPatient(id: string): Promise<Patient | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getPatient(id);
   return queryOne<Patient>("SELECT * FROM patients WHERE id = $1", [id]);
 }
 
 export async function listPatientsByFamily(familyUserId: string): Promise<Patient[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listPatientsByFamily(familyUserId);
   return query<Patient>("SELECT * FROM patients WHERE family_user_id = $1 ORDER BY created_at DESC", [familyUserId]);
 }
 
 export async function listPatientsByCaregiver(caregiverUserId: string): Promise<Patient[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listPatientsByCaregiver(caregiverUserId);
   return query<Patient>(
     `SELECT p.* FROM patients p
      JOIN caregiver_assignments a ON a.patient_id = p.id
@@ -224,6 +249,7 @@ export async function createPatient(input: {
   status?: "pendente" | "ativo" | "inativo";
   notes?: string;
 }): Promise<Patient> {
+  if (shouldUseSupabaseData()) return supabaseData.createPatient(input);
   const id = randomUUID();
   await query(
     `INSERT INTO patients (id, name, birth_date, address, care_level, condition_summary, family_user_id, status, notes)
@@ -244,6 +270,7 @@ export async function createPatient(input: {
 }
 
 export async function updatePatient(id: string, fields: Partial<Patient>): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updatePatient(id, fields);
   const allowed: (keyof Patient)[] = [
     "name",
     "birth_date",
@@ -270,11 +297,13 @@ export async function updatePatient(id: string, fields: Partial<Patient>): Promi
 }
 
 export async function deletePatient(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deletePatient(id);
   await query("DELETE FROM patients WHERE id = $1", [id]);
 }
 
 // ---------- Assignments ----------
 export async function listAssignmentsForPatient(patientId: string): Promise<Assignment[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listAssignmentsForPatient(patientId);
   return query<Assignment>(
     "SELECT * FROM caregiver_assignments WHERE patient_id = $1 ORDER BY active DESC, start_date DESC",
     [patientId]
@@ -282,6 +311,7 @@ export async function listAssignmentsForPatient(patientId: string): Promise<Assi
 }
 
 export async function createAssignment(input: { patient_id: string; caregiver_user_id: string; start_date: string }): Promise<Assignment> {
+  if (shouldUseSupabaseData()) return supabaseData.createAssignment(input);
   const id = randomUUID();
   await query(
     `INSERT INTO caregiver_assignments (id, patient_id, caregiver_user_id, start_date, active) VALUES ($1,$2,$3,$4,1)`,
@@ -291,6 +321,7 @@ export async function createAssignment(input: { patient_id: string; caregiver_us
 }
 
 export async function deactivateAssignment(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deactivateAssignment(id);
   await query(
     "UPDATE caregiver_assignments SET active = 0, end_date = strftime('%Y-%m-%d','now') WHERE id = $1",
     [id]
@@ -298,6 +329,7 @@ export async function deactivateAssignment(id: string): Promise<void> {
 }
 
 export async function isCaregiverAssignedToPatient(caregiverUserId: string, patientId: string): Promise<boolean> {
+  if (shouldUseSupabaseData()) return supabaseData.isCaregiverAssignedToPatient(caregiverUserId, patientId);
   const row = await queryOne(
     "SELECT 1 FROM caregiver_assignments WHERE caregiver_user_id = $1 AND patient_id = $2 AND active = 1",
     [caregiverUserId, patientId]
@@ -307,6 +339,7 @@ export async function isCaregiverAssignedToPatient(caregiverUserId: string, pati
 
 // ---------- Leads ----------
 export async function listLeads(): Promise<Lead[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listLeads();
   return query<Lead>("SELECT * FROM leads ORDER BY created_at DESC");
 }
 
@@ -318,6 +351,7 @@ export async function createLead(input: {
   care_type?: string;
   message?: string;
 }): Promise<Lead> {
+  if (shouldUseSupabaseData()) return supabaseData.createLead(input);
   const id = randomUUID();
   const lead: Lead = {
     id,
@@ -350,15 +384,18 @@ export async function createLead(input: {
 }
 
 export async function updateLeadStatus(id: string, status: Lead["status"]): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateLeadStatus(id, status);
   await query("UPDATE leads SET status = $1 WHERE id = $2", [status, id]);
 }
 
 export async function deleteLead(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteLead(id);
   await query("DELETE FROM leads WHERE id = $1", [id]);
 }
 
 // ---------- Professional applications ----------
 export async function listProfessionalApplications(): Promise<ProfessionalApplication[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listProfessionalApplications();
   return query<ProfessionalApplication>("SELECT * FROM professional_applications ORDER BY created_at DESC");
 }
 
@@ -377,6 +414,7 @@ export async function createProfessionalApplication(input: {
   lgpd_consent: true;
   privacy_notice_version: string;
 }): Promise<ProfessionalApplication> {
+  if (shouldUseSupabaseData()) return supabaseData.createProfessionalApplication(input);
   const id = randomUUID();
   await query(
     `INSERT INTO professional_applications
@@ -409,6 +447,7 @@ export async function updateProfessionalApplicationStatus(
   status: ProfessionalApplication["status"],
   reviewedBy: string
 ): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateProfessionalApplicationStatus(id, status, reviewedBy);
   if (status === "aprovado") {
     const application = await queryOne<ProfessionalApplication>(
       "SELECT * FROM professional_applications WHERE id = $1",
@@ -487,11 +526,13 @@ export async function updateProfessionalApplicationStatus(
 }
 
 export async function deleteProfessionalApplication(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteProfessionalApplication(id);
   await query("DELETE FROM professional_applications WHERE id = $1", [id]);
 }
 
 // ---------- Caregiver bank ----------
 export async function listCaregiverProfiles(): Promise<CaregiverProfile[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listCaregiverProfiles();
   return query<CaregiverProfile>(
     `SELECT cp.*, u.email AS access_email
      FROM caregiver_profiles cp
@@ -501,6 +542,7 @@ export async function listCaregiverProfiles(): Promise<CaregiverProfile[]> {
 }
 
 export async function getCaregiverProfile(id: string): Promise<CaregiverProfile | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getCaregiverProfile(id);
   return queryOne<CaregiverProfile>(
     `SELECT cp.*, u.email AS access_email
      FROM caregiver_profiles cp
@@ -511,6 +553,7 @@ export async function getCaregiverProfile(id: string): Promise<CaregiverProfile 
 }
 
 export async function getCaregiverProfileByUserId(userId: string): Promise<CaregiverProfile | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getCaregiverProfileByUserId(userId);
   return queryOne<CaregiverProfile>(
     `SELECT cp.*, u.email AS access_email
      FROM caregiver_profiles cp
@@ -525,6 +568,7 @@ export async function createCaregiverAccess(input: {
   email: string;
   password: string;
 }): Promise<User> {
+  if (shouldUseSupabaseData()) return supabaseData.createCaregiverAccess(input);
   const profile = await getCaregiverProfile(input.profileId);
   if (!profile || profile.user_id || profile.account_status !== "aguardando_acesso") {
     throw new Error("Perfil não encontrado ou acesso já criado.");
@@ -575,6 +619,7 @@ async function cleanupStoredContracts(keys: string[]): Promise<void> {
 }
 
 export async function deleteCaregiverProfile(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteCaregiverProfile(id);
   const profile = await getCaregiverProfile(id);
   if (!profile) return;
   const keys = await contractKeysOwnedBy("caregiver_profile_id", id);
@@ -612,6 +657,7 @@ export async function deleteCaregiverProfile(id: string): Promise<void> {
 }
 
 export async function deleteCaregiverUser(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteCaregiverUser(id);
   const keys = await contractKeysOwnedBy("caregiver_user_id", id);
   await executeBatch([
     { text: "DELETE FROM contract_documents WHERE caregiver_user_id = $1", params: [id] },
@@ -629,6 +675,7 @@ export async function deleteCaregiverUser(id: string): Promise<void> {
 }
 
 export async function deleteFamilyUser(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteFamilyUser(id);
   const keys = await contractKeysOwnedBy("family_user_id", id);
   await executeBatch([
     { text: "UPDATE patients SET family_user_id = NULL WHERE family_user_id = $1", params: [id] },
@@ -658,6 +705,7 @@ export async function listContractDocuments(
   ownerType: ContractOwnerType,
   ownerId: string
 ): Promise<ContractDocument[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listContractDocuments(ownerType, ownerId);
   const column = contractOwnerWhere(ownerType);
   return query<ContractDocument>(
     `SELECT id, family_user_id, caregiver_profile_id, caregiver_user_id,
@@ -670,6 +718,7 @@ export async function listContractDocuments(
 }
 
 export async function listContractDocumentsForCaregiver(userId: string): Promise<ContractDocument[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listContractDocumentsForCaregiver(userId);
   return query<ContractDocument>(
     `SELECT cd.id, cd.family_user_id, cd.caregiver_profile_id, cd.caregiver_user_id,
             cd.file_name, cd.mime_type, cd.file_size, cd.uploaded_by, cd.created_at
@@ -682,6 +731,7 @@ export async function listContractDocumentsForCaregiver(userId: string): Promise
 }
 
 export async function getContractDocument(id: string): Promise<ContractDocument | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getContractDocument(id);
   return queryOne<ContractDocument>(
     `SELECT id, family_user_id, caregiver_profile_id, caregiver_user_id,
             file_name, mime_type, file_size, uploaded_by, created_at
@@ -691,6 +741,7 @@ export async function getContractDocument(id: string): Promise<ContractDocument 
 }
 
 export async function getContractFileData(id: string): Promise<Uint8Array | null> {
+  if (shouldUseSupabaseData()) return supabaseData.getContractFileData(id);
   const contract = await queryOne<StoredContractDocument>(
     "SELECT * FROM contract_documents WHERE id = $1",
     [id]
@@ -707,6 +758,7 @@ export async function createContractDocument(input: {
   fileData: Uint8Array;
   uploadedBy: string;
 }): Promise<ContractDocument> {
+  if (shouldUseSupabaseData()) return supabaseData.createContractDocument(input);
   const id = randomUUID();
   const storageKey = `contracts/${id}.pdf`;
   const familyUserId = input.ownerType === "family" ? input.ownerId : null;
@@ -744,6 +796,7 @@ export async function createContractDocument(input: {
 }
 
 export async function deleteContractDocument(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteContractDocument(id);
   const contract = await queryOne<{ storage_key: string }>(
     "SELECT storage_key FROM contract_documents WHERE id = $1",
     [id]
@@ -754,6 +807,7 @@ export async function deleteContractDocument(id: string): Promise<void> {
 
 // ---------- Daily records ----------
 export async function listRecordsForPatient(patientId: string, limit = 90): Promise<DailyRecord[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listRecordsForPatient(patientId, limit);
   return query<DailyRecord>(
     "SELECT * FROM daily_records WHERE patient_id = $1 ORDER BY record_date DESC, record_time DESC NULLS LAST, created_at DESC LIMIT $2",
     [patientId, limit]
@@ -761,6 +815,7 @@ export async function listRecordsForPatient(patientId: string, limit = 90): Prom
 }
 
 export async function getRecord(id: string): Promise<DailyRecord | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getRecord(id);
   return queryOne<DailyRecord>("SELECT * FROM daily_records WHERE id = $1", [id]);
 }
 
@@ -769,6 +824,7 @@ export async function getRecordForCaregiverOnDate(
   caregiverUserId: string,
   recordDate: string
 ): Promise<DailyRecord | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getRecordForCaregiverOnDate(patientId, caregiverUserId, recordDate);
   return queryOne<DailyRecord>(
     `SELECT * FROM daily_records
      WHERE patient_id = $1 AND caregiver_user_id = $2 AND record_date = $3
@@ -782,6 +838,7 @@ export async function createRecord(
   input: Omit<DailyRecord, "id" | "created_at" | "updated_at">,
   actor: RecordAuditActor = { userId: input.caregiver_user_id, name: "Cuidador" }
 ): Promise<DailyRecord> {
+  if (shouldUseSupabaseData()) return supabaseData.createRecord(input, actor);
   const id = randomUUID();
   await executeBatch([
     {
@@ -836,6 +893,7 @@ export async function updateRecord(
   fields: Partial<Omit<DailyRecord, "id" | "created_at" | "updated_at" | "patient_id" | "caregiver_user_id">>,
   actor: RecordAuditActor
 ): Promise<DailyRecord | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.updateRecord(id, fields, actor);
   const existing = await getRecord(id);
   if (!existing) return undefined;
 
@@ -904,6 +962,7 @@ export async function listRecordAuditForPatient(
   patientId: string,
   limit = 50
 ): Promise<DailyRecordAuditEvent[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listRecordAuditForPatient(patientId, limit);
   return query<DailyRecordAuditEvent>(
     `SELECT * FROM daily_record_audit_events
      WHERE patient_id = $1
@@ -914,6 +973,7 @@ export async function listRecordAuditForPatient(
 }
 
 export async function countPendingLeads(): Promise<number> {
+  if (shouldUseSupabaseData()) return supabaseData.countPendingLeads();
   const result = await queryOne<{ total: number }>(
     "SELECT COUNT(*) AS total FROM leads WHERE status IN ('novo','em_contato')"
   );
@@ -921,12 +981,14 @@ export async function countPendingLeads(): Promise<number> {
 }
 
 export async function getCaregiverName(id: string): Promise<string> {
+  if (shouldUseSupabaseData()) return supabaseData.getCaregiverName(id);
   const u = await getUserById(id);
   return u ? u.name : "Cuidador";
 }
 
 /** Busca vários usuários de uma vez e devolve um mapa id -> nome (evita N chamadas em loops). */
 export async function getCaregiverNamesMap(ids: string[]): Promise<Record<string, string>> {
+  if (shouldUseSupabaseData()) return supabaseData.getCaregiverNamesMap(ids);
   const uniqueIds = [...new Set(ids)];
   const users = await getUsersByIds(uniqueIds);
   const map: Record<string, string> = {};

@@ -4,6 +4,7 @@ import { Brand } from "@/components/Brand";
 import { LineIcon } from "@/components/LineIcon";
 import { ProfessionalApplicationForm } from "@/components/ProfessionalApplicationForm";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { isTurnstileRequired } from "@/lib/abuse-prevention";
 import { runtimeValue } from "@/lib/runtime-config";
 
 export const metadata: Metadata = {
@@ -90,7 +91,10 @@ export default function WorkWithUsPage() {
               <h2 className="text-lg font-semibold text-[var(--foreground)]">Cadastro profissional</h2>
               <p className="mt-1 text-sm text-[var(--muted)]">Campos com * são obrigatórios.</p>
             </div>
-            <ProfessionalApplicationForm turnstileSiteKey={runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY")} />
+            <ProfessionalApplicationForm
+              turnstileSiteKey={runtimeValue("NEXT_PUBLIC_TURNSTILE_SITE_KEY")}
+              turnstileRequired={isTurnstileRequired()}
+            />
           </div>
         </section>
       </main>

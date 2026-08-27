@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserByEmail } from "@/lib/data";
 import { verifyPassword, createSessionToken, SESSION_COOKIE_NAME, roleHomePath } from "@/lib/auth";
+import { getAuthProvider } from "@/lib/auth";
 import { isSafePreview } from "@/lib/preview";
 import { consumeRateLimit, isSameOriginRequest } from "@/lib/abuse-prevention";
 import { isValidEmail } from "@/lib/validation";
+import {
+  applySupabaseCookieState,
+  createSupabaseCookieState,
+} from "@/lib/supabase/server";
+import { signInWithSupabase } from "@/lib/supabase/auth";
 
 export async function POST(req: NextRequest) {
   if (isSafePreview()) {
@@ -34,6 +39,23 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    if (getAuthProvider() === "supabase") {
+      const state = createSupabaseCookieState();
+      const result = await signInWithSupabase(req, email, password, state);
+      if (!result.session) {
+        const response = NextResponse.json({ error: "E-mail ou senha inválidos." }, { status: 401 });
+        return applySupabaseCookieState(response, state);
+      }
+
+      const response = NextResponse.json({
+        ok: true,
+        role: result.session.role,
+        redirect: roleHomePath(result.session.role),
+      });
+      return applySupabaseCookieState(response, state);
+    }
+
+    const { getUserByEmail } = await import("@/lib/data");
     const user = await getUserByEmail(email);
     if (!user || !verifyPassword(password, user.password_hash)) {
       return NextResponse.json({ error: "E-mail ou senha inválidos." }, { status: 401 });

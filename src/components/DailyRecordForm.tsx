@@ -32,6 +32,7 @@ export function DailyRecordForm({
   const router = useRouter();
   const isEditing = Boolean(initialRecord);
   const [incident, setIncident] = useState(initialRecord?.incident === 1);
+  const [removePhoto, setRemovePhoto] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recordDate, setRecordDate] = useState(initialRecord?.record_date || initialRecordDate);
@@ -185,11 +186,25 @@ export function DailyRecordForm({
         <h3 className="mb-3 text-sm font-semibold text-[var(--foreground)]">Foto (opcional)</h3>
         {initialRecord?.photo_data && (
           <label className="mb-3 flex items-center gap-2 text-sm text-[var(--muted)]">
-            <input type="checkbox" name="remove_photo" className="h-4 w-4 accent-[var(--brand)]" />
+            <input
+              type="checkbox"
+              name="remove_photo"
+              checked={removePhoto}
+              onChange={(event) => setRemovePhoto(event.target.checked)}
+              className="h-4 w-4 accent-[var(--brand)]"
+            />
             Remover a foto atual
           </label>
         )}
-        <input type="file" name="photo" accept="image/png,image/jpeg,image/webp" className="text-sm" />
+        <input
+          type="file"
+          name="photo"
+          accept="image/png,image/jpeg,image/webp"
+          onChange={(event) => {
+            if (event.target.files?.length) setRemovePhoto(false);
+          }}
+          className="text-sm"
+        />
         <p className="mt-1 text-xs text-[var(--muted-2)]">JPG, PNG ou WEBP, até 3 MB.</p>
       </section>
 
