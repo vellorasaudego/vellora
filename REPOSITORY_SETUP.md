@@ -5,10 +5,17 @@ seguido quando o repositório GitHub e o ambiente de staging forem criados.
 
 ## Estado atual
 
-- Este workspace ainda não possui `.git`, remoto, branch-base ou workflow
-  conectado a um provedor Git.
-- O projeto Supabase `punannbkoiekhvbnqqkh` foi confirmado como produção.
+- O repositório `https://github.com/vellorasaudego/vellora.git` está configurado
+  como `origin`.
+- A branch-base local `main` acompanha `origin/main`.
+- A branch de trabalho atual é `feature/db-01-supabase-foundation`.
+- `git ls-remote` falhou neste ambiente com `SEC_E_NO_CREDENTIALS`; por isso o
+  push da branch de trabalho e a abertura da PR ainda estão pendentes.
+- O workflow de CI local existe e os gates locais já passaram.
+- O projeto Supabase `punannbkoiekhvbnqqkh` foi confirmado como produção; o MCP
+  está autorizado, o SEC-01 foi corrigido e o advisor de segurança está vazio.
 - Ainda não existe um projeto Supabase de staging.
+- As migrations remotas do Supabase continuam vazias.
 - O runtime atual ainda usa Cloudflare D1/R2. A migração para Supabase,
   incluindo schema, autenticação, Storage e variáveis específicas, pertence a
   tickets posteriores e não é feita pelo OPS-01.
@@ -34,37 +41,35 @@ npm run build
 
 ## Checklist para o proprietário do projeto
 
-Estas ações continuam bloqueadas até que o usuário crie os recursos externos;
-nenhuma delas foi executada por este ticket:
+Os itens abaixo refletem o estado misto do ticket: a preparação local e a
+configuração básica do repositório já existem, enquanto a publicação remota e
+os recursos externos continuam pendentes.
 
 ### Repositório
 
-- [ ] Criar um repositório privado no GitHub, de preferência vazio (sem README
-      ou licença gerados automaticamente).
-- [ ] Escolher e registrar a branch-base do projeto; não assumir `main` sem
-      essa decisão.
-- [ ] Inicializar o Git no workspace, adicionar o remoto e publicar a branch
-      escolhida.
+- [x] Repositório GitHub configurado como `origin`:
+      `https://github.com/vellorasaudego/vellora.git`.
+- [x] Branch-base local definida como `main`, acompanhando `origin/main`.
+- [x] Branch de trabalho local criada: `feature/db-01-supabase-foundation`.
+- [ ] Corrigir as credenciais deste ambiente, repetir `git ls-remote`, publicar
+      a branch de trabalho e abrir a PR.
 - [ ] Confirmar que `.env`, `.wrangler`, `dist`, `build` gerado e demais
       artefatos locais não foram publicados.
 - [ ] Habilitar branch protection depois do primeiro push, exigindo o job
       `Check and build` antes de aceitar mudanças.
 
-Exemplo de sequência a executar pelo proprietário depois de criar o remoto
-(substitua os valores entre `<...>` e confira o caminho antes):
+Depois que a autenticação estiver disponível, a publicação pendente deverá ser
+feita pelo proprietário a partir da branch de trabalho, sem adicionar segredos:
 
 ```bash
-git init
-git add .
-git status
-git commit -m "chore: initial project import"
-git branch -M <branch-base>
-git remote add origin <url-do-repositorio>
-git push -u origin <branch-base>
+git ls-remote origin
+git push -u origin feature/db-01-supabase-foundation
 ```
 
-### Supabase staging
+### Supabase e staging
 
+- [x] Confirmar `punannbkoiekhvbnqqkh` como projeto de produção.
+- [x] Autorizar o MCP, corrigir o SEC-01 e confirmar advisor de segurança vazio.
 - [ ] Criar um segundo projeto Supabase persistente para staging, separado do
       projeto de produção `punannbkoiekhvbnqqkh`.
 - [ ] Guardar URL e chaves do staging somente no provedor de hospedagem e no
@@ -73,11 +78,13 @@ git push -u origin <branch-base>
       pacientes, documentos ou fotos reais para staging.
 - [ ] Registrar o project ref do staging em um gerenciador seguro quando ele
       existir.
+- [ ] Aplicar e verificar as migrations do ambiente somente nos tickets de
+      banco aprovados; no momento, as migrations remotas continuam vazias.
 
 ### Vercel e ambientes
 
 - [ ] Criar o projeto Vercel e conectá-lo ao repositório depois do primeiro
-      push.
+      push da branch inicial.
 - [ ] Configurar variáveis separadamente para Preview/Staging e Production.
 - [ ] Manter `VELLORA_SAFE_PREVIEW=true` em uma prévia visual sem dados até a
       integração funcional ser concluída.
@@ -86,8 +93,14 @@ git push -u origin <branch-base>
 
 ## Critério de desbloqueio
 
-O OPS-01 poderá ser encerrado integralmente quando houver um remoto Git
-acessível, uma branch-base explicitamente escolhida, o workflow rodando nesse
-remoto e um projeto Supabase de staging identificado. Até lá, os artefatos
-locais deste ticket são seguros para versionamento e o ticket permanece
+O OPS-01 poderá ser encerrado integralmente quando as credenciais permitirem
+que `git ls-remote` funcione, a branch
+`feature/db-01-supabase-foundation` for publicada, uma PR for aberta e o
+workflow de CI executar no GitHub. Também deverá existir um projeto Supabase de
+staging identificado para os testes separados de produção.
+
+O remoto, a branch-base, o workflow local e a preparação de segurança do
+Supabase já estão prontos. A ausência de migrations remotas continua
+intencional até os tickets de banco; a migração do runtime não faz parte do
+OPS-01. Até a autenticação Git e o staging serem resolvidos, o ticket permanece
 parcialmente bloqueado por dependências externas.
