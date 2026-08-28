@@ -163,14 +163,7 @@ export default function HomePage() {
               <p className="mt-7 max-w-2xl text-base leading-8 text-[var(--muted)] sm:text-lg">
                 A Vellora Saúde seleciona e gerencia cuidadores e profissionais de saúde para atender seu familiar em casa, com supervisão de enfermagem e acompanhamento contínuo.
               </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href="/solicitar-cuidado"
-                  className="inline-flex min-h-12 items-center justify-center gap-5 rounded-lg bg-[var(--brand-dark)] px-7 text-sm font-semibold text-white shadow-sm hover:bg-[var(--brand-deep)]"
-                >
-                  Solicitar cuidado
-                  <LineIcon name="arrow" className="h-4 w-4" />
-                </a>
+              <div className="mt-9">
                 <a
                   href="#servicos"
                   className="inline-flex min-h-12 items-center justify-center rounded-lg border border-[var(--border-strong)] bg-white px-7 text-sm font-semibold text-[var(--foreground)] hover:border-[var(--brand)] hover:text-[var(--brand)]"
@@ -344,10 +337,6 @@ export default function HomePage() {
                   É uma leitura rápida dos registros do período, como cuidados realizados, sinais vitais, observações da equipe e horário da última atualização.
                 </p>
               </div>
-              <a href="/login" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-[var(--brand-deep)] shadow-lg hover:-translate-y-0.5">
-                Acessar o painel
-                <LineIcon name="arrow" className="h-4 w-4" />
-              </a>
             </div>
 
             <div className="portal-summary-card overflow-hidden rounded-3xl border border-white/50 bg-white shadow-[0_28px_70px_rgba(6,29,26,0.28)]">
