@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 function readProjectFile(relativePath: string): string {
-  return readFileSync(join(process.cwd(), relativePath), "utf8");
+  return readFileSync(join(process.cwd(), relativePath), "utf8").replaceAll("\r\n", "\n");
 }
 
 const route = readProjectFile("src/app/api/records/route.ts");

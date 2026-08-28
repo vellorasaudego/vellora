@@ -1,4 +1,4 @@
-import { t as runtimeValue } from "./runtime-config-DIeQIoik.js";
+import { n as runtimeValue } from "./runtime-config-B9JrV3R1.js";
 //#region src/lib/email.ts
 function configuredAppUrl() {
 	const value = runtimeValue("VELLORA_APP_URL")?.trim();

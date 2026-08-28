@@ -35,9 +35,10 @@ contratos e fotos. Mantenha `VELLORA_AUTH_PROVIDER=supabase`,
 
 As migrations SQL do runtime de produção ficam em `supabase/migrations/` e
 devem ser revisadas e aplicadas manualmente no projeto Supabase de produção.
-`db/schema.ts` e `drizzle/` pertencem ao adaptador legado. Cloudflare D1/R2 e
-os artefatos de OpenAI Sites só podem aparecer em um legado ou preview
-explicitamente configurado; não são requisitos da produção Supabase.
+`db/schema.ts` e `drizzle/` pertencem ao adaptador legado. O runtime publicado
+na Vercel usa Next.js e Supabase; Cloudflare D1/R2 e os artefatos de OpenAI
+Sites só permanecem para compatibilidade com o legado/preview explicitamente
+configurado.
 
 ## Configuração segura
 
@@ -100,8 +101,8 @@ entrada pública falha fechada.
 8. O cuidador pode editar seus próprios registros salvos; alterações ficam na trilha de auditoria administrativa.
 
 O rollout atual é direto em produção, sem staging persistente. A decisão e a
-opção futura de uma prévia segura estão em [STAGING.md](./STAGING.md). Vercel
-será tratado somente na Wave 12.
+opção futura de uma prévia segura estão em [STAGING.md](./STAGING.md). Para
+publicar na Vercel, consulte [DEPLOY.md](./DEPLOY.md).
 
 ## Verificações
 

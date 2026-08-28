@@ -4,10 +4,30 @@ O rollout atual publica diretamente usando o runtime **Supabase de produção**:
 Supabase Auth, Supabase Postgres e Supabase Storage. O proprietário do projeto
 faz push e abre PR manualmente; este documento não executa essas operações.
 
-Vercel será tratado somente na Wave 12 e não é requisito desta etapa. Bindings
-Cloudflare e a configuração de OpenAI Sites são compatibilidade de
+O host de produção é a **Vercel**, usando o domínio `vellorasaude.com.br`.
+Bindings Cloudflare e a configuração de OpenAI Sites são compatibilidade de
 legado/preview, quando explicitamente selecionadas, e não fazem parte do
 runtime de produção atual.
+
+## Configuração da Vercel
+
+Crie ou vincule um projeto Vercel ao repositório `vellorasaudego/vellora`,
+com a raiz do projeto neste diretório. O repositório já declara:
+
+- install command: `npm ci`;
+- build command: `npm run build:vercel`;
+- output directory: `.next`;
+- framework: Next.js, detectado pelo `package.json`.
+
+Adicione `vellorasaude.com.br` como domínio principal do projeto. Se também
+for usado `www.vellorasaude.com.br`, configure-o como domínio alternativo com
+redirecionamento para o domínio principal. No registrador DNS, aplique os
+registros exibidos pela Vercel e aguarde a verificação do certificado SSL.
+
+No Supabase Auth, atualize também:
+
+- Site URL: `https://vellorasaude.com.br`;
+- Redirect URL: `https://vellorasaude.com.br/auth/callback`.
 
 ## Recursos obrigatórios
 
@@ -24,6 +44,11 @@ runtime de produção atual.
   `/admin/leads` e `/admin/profissionais`, que são as fontes oficiais.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` e `CLOUDFLARE_TURNSTILE_SECRET_KEY`; no
   provider Supabase, as duas chaves são necessárias para a proteção Turnstile.
+
+Configure `VELLORA_APP_URL=https://vellorasaude.com.br` na Vercel. Não use
+`VELLORA_SESSION_SECRET`, `SUPABASE_PROVISION_*`, `VELLORA_BOOTSTRAP_*` ou
+`VELLORA_ADMIN_RECOVERY_*` na Vercel: essas variáveis pertencem a operações
+locais e excepcionais, não ao runtime Supabase de produção.
 
 As migrations SQL de `supabase/migrations/` devem ser revisadas e aplicadas
 manualmente no projeto de produção antes da publicação correspondente. Não
@@ -65,8 +90,15 @@ alertas opcionais não são enviados.
 ```bash
 npm run check
 npm run build
+
+npm run build:vercel
 npm run supabase:smoke
 ```
+
+Depois do push para `main`, confirme na Vercel que o deployment terminou com
+status `Ready`, que o domínio está verificado e que `/`, `/login`,
+`/esqueci-senha` e `/auth/callback` respondem no domínio de produção. Valide
+as rotas protegidas somente com uma conta de teste sem dados sensíveis.
 
 Não altere migrations que já foram publicadas. Toda mudança posterior de
 schema deve gerar um novo arquivo, passar pelos gates locais e ser aplicada

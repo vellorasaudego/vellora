@@ -143,14 +143,32 @@ describe("fronteira segura entre Supabase e legacy", () => {
     const callback = readProjectFile("src/app/auth/callback/route.ts");
     const logout = readProjectFile("src/app/api/auth/logout/route.ts");
     const supabaseAuth = readProjectFile("src/lib/supabase/auth.ts");
+    const supabaseServer = readProjectFile("src/lib/supabase/server.ts");
 
     expect(login).toContain("signInWithSupabase");
     expect(login).not.toContain('import { getUserByEmail }');
     expect(forgot).toContain("requestSupabasePasswordReset");
+    expect(forgot).not.toContain("applySupabaseCookieState");
     expect(reset).toContain("updateSupabasePassword");
     expect(callback).toContain("exchangeCodeForSession");
+    expect(callback).toContain("verifyOtp");
+    expect(callback).toContain("token_hash");
+    expect(supabaseAuth).toContain("createSupabaseStatelessClient");
+    expect(supabaseAuth).toContain("SUPABASE_GLOBAL_SIGN_OUT_TIMEOUT_MS");
+    expect(supabaseAuth).toContain("Promise.race");
+    expect(supabaseServer).toContain('flowType: "implicit"');
     expect(logout).toContain("signOutWithSupabase");
     expect(supabaseAuth).toMatch(/signOutWithSupabase[\s\S]*?scope: "local"/);
+  });
+
+  it("encerra o estado de salvamento e exibe confirmação no reset de senha", () => {
+    const resetForm = readProjectFile("src/components/ResetPasswordForm.tsx");
+
+    expect(resetForm).toContain("AbortController");
+    expect(resetForm).toContain("RESET_PASSWORD_REQUEST_TIMEOUT_MS");
+    expect(resetForm).toContain("Senha redefinida com sucesso.");
+    expect(resetForm).toContain("Ir para o login agora");
+    expect(resetForm).not.toContain("router.refresh();");
   });
 
   it("não coloca chave privada nos exemplos de ambiente", () => {

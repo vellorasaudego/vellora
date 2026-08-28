@@ -32,7 +32,7 @@ execução sem adicionar valores reais ao Git:
 VELLORA_AUTH_PROVIDER=supabase
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<publishable-key>
-VELLORA_APP_URL=https://<dominio-publicado>
+VELLORA_APP_URL=https://vellorasaude.com.br
 ```
 
 `NEXT_PUBLIC_SUPABASE_ANON_KEY` é aceito somente como compatibilidade quando o
@@ -42,27 +42,49 @@ como provisionamento. Consulte `SUPABASE_PROVISIONING.md` para os nomes das
 variáveis e o procedimento; nunca coloque essa chave em `NEXT_PUBLIC_*`, código
 do navegador, tickets, screenshots ou logs.
 
-A URL `https://<dominio-publicado>/auth/callback` deve estar na lista de
+A URL `https://vellorasaude.com.br/auth/callback` deve estar na lista de
 redirect URLs do Supabase Auth. O callback aceita somente destinos internos e
 não deve ser usado para redirecionar para uma URL externa.
 
 ## Recuperação de senha e remetente
 
-O fluxo de recuperação usa PKCE: o e-mail retorna para `/auth/callback`, a
-sessão é trocada no servidor e o usuário segue para `/redefinir-senha`. Para o
-ambiente local, mantenha `VELLORA_APP_URL=http://localhost:5173`; para produção,
-use a origem HTTPS publicada.
+O fluxo de recuperação usa `token_hash`: o e-mail leva o hash de uso único para
+`/auth/callback`, o servidor valida esse hash com `verifyOtp({ type:
+"recovery" })`, grava a sessão em cookies SSR e redireciona para
+`/redefinir-senha`. Assim, o link não depende do navegador que solicitou o
+e-mail. Links antigos baseados em PKCE continuam aceitos pelo callback apenas
+para compatibilidade; novos e-mails devem usar o template abaixo.
+
+Para o ambiente local, mantenha `VELLORA_APP_URL=http://localhost:5173`; na
+Vercel, use `VELLORA_APP_URL=https://vellorasaude.com.br`.
 
 No painel do Supabase, em Authentication → URL Configuration, configure a Site
 URL da produção e autorize estes callbacks:
 
 - `http://localhost:5173/auth/callback`
-- `https://<dominio-publicado>/auth/callback`
+- `https://vellorasaude.com.br/auth/callback`
 
-Se o painel exigir correspondência exata dos parâmetros, autorize também o
-callback de recuperação gerado pela aplicação ou use o padrão curinga aceito
-pelo painel. Não reutilize links antigos depois de alterar essas URLs; solicite
-um novo e-mail.
+Em Authentication → Email Templates → Reset Password, substitua o link padrão
+que usa `{{ .ConfirmationURL }}` por este template mínimo. O `&amp;` é
+intencional: ele mantém o HTML válido e vira `&` no endereço final.
+
+```html
+<h2>Redefina sua senha</h2>
+<p>Recebemos uma solicitação para criar uma nova senha para sua conta.</p>
+<p>
+  <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;type=recovery">
+    Criar nova senha
+  </a>
+</p>
+<p>Se você não solicitou essa alteração, ignore este e-mail.</p>
+```
+
+Esse template foi salvo no projeto Supabase de produção. Alterar somente o
+código não muda o template que o Supabase já armazenou; se ele for restaurado
+no painel, reaplique o conteúdo acima. O hash é sensível, de uso único e deve
+desaparecer no primeiro redirect; o callback também envia `Cache-Control:
+no-store` e `Referrer-Policy: no-referrer`. Depois de qualquer alteração,
+solicite um novo e-mail. Não reutilize links anteriores.
 
 O remetente padrão `Supabase Auth <noreply@mail.app.supabase.io>` só muda quando
 o Custom SMTP é habilitado no painel. Para enviar como `Vellora Saúde

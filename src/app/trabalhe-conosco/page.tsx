@@ -101,7 +101,10 @@ export default function WorkWithUsPage() {
 
       <footer className="border-t border-white/10 bg-[var(--brand-deep)] text-white">
         <div className="container-page flex flex-col gap-3 py-7 text-sm text-white/65 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Vellora Saúde.</p>
+          <div>
+            <p>© {new Date().getFullYear()} Vellora Saúde.</p>
+            <p className="mt-1">CNPJ: 68.797.629/0001-48</p>
+          </div>
           <Link href="/" className="font-semibold text-[#a9e8dc] hover:text-white">Ir para o site das famílias</Link>
         </div>
       </footer>

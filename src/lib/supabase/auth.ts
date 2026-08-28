@@ -4,10 +4,28 @@ import { runtimeValue } from "../runtime-config";
 import {
   createSupabaseRequestClient,
   createSupabaseServerClient,
+  createSupabaseStatelessClient,
   type SupabaseCookieState,
 } from "./server";
 import { mapSupabaseSession, type SupabaseAuthUser, type SupabaseProfile } from "./roles";
 import type { NextRequest } from "next/server";
+
+const SUPABASE_GLOBAL_SIGN_OUT_TIMEOUT_MS = 5_000;
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T | null> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<null>((resolve) => {
+        timeoutId = setTimeout(() => resolve(null), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
 
 export type SupabaseSignInResult = {
   session: SessionPayload | null;
@@ -137,19 +155,17 @@ export function getSupabasePasswordResetRedirectUrl(requestUrl: string): string 
       ? parseSafeOrigin(configuredAppUrl, "VELLORA_APP_URL")
       : parseSafeOrigin(requestOrigin.origin, "A origem da solicitação");
 
-  const callbackUrl = new URL("/auth/callback", baseUrl.origin);
-  callbackUrl.searchParams.set("next", "/redefinir-senha");
-  callbackUrl.searchParams.set("flow", "recovery");
-  return callbackUrl.toString();
+  return new URL("/auth/callback", baseUrl.origin).toString();
 }
 
 export async function requestSupabasePasswordReset(
-  request: Pick<NextRequest, "cookies">,
   email: string,
   redirectTo: string,
-  state: SupabaseCookieState,
 ): Promise<Error | null> {
-  const client = createSupabaseRequestClient(request, state);
+  // The email template carries the one-time token_hash. Use a stateless
+  // client because @supabase/ssr forces PKCE on server clients, even when a
+  // different flowType is supplied.
+  const client = createSupabaseStatelessClient();
   const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo });
   return error;
 }
@@ -169,10 +185,23 @@ export async function updateSupabasePassword(
   const { error } = await client.auth.updateUser({ password });
   if (error) return { ok: false, error };
 
-  const signOutError = await client.auth.signOut({ scope: "global" });
-  if (signOutError.error) {
+  try {
+    const signOutResult = await withTimeout(
+      client.auth.signOut({ scope: "global" }),
+      SUPABASE_GLOBAL_SIGN_OUT_TIMEOUT_MS,
+    );
+    if (signOutResult === null) {
+      console.warn("[supabase-auth] Senha alterada, mas a revogação global excedeu o tempo limite.", {
+        timeoutMs: SUPABASE_GLOBAL_SIGN_OUT_TIMEOUT_MS,
+      });
+    } else if (signOutResult.error) {
+      console.error("[supabase-auth] Senha alterada, mas a revogação global falhou.", {
+        error: signOutResult.error.message,
+      });
+    }
+  } catch (error) {
     console.error("[supabase-auth] Senha alterada, mas a revogação global falhou.", {
-      error: signOutError.error.message,
+      error: error instanceof Error ? error.message : "Erro desconhecido",
     });
   }
 
