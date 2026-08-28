@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -38,5 +38,14 @@ describe("preparação do deploy Vercel", () => {
     expect(runtimeConfig).toContain("process.env");
     expect(database).toContain("runtimeBinding");
     expect(storage).toContain("runtimeBinding");
+  });
+
+  it("usa um ícone compatível com o decodificador do Turbopack", () => {
+    const iconPath = join(projectRoot, "src/app/icon.svg");
+    const legacyFaviconPath = join(projectRoot, "src/app/favicon.ico");
+
+    expect(existsSync(iconPath)).toBe(true);
+    expect(readFileSync(iconPath, "utf8")).toContain("<svg");
+    expect(existsSync(legacyFaviconPath)).toBe(false);
   });
 });
