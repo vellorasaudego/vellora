@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { NextRequest, NextResponse } from "next/server";
 import { runtimeValue } from "../runtime-config";
@@ -72,6 +72,24 @@ export function createSupabaseRequestClient(
         state.cookies.push(...cookiesToSet);
         Object.assign(state.headers, responseHeaders);
       },
+    },
+  });
+}
+
+/**
+ * Creates a client for Auth operations that do not need a session. Unlike
+ * createServerClient, this client does not force PKCE or write verifier
+ * cookies. It is used to request a token_hash recovery email.
+ */
+export function createSupabaseStatelessClient(): SupabaseClient {
+  const config = serverSupabaseConfig();
+
+  return createClient(config.url, config.publishableKey, {
+    auth: {
+      flowType: "implicit",
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+      persistSession: false,
     },
   });
 }

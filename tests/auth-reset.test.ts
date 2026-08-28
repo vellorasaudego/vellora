@@ -20,8 +20,7 @@ describe("redirect de recuperação de senha Supabase", () => {
 
     expect(redirect.origin).toBe("http://localhost:5173");
     expect(redirect.pathname).toBe("/auth/callback");
-    expect(redirect.searchParams.get("next")).toBe("/redefinir-senha");
-    expect(redirect.searchParams.get("flow")).toBe("recovery");
+    expect(redirect.search).toBe("");
   });
 
   it("preserva a origem HTTPS configurada em um host de produção", () => {
@@ -33,6 +32,7 @@ describe("redirect de recuperação de senha Supabase", () => {
 
     expect(redirect.origin).toBe("https://app.vellorasaude.com.br");
     expect(redirect.pathname).toBe("/auth/callback");
+    expect(redirect.search).toBe("");
   });
 
   it("mantém a origem configurada mesmo quando o proxy informa HTTP no host remoto", () => {

@@ -4,10 +4,6 @@ import { isSafePreview } from "@/lib/preview";
 import { consumeRateLimit, isSameOriginRequest } from "@/lib/abuse-prevention";
 import { isValidEmail } from "@/lib/validation";
 import {
-  applySupabaseCookieState,
-  createSupabaseCookieState,
-} from "@/lib/supabase/server";
-import {
   getSupabasePasswordResetRedirectUrl,
   requestSupabasePasswordReset,
 } from "@/lib/supabase/auth";
@@ -41,12 +37,9 @@ export async function POST(req: NextRequest) {
 
   if (getAuthProvider() === "supabase") {
     try {
-      const state = createSupabaseCookieState();
       const error = await requestSupabasePasswordReset(
-        req,
         email,
         getSupabasePasswordResetRedirectUrl(req.url),
-        state,
       );
       if (error) {
         console.error("[api/auth/forgot-password] Não foi possível solicitar recuperação Supabase.", {
@@ -57,10 +50,7 @@ export async function POST(req: NextRequest) {
           { status: 503 },
         );
       }
-      return applySupabaseCookieState(
-        NextResponse.json({ ok: true, message: GENERIC_MESSAGE }),
-        state,
-      );
+      return NextResponse.json({ ok: true, message: GENERIC_MESSAGE });
     } catch (error) {
       console.error("[api/auth/forgot-password] Configuração Supabase indisponível.", {
         error: error instanceof Error ? error.message : "Erro desconhecido",

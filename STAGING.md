@@ -47,5 +47,6 @@ Depois, valide os fluxos no projeto de produção conforme a janela de rollout:
 - páginas de privacidade e termos.
 
 Leads e candidaturas não dependem de e-mail: os painéis são suas fontes
-oficiais. A configuração de Vercel e o deploy correspondente ficam para a
-Wave 12.
+oficiais. O deploy de produção é feito na Vercel com
+`https://vellorasaude.com.br`; este arquivo descreve somente uma eventual
+prévia segura e não cria um ambiente Supabase separado.

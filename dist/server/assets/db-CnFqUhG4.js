@@ -1,5 +1,4 @@
-import { t as runtimeValue } from "./runtime-config-DIeQIoik.js";
-import { env } from "cloudflare:workers";
+import { n as runtimeValue, t as runtimeBinding } from "./runtime-config-B9JrV3R1.js";
 import nodeCrypto, { createHmac, randomUUID } from "crypto";
 //#region node_modules/bcryptjs/index.js
 /**
@@ -1905,7 +1904,7 @@ function normalizeRecoveryPassword(value) {
 //#endregion
 //#region src/lib/db.ts
 function getBinding() {
-	const binding = env.DB;
+	const binding = runtimeBinding("DB");
 	if (!binding) throw new Error("O banco de dados do site não está disponível.");
 	return binding;
 }

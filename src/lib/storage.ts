@@ -1,5 +1,4 @@
-import { env } from "cloudflare:workers";
-import { runtimeValue } from "./runtime-config";
+import { runtimeBinding, runtimeValue } from "./runtime-config";
 import {
   deleteSupabaseFile,
   deleteSupabaseFiles,
@@ -23,7 +22,7 @@ type R2BucketLike = {
 };
 
 function getBucket(): R2BucketLike {
-  const bucket = (env as { BUCKET?: R2BucketLike }).BUCKET;
+  const bucket = runtimeBinding<R2BucketLike>("BUCKET");
   if (!bucket) throw new Error("O armazenamento de documentos do site não está disponível.");
   return bucket;
 }

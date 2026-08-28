@@ -4,6 +4,7 @@ import {
   handleImageOptimization,
 } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { setRuntimeBindings } from "../src/lib/runtime-config";
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
@@ -27,7 +28,11 @@ interface ExecutionContext {
 function withSecurityHeaders(response: Response, request: Request): Response {
   const headers = new Headers(response.headers);
   headers.set("X-Content-Type-Options", "nosniff");
-  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  // Keep route-specific stricter policies, such as the no-referrer response
+  // used while consuming a password-recovery token.
+  if (!headers.has("Referrer-Policy")) {
+    headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  }
   headers.set("X-Frame-Options", "DENY");
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   if (new URL(request.url).protocol === "https:") {
@@ -42,6 +47,7 @@ function withSecurityHeaders(response: Response, request: Request): Response {
 
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    setRuntimeBindings(env);
     const url = new URL(request.url);
 
     if (url.pathname === "/_vinext/image") {

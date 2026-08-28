@@ -11710,7 +11710,7 @@ var client_references_default = {
 		};
 	},
 	"a1e5201a4cb5": async () => {
-		const m = await import("./assets/ResetPasswordForm-DOrleDdA.js");
+		const m = await import("./assets/ResetPasswordForm-mV8oPi0J.js");
 		return { get "ResetPasswordForm"() {
 			return m["ResetPasswordForm"];
 		} };

@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   createSupabaseCookieState: vi.fn(),
   createSupabaseRequestClient: vi.fn(),
   exchangeCodeForSession: vi.fn(),
+  verifyOtp: vi.fn(),
   getAuthProvider: vi.fn(),
 }));
 
@@ -45,13 +46,21 @@ describe("callback de autenticação Supabase", () => {
     mocks.createSupabaseCookieState.mockReset();
     mocks.createSupabaseRequestClient.mockReset();
     mocks.exchangeCodeForSession.mockReset();
+    mocks.verifyOtp.mockReset();
     mocks.applySupabaseCookieState.mockReset();
 
     mocks.getAuthProvider.mockReturnValue("supabase");
     mocks.createSupabaseCookieState.mockImplementation(() => ({ cookies: [], headers: {} }));
     mocks.exchangeCodeForSession.mockResolvedValue({ error: null });
+    mocks.verifyOtp.mockResolvedValue({
+      data: { session: { access_token: "session" }, user: { id: "user" } },
+      error: null,
+    });
     mocks.createSupabaseRequestClient.mockReturnValue({
-      auth: { exchangeCodeForSession: mocks.exchangeCodeForSession },
+      auth: {
+        exchangeCodeForSession: mocks.exchangeCodeForSession,
+        verifyOtp: mocks.verifyOtp,
+      },
     });
     mocks.applySupabaseCookieState.mockImplementation((response: Response) => response);
 
@@ -69,6 +78,48 @@ describe("callback de autenticação Supabase", () => {
     expect(target.search).toBe("");
     expect(mocks.exchangeCodeForSession).toHaveBeenCalledOnce();
     expect(mocks.exchangeCodeForSession).toHaveBeenCalledWith("test-code");
+  });
+
+  it("valida token_hash de recovery no servidor e não depende de PKCE", async () => {
+    const response = await GET(makeRequest("?token_hash=recovery-token&type=recovery"));
+
+    const target = await expectRedirect(response, "/redefinir-senha");
+    expect(target.search).toBe("");
+    expect(response.headers.get("cache-control")).toContain("no-store");
+    expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+    expect(mocks.verifyOtp).toHaveBeenCalledOnce();
+    expect(mocks.verifyOtp).toHaveBeenCalledWith({
+      token_hash: "recovery-token",
+      type: "recovery",
+    });
+    expect(mocks.exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(response.headers.get("location")).not.toContain("recovery-token");
+  });
+
+  it("rejeita token_hash sem o tipo recovery", async () => {
+    const response = await GET(makeRequest("?token_hash=recovery-token&type=email"));
+
+    const target = await expectRedirect(response, "/redefinir-senha");
+    expect(target.search).toBe("?recovery=erro");
+    expect(mocks.verifyOtp).not.toHaveBeenCalled();
+    expect(response.headers.get("location")).not.toContain("recovery-token");
+  });
+
+  it("converte falha na validação do token_hash em erro controlado", async () => {
+    mocks.verifyOtp.mockResolvedValueOnce({
+      data: { session: null, user: null },
+      error: { message: "token expired" },
+    });
+
+    const response = await GET(makeRequest("?token_hash=expired-token&type=recovery"));
+
+    const target = await expectRedirect(response, "/redefinir-senha");
+    expect(target.search).toBe("?recovery=erro");
+    expect(mocks.verifyOtp).toHaveBeenCalledWith({
+      token_hash: "expired-token",
+      type: "recovery",
+    });
+    expect(mocks.applySupabaseCookieState).toHaveBeenCalledOnce();
   });
 
   it.each(["https://evil.example", "//evil.example", "/\\evil.example"])(

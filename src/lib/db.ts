@@ -1,8 +1,7 @@
-import { env } from "cloudflare:workers";
 import bcrypt from "bcryptjs";
 import { createHmac, randomUUID } from "crypto";
 import { normalizeRecoveryEmail, normalizeRecoveryPassword } from "./recovery";
-import { runtimeValue } from "./runtime-config";
+import { runtimeBinding, runtimeValue } from "./runtime-config";
 
 type D1Value = string | number | null | ArrayBuffer | ArrayBufferView;
 
@@ -27,7 +26,7 @@ declare global {
 }
 
 function getBinding(): D1BindingLike {
-  const binding = (env as { DB?: D1BindingLike }).DB;
+  const binding = runtimeBinding<D1BindingLike>("DB");
   if (!binding) throw new Error("O banco de dados do site não está disponível.");
   return binding;
 }

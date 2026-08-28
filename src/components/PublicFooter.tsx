@@ -44,7 +44,10 @@ export function PublicFooter() {
       </div>
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Vellora Saúde. Todos os direitos reservados.</p>
+          <div>
+            <p>© {new Date().getFullYear()} Vellora Saúde. Todos os direitos reservados.</p>
+            <p className="mt-1">CNPJ: 68.797.629/0001-48</p>
+          </div>
           <p>Dados de saúde exigem acesso restrito e tratamento responsável.</p>
         </div>
       </div>

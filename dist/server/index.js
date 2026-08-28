@@ -1,8 +1,7 @@
-globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/Badge-D3Nospj7.js","assets/TurnstileWidget-BilDF6Y3.js","assets/navigation-CzfSVj_e.js","assets/layout-segment-context-BCqtrVoA.js","assets/link-j7Qg5aJz.js","assets/router-4LvrYt-Q.js","assets/ContactForm-B7JvUuCv.js","assets/DailyRecordForm-CZevQYsE.js","assets/ForgotPasswordForm-Brk-NoZg.js","assets/LoginForm-Cxd9vemr.js","assets/LogoutButton-BJpRZMwE.js","assets/ProfessionalApplicationForm-w0xz5-Bz.js","assets/ResetPasswordForm-DMj2Z7eP.js","assets/AssignmentsManager-BQAdS7Ql.js","assets/CaregiverBank-Me4k8QwA.js","assets/ContractManager-B1ht7Gmz.js","assets/DeleteButton-B3IQpBrC.js","assets/EditPatientForm-Bi7dd-Gl.js","assets/LeadsTable-DlgOZuim.js","assets/NewCaregiverForm-C9rXdsKp.js","assets/NewPatientForm-Dtke-Aqv.js","assets/ProfessionalApplicationsTable-DSXYvJWZ.js","assets/VitalsChart-CigRe1cI.js"];
-import { $ as VINEXT_CACHE_HEADER, A as markDynamicUsage, B as ACTION_REDIRECT_STATUS_HEADER, C as consumeDynamicUsage, D as getHeadersContext, E as getDraftModeCookieHeader, F as validateCookieName, G as MIDDLEWARE_NEXT_HEADER, H as ACTION_REVALIDATED_HEADER, I as buildRequestHeadersFromMiddlewareResponse, J as NEXTJS_ACTION_NOT_FOUND_HEADER, K as MIDDLEWARE_REWRITE_HEADER, L as encodeMiddlewareRequestHeaders, M as setHeadersContext, N as parseCookieHeader, O as headersContextFromRequest, P as serializeSetCookie, Q as NEXT_URL_HEADER, R as shouldKeepMiddlewareHeader, S as applyMiddlewareRequestHeaders, T as getAndClearPendingCookies, U as FLIGHT_HEADERS, V as ACTION_REDIRECT_TYPE_HEADER, W as INTERNAL_HEADERS, X as NEXT_ROUTER_SEGMENT_PREFETCH_HEADER, Y as NEXT_ROUTER_PREFETCH_HEADER, Z as NEXT_ROUTER_STATE_TREE_HEADER, _ as createSupabaseServerClient, a as hashPassword, at as VINEXT_RSC_RENDER_MODE_HEADER, b as resolveAuthProvider, c as getSupabasePasswordResetRedirectUrl, ct as createRequestContext, d as signOutWithSupabase, dt as runWithRequestContext, et as VINEXT_INTERCEPTION_CONTEXT_HEADER, f as updateSupabasePassword, ft as runWithUnifiedStateMutation, g as createSupabaseRequestClient, gt as __toESM, h as createSupabaseCookieState, ht as __exportAll, i as getSession, it as VINEXT_PRERENDER_SECRET_HEADER, j as setHeadersAccessPhase, k as isDraftModeRequest, l as requestSupabasePasswordReset, lt as getRequestContext, m as applySupabaseCookieState, mt as __commonJSMin, n as createSessionToken, nt as VINEXT_MW_CTX_HEADER, o as roleHomePath, ot as VINEXT_STATIC_FILE_HEADER, p as mapSupabaseSession, pt as getOrCreateAls, q as MIDDLEWARE_SET_COOKIE_HEADER, r as getAuthProvider, rt as VINEXT_PARAMS_HEADER, s as verifyPassword, st as VINEXT_TIMING_HEADER, t as SESSION_COOKIE_NAME, tt as VINEXT_MOUNTED_SLOTS_HEADER, u as signInWithSupabase, ut as isInsideUnifiedScope, v as validateSupabaseConfig, w as consumeInvalidDynamicUsageError, x as jwtVerify, y as createClient, z as ACTION_REDIRECT_HEADER } from "./assets/auth-BMMW7Zok.js";
-import { t as runtimeValue } from "./assets/runtime-config-DIeQIoik.js";
-import { n as query, r as queryOne, t as executeBatch } from "./assets/db-DG7c0MHC.js";
-import { env } from "cloudflare:workers";
+globalThis.__VINEXT_LAZY_CHUNKS__ = ["assets/Badge-D3Nospj7.js","assets/TurnstileWidget-BilDF6Y3.js","assets/navigation-CzfSVj_e.js","assets/layout-segment-context-CpGijKE9.js","assets/link-DadbM6iy.js","assets/router-DoqBUNcg.js","assets/ContactForm-SGo2WUjL.js","assets/DailyRecordForm-CZevQYsE.js","assets/ForgotPasswordForm-Brk-NoZg.js","assets/LoginForm-DsTLpxxv.js","assets/LogoutButton-BJpRZMwE.js","assets/ProfessionalApplicationForm-D7eOc_no.js","assets/ResetPasswordForm-B2ckr8v6.js","assets/AssignmentsManager-BQAdS7Ql.js","assets/CaregiverBank-Me4k8QwA.js","assets/ContractManager-B1ht7Gmz.js","assets/DeleteButton-B3IQpBrC.js","assets/EditPatientForm-Bi7dd-Gl.js","assets/LeadsTable-CgbApkzm.js","assets/NewCaregiverForm-C9rXdsKp.js","assets/NewPatientForm-Dtke-Aqv.js","assets/ProfessionalApplicationsTable-DSXYvJWZ.js","assets/VitalsChart-CigRe1cI.js"];
+import { $ as VINEXT_CACHE_HEADER, A as markDynamicUsage, B as ACTION_REDIRECT_STATUS_HEADER, C as consumeDynamicUsage, D as getHeadersContext, E as getDraftModeCookieHeader, F as validateCookieName, G as MIDDLEWARE_NEXT_HEADER, H as ACTION_REVALIDATED_HEADER, I as buildRequestHeadersFromMiddlewareResponse, J as NEXTJS_ACTION_NOT_FOUND_HEADER, K as MIDDLEWARE_REWRITE_HEADER, L as encodeMiddlewareRequestHeaders, M as setHeadersContext, N as parseCookieHeader, O as headersContextFromRequest, P as serializeSetCookie, Q as NEXT_URL_HEADER, R as shouldKeepMiddlewareHeader, S as applyMiddlewareRequestHeaders, T as getAndClearPendingCookies, U as FLIGHT_HEADERS, V as ACTION_REDIRECT_TYPE_HEADER, W as INTERNAL_HEADERS, X as NEXT_ROUTER_SEGMENT_PREFETCH_HEADER, Y as NEXT_ROUTER_PREFETCH_HEADER, Z as NEXT_ROUTER_STATE_TREE_HEADER, _ as createSupabaseServerClient, a as hashPassword, at as VINEXT_RSC_RENDER_MODE_HEADER, b as resolveAuthProvider, c as getSupabasePasswordResetRedirectUrl, ct as createRequestContext, d as signOutWithSupabase, dt as runWithRequestContext, et as VINEXT_INTERCEPTION_CONTEXT_HEADER, f as updateSupabasePassword, ft as runWithUnifiedStateMutation, g as createSupabaseRequestClient, gt as __toESM, h as createSupabaseCookieState, ht as __exportAll, i as getSession, it as VINEXT_PRERENDER_SECRET_HEADER, j as setHeadersAccessPhase, k as isDraftModeRequest, l as requestSupabasePasswordReset, lt as getRequestContext, m as applySupabaseCookieState, mt as __commonJSMin, n as createSessionToken, nt as VINEXT_MW_CTX_HEADER, o as roleHomePath, ot as VINEXT_STATIC_FILE_HEADER, p as mapSupabaseSession, pt as getOrCreateAls, q as MIDDLEWARE_SET_COOKIE_HEADER, r as getAuthProvider, rt as VINEXT_PARAMS_HEADER, s as verifyPassword, st as VINEXT_TIMING_HEADER, t as SESSION_COOKIE_NAME, tt as VINEXT_MOUNTED_SLOTS_HEADER, u as signInWithSupabase, ut as isInsideUnifiedScope, v as validateSupabaseConfig, w as consumeInvalidDynamicUsageError, x as jwtVerify, y as createClient, z as ACTION_REDIRECT_HEADER } from "./assets/auth-cUWrAUm-.js";
+import { n as runtimeValue, r as setRuntimeBindings, t as runtimeBinding } from "./assets/runtime-config-B9JrV3R1.js";
+import { n as query, r as queryOne, t as executeBatch } from "./assets/db-CnFqUhG4.js";
 import * as __viteRscAsyncHooks from "node:async_hooks";
 import { AsyncLocalStorage as AsyncLocalStorage$1 } from "node:async_hooks";
 import assetsManifest from "./__vite_rsc_assets_manifest.js";
@@ -6212,7 +6211,7 @@ var NextURL = class NextURL {
 	* Matches the Next.js API: `request.nextUrl.buildId`.
 	*/
 	get buildId() {
-		return "84d2750a-5d3a-4cda-baf8-fb34eb0ffd5b";
+		return "3c90418e-8041-4447-a76e-fbf520e6f86f";
 	}
 };
 var RequestCookies = class {
@@ -6556,7 +6555,7 @@ async function proxy(req) {
 			url.searchParams.set("next", pathname);
 			return NextResponse.redirect(url);
 		}
-		const { queryOne } = await import("./assets/db-DV2EKxv6.js");
+		const { queryOne } = await import("./assets/db-BVbT75nV.js");
 		const user = await queryOne("SELECT role, session_version FROM users WHERE id = $1 AND deleted_at IS NULL", [payload.userId]);
 		if (!user || user.role !== requiredRole || user.session_version !== payload.sessionVersion) {
 			const url = req.nextUrl.clone();
@@ -12490,7 +12489,7 @@ function buildCacheKey(prefix, pathname, suffix) {
 * The suffix mirrors Next.js's separate on-disk app artifacts while keeping the
 * Cloudflare KV key under its 512-byte limit for long pathnames.
 */
-function appIsrCacheKey(pathname, suffix, buildId = "84d2750a-5d3a-4cda-baf8-fb34eb0ffd5b") {
+function appIsrCacheKey(pathname, suffix, buildId = "3c90418e-8041-4447-a76e-fbf520e6f86f") {
 	return buildCacheKey(buildId ? `app:${buildId}` : "app", pathname, suffix);
 }
 function appIsrHtmlKey(pathname) {
@@ -12819,7 +12818,7 @@ function createAppPageArtifactCompatibility(element, routePattern) {
 			routePattern,
 			rootBoundaryId
 		}),
-		deploymentVersion: "84d2750a-5d3a-4cda-baf8-fb34eb0ffd5b",
+		deploymentVersion: "3c90418e-8041-4447-a76e-fbf520e6f86f",
 		rootBoundaryId
 	});
 }
@@ -14362,7 +14361,7 @@ function resolveStorageProvider(value) {
 //#endregion
 //#region src/lib/storage.ts
 function getBucket() {
-	const bucket = env.BUCKET;
+	const bucket = runtimeBinding("BUCKET");
 	if (!bucket) throw new Error("O armazenamento de documentos do site não está disponível.");
 	return bucket;
 }
@@ -17094,11 +17093,14 @@ function PublicFooter() {
 				className: "border-t border-white/10",
 				children: /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("div", {
 					className: "container-page flex flex-col gap-2 py-5 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("p", { children: [
+					children: [/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("p", { children: [
 						"© ",
 						(/* @__PURE__ */ new Date()).getFullYear(),
 						" Vellora Saúde. Todos os direitos reservados."
-					] }), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("p", { children: "Dados de saúde exigem acesso restrito e tratamento responsável." })]
+					] }), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("p", {
+						className: "mt-1",
+						children: "CNPJ: 68.797.629/0001-48"
+					})] }), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("p", { children: "Dados de saúde exigem acesso restrito e tratamento responsável." })]
 				})
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(WhatsAppButton, {})
@@ -18871,23 +18873,22 @@ async function POST$7(req) {
 		message: GENERIC_MESSAGE
 	});
 	if (getAuthProvider() === "supabase") try {
-		const state = createSupabaseCookieState();
-		const error = await requestSupabasePasswordReset(req, email, getSupabasePasswordResetRedirectUrl(req.url), state);
+		const error = await requestSupabasePasswordReset(email, getSupabasePasswordResetRedirectUrl(req.url));
 		if (error) {
 			console.error("[api/auth/forgot-password] Não foi possível solicitar recuperação Supabase.", { error: error.message });
 			return NextResponse.json({ error: "A recuperação por e-mail está temporariamente indisponível. Tente novamente mais tarde." }, { status: 503 });
 		}
-		return applySupabaseCookieState(NextResponse.json({
+		return NextResponse.json({
 			ok: true,
 			message: GENERIC_MESSAGE
-		}), state);
+		});
 	} catch (error) {
 		console.error("[api/auth/forgot-password] Configuração Supabase indisponível.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
 		return NextResponse.json({ error: "A recuperação por e-mail está temporariamente indisponível. Tente novamente mais tarde." }, { status: 503 });
 	}
 	const { getUserByEmail } = await Promise.resolve().then(() => data_exports);
-	const { createPasswordResetToken, discardPasswordResetToken } = await import("./assets/password-reset-ytzJRabd.js");
-	const { isPasswordEmailConfigured, sendPasswordResetEmail } = await import("./assets/email-DtZJmBe2.js");
+	const { createPasswordResetToken, discardPasswordResetToken } = await import("./assets/password-reset-BoIocIpt.js");
+	const { isPasswordEmailConfigured, sendPasswordResetEmail } = await import("./assets/email-B6FmXxBh.js");
 	if (!isPasswordEmailConfigured()) return NextResponse.json({ error: "A recuperação por e-mail está temporariamente indisponível. Fale com a equipe da Vellora Saúde." }, { status: 503 });
 	try {
 		const user = await getUserByEmail(email);
@@ -19020,7 +19021,7 @@ async function POST$4(req) {
 	}
 	const token = typeof body?.token === "string" ? body.token.trim() : "";
 	if (!token || token.length > 256) return NextResponse.json({ error: "Link inválido ou expirado." }, { status: 400 });
-	const { resetPasswordWithToken } = await import("./assets/password-reset-ytzJRabd.js");
+	const { resetPasswordWithToken } = await import("./assets/password-reset-BoIocIpt.js");
 	if (!await resetPasswordWithToken(token, password)) return NextResponse.json({ error: "Link inválido ou expirado." }, { status: 400 });
 	return NextResponse.json({ ok: true });
 }
@@ -19452,6 +19453,14 @@ async function POST(req) {
 //#endregion
 //#region src/app/auth/callback/route.ts
 var route_exports$1 = /* @__PURE__ */ __exportAll({ GET: () => GET$1 });
+function secureCallbackResponse(response) {
+	response.headers.set("Cache-Control", "no-store, max-age=0");
+	response.headers.set("Referrer-Policy", "no-referrer");
+	return response;
+}
+function applyCallbackState(response, state) {
+	return secureCallbackResponse(applySupabaseCookieState(response, state));
+}
 function safeNextPath(value, requestUrl) {
 	if (!value || !value.startsWith("/") || value.startsWith("//")) return "/";
 	try {
@@ -19476,23 +19485,43 @@ function redirectAfterCallback(request, recovery, error) {
 	return url;
 }
 async function GET$1(request) {
-	if (getAuthProvider() !== "supabase") return NextResponse.redirect(new URL("/login", request.url));
+	if (getAuthProvider() !== "supabase") return secureCallbackResponse(NextResponse.redirect(new URL("/login", request.url)));
+	const tokenHash = request.nextUrl.searchParams.get("token_hash")?.trim() ?? "";
+	const tokenType = request.nextUrl.searchParams.get("type");
 	const code = request.nextUrl.searchParams.get("code");
 	const next = safeNextPath(request.nextUrl.searchParams.get("next"), request.url);
-	const recovery = isRecoveryFlow(request, next);
-	const providerReportedError = Boolean(request.nextUrl.searchParams.get("error") || request.nextUrl.searchParams.get("error_code"));
-	if (!code || providerReportedError) return NextResponse.redirect(redirectAfterCallback(request, recovery, true));
+	const recovery = Boolean(tokenHash) || tokenType === "recovery" || isRecoveryFlow(request, next);
+	const providerReportedError = Boolean(request.nextUrl.searchParams.get("error") || request.nextUrl.searchParams.get("error_code") || request.nextUrl.searchParams.get("error_description"));
+	if (tokenHash) {
+		if (tokenHash.length > 512 || tokenType !== "recovery" || providerReportedError) return secureCallbackResponse(NextResponse.redirect(redirectAfterCallback(request, true, true)));
+		const state = createSupabaseCookieState();
+		try {
+			const { data, error } = await createSupabaseRequestClient(request, state).auth.verifyOtp({
+				token_hash: tokenHash,
+				type: "recovery"
+			});
+			if (error || !data.session || !data.user) {
+				console.error("[auth/callback] Não foi possível validar o token de recuperação Supabase.", { error: error?.message ?? "Sessão ausente após validar o token" });
+				return applyCallbackState(NextResponse.redirect(redirectAfterCallback(request, true, true)), state);
+			}
+			return applyCallbackState(NextResponse.redirect(new URL("/redefinir-senha", request.url)), state);
+		} catch (error) {
+			console.error("[auth/callback] Configuração Supabase indisponível.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
+			return applyCallbackState(NextResponse.redirect(redirectAfterCallback(request, true, true)), state);
+		}
+	}
+	if (!code || providerReportedError) return secureCallbackResponse(NextResponse.redirect(redirectAfterCallback(request, recovery, true)));
 	const state = createSupabaseCookieState();
 	try {
 		const { error } = await createSupabaseRequestClient(request, state).auth.exchangeCodeForSession(code);
 		if (error) {
 			console.error("[auth/callback] Não foi possível concluir o callback Supabase.", { error: error.message });
-			return applySupabaseCookieState(NextResponse.redirect(redirectAfterCallback(request, recovery, true)), state);
+			return applyCallbackState(NextResponse.redirect(redirectAfterCallback(request, recovery, true)), state);
 		}
-		return applySupabaseCookieState(NextResponse.redirect(new URL(recovery ? "/redefinir-senha" : next, request.url)), state);
+		return applyCallbackState(NextResponse.redirect(new URL(recovery ? "/redefinir-senha" : next, request.url)), state);
 	} catch (error) {
 		console.error("[auth/callback] Configuração Supabase indisponível.", { error: error instanceof Error ? error.message : "Erro desconhecido" });
-		return applySupabaseCookieState(NextResponse.redirect(redirectAfterCallback(request, recovery, true)), state);
+		return applyCallbackState(NextResponse.redirect(redirectAfterCallback(request, recovery, true)), state);
 	}
 }
 //#endregion
@@ -20353,11 +20382,14 @@ function WorkWithUsPage() {
 			className: "border-t border-white/10 bg-[var(--brand-deep)] text-white",
 			children: /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("div", {
 				className: "container-page flex flex-col gap-3 py-7 text-sm text-white/65 sm:flex-row sm:items-center sm:justify-between",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("p", { children: [
+				children: [/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime_react_server.jsxs)("p", { children: [
 					"© ",
 					(/* @__PURE__ */ new Date()).getFullYear(),
 					" Vellora Saúde."
-				] }), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(link_default, {
+				] }), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)("p", {
+					className: "mt-1",
+					children: "CNPJ: 68.797.629/0001-48"
+				})] }), /* @__PURE__ */ (0, import_jsx_runtime_react_server.jsx)(link_default, {
 					href: "/",
 					className: "font-semibold text-[#a9e8dc] hover:text-white",
 					children: "Ir para o site das famílias"
@@ -22979,7 +23011,7 @@ async function handleRequest(request, env, ctx) {
 function withSecurityHeaders(response, request) {
 	const headers = new Headers(response.headers);
 	headers.set("X-Content-Type-Options", "nosniff");
-	headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+	if (!headers.has("Referrer-Policy")) headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 	headers.set("X-Frame-Options", "DENY");
 	headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
 	if (new URL(request.url).protocol === "https:") headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
@@ -22992,6 +23024,7 @@ function withSecurityHeaders(response, request) {
 //#endregion
 //#region \0virtual:cloudflare/worker-entry
 var worker_entry_default = { async fetch(request, env, ctx) {
+	setRuntimeBindings(env);
 	if (new URL(request.url).pathname === "/_vinext/image") return withSecurityHeaders(await handleImageOptimization(request, {
 		fetchAsset: (path) => env.ASSETS.fetch(new Request(new URL(path, request.url))),
 		transformImage: async (body, { width, format, quality }) => {
