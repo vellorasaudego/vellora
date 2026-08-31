@@ -16,6 +16,8 @@ export default async function FamiliaPatientPage({ params }: { params: Promise<{
   }
 
   const [records, assignments] = await Promise.all([listRecordsForPatient(patient.id, 60), listAssignmentsForPatient(patient.id)]);
+  const currentRecord = records[0];
+  const previousRecords = records.slice(1);
 
   const chartData: VitalsPoint[] = [...records]
     .reverse()
@@ -66,6 +68,16 @@ export default async function FamiliaPatientPage({ params }: { params: Promise<{
         </div>
       </div>
 
+      {currentRecord && (
+        <>
+          <h3 className="mt-10 mb-4 text-lg font-semibold text-[var(--foreground)]">Registro atual</h3>
+          <RecordCard
+            record={currentRecord}
+            caregiverName={namesMap[currentRecord.caregiver_user_id] || "Cuidador"}
+          />
+        </>
+      )}
+
       {chartData.length > 0 && (
         <>
           <h3 className="mt-10 mb-4 text-lg font-semibold text-[var(--foreground)]">Evolução dos sinais vitais</h3>
@@ -84,7 +96,10 @@ export default async function FamiliaPatientPage({ params }: { params: Promise<{
         {records.length === 0 && (
           <p className="text-sm text-[var(--muted-2)]">Ainda não há registros diários para este paciente.</p>
         )}
-        {records.map((r) => (
+        {currentRecord && previousRecords.length === 0 && (
+          <p className="text-sm text-[var(--muted-2)]">Ainda não há registros anteriores para este paciente.</p>
+        )}
+        {previousRecords.map((r) => (
           <RecordCard key={r.id} record={r} caregiverName={namesMap[r.caregiver_user_id] || "Cuidador"} />
         ))}
       </div>

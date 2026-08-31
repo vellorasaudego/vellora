@@ -26,6 +26,14 @@ import {
   getStoredFile,
   putStoredFile,
 } from "../storage";
+import {
+  ASSIGNMENT_ACTIVE_CONFLICT_MESSAGE,
+  ASSIGNMENT_DUPLICATE_CONFLICT_MESSAGE,
+  ASSIGNMENT_HISTORY_CONFLICT_MESSAGE,
+  AssignmentConflictError,
+  isAssignmentUniqueViolation,
+} from "../assignment-errors";
+import { DUPLICATE_ACCOUNT_EMAIL_MESSAGE, isDuplicateAccountEmailError } from "../user-errors";
 
 export type DataProvider = "legacy" | "supabase";
 
@@ -537,6 +545,9 @@ async function createAuthProfile(
     password: input.password,
     email_confirm: true,
   });
+  if (authError && isDuplicateAccountEmailError(authError)) {
+    throw new SupabaseDataError(DUPLICATE_ACCOUNT_EMAIL_MESSAGE);
+  }
   requireNoError("Não foi possível criar usuário no Supabase Auth", authError);
   if (!authData.user) throw new SupabaseDataError("Supabase Auth não retornou o usuário criado.");
 
@@ -769,17 +780,85 @@ export async function createAssignment(input: {
   start_date: string;
 }): Promise<Assignment> {
   const client = await requestClient();
+  const patientId = assertUuid(input.patient_id, "Paciente");
+  const caregiverUserId = assertUuid(input.caregiver_user_id, "Cuidador");
+
+  const { data: inactiveData, error: inactiveError } = await client
+    .from("caregiver_assignments")
+    .select("*")
+    .eq("patient_id", patientId)
+    .eq("caregiver_user_id", caregiverUserId)
+    .eq("start_date", input.start_date)
+    .eq("active", false)
+    .order("created_at", { ascending: false })
+    .limit(2);
+  requireNoError("Não foi possível verificar vínculo histórico Supabase", inactiveError);
+
+  const inactiveRows = (inactiveData || []) as SupabaseRow[];
+  if (inactiveRows.length > 1) {
+    throw new AssignmentConflictError("duplicate_history", ASSIGNMENT_HISTORY_CONFLICT_MESSAGE);
+  }
+
+  const { data: activeData, error: activeError } = await client
+    .from("caregiver_assignments")
+    .select("*")
+    .eq("patient_id", patientId)
+    .eq("caregiver_user_id", caregiverUserId)
+    .eq("active", true)
+    .limit(1)
+    .maybeSingle();
+  requireNoError("Não foi possível verificar vínculo ativo Supabase", activeError);
+  if (activeData) {
+    throw new AssignmentConflictError("active_duplicate", ASSIGNMENT_ACTIVE_CONFLICT_MESSAGE);
+  }
+
+  const inactiveAssignment = inactiveRows[0];
+  if (inactiveAssignment) {
+    const assignmentId = assertUuid(asString(inactiveAssignment.id), "Assignment");
+    const { data: restoredData, error: restoredError } = await client
+      .from("caregiver_assignments")
+      .update({ active: true, end_date: null, updated_at: new Date().toISOString() })
+      .eq("id", assignmentId)
+      .eq("active", false)
+      .select("*")
+      .maybeSingle();
+    if (restoredError) {
+      if (isAssignmentUniqueViolation(restoredError)) {
+        throw new AssignmentConflictError("duplicate_assignment", ASSIGNMENT_DUPLICATE_CONFLICT_MESSAGE);
+      }
+      throw operationError("Não foi possível reativar assignment Supabase", restoredError);
+    }
+    if (restoredData) return mapAssignment(restoredData as SupabaseRow);
+
+    const { data: activeAfterRace, error: activeAfterRaceError } = await client
+      .from("caregiver_assignments")
+      .select("id")
+      .eq("patient_id", patientId)
+      .eq("caregiver_user_id", caregiverUserId)
+      .eq("active", true)
+      .limit(1)
+      .maybeSingle();
+    requireNoError("Não foi possível confirmar a reativação Supabase", activeAfterRaceError);
+    if (activeAfterRace) {
+      throw new AssignmentConflictError("active_duplicate", ASSIGNMENT_ACTIVE_CONFLICT_MESSAGE);
+    }
+    throw new SupabaseDataError("Não foi possível reativar assignment Supabase.");
+  }
+
   const { data, error } = await client
     .from("caregiver_assignments")
     .insert({
       id: randomUUID(),
-      patient_id: assertUuid(input.patient_id, "Paciente"),
-      caregiver_user_id: assertUuid(input.caregiver_user_id, "Cuidador"),
+      patient_id: patientId,
+      caregiver_user_id: caregiverUserId,
       start_date: input.start_date,
       active: true,
     })
     .select("*")
     .single();
+  if (isAssignmentUniqueViolation(error)) {
+    throw new AssignmentConflictError("duplicate_assignment", ASSIGNMENT_DUPLICATE_CONFLICT_MESSAGE);
+  }
   return mapAssignment(requireValue("Não foi possível criar assignment Supabase", data as SupabaseRow | null, error));
 }
 

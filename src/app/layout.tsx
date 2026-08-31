@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAdsTag } from "@/components/GoogleAdsTag";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,7 +22,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <GoogleAdsTag />
+      </body>
     </html>
   );
 }

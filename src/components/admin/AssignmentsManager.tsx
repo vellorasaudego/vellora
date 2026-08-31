@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Assignment, User } from "@/lib/data";
+import type { Assignment, User } from "@/lib/data";
 
 export function AssignmentsManager({
   patientId,
@@ -16,14 +16,17 @@ export function AssignmentsManager({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const assignedIds = new Set(assignments.filter((a) => a.active).map((a) => a.caregiver_user_id));
   const available = caregivers.filter((c) => !assignedIds.has(c.id));
 
   async function handleAdd(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
     setLoading(true);
     setError(null);
-    const data = new FormData(e.currentTarget);
+    setSuccess(null);
     try {
       const res = await fetch("/api/admin/assignments", {
         method: "POST",
@@ -35,9 +38,10 @@ export function AssignmentsManager({
         }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || "Não foi possível vincular.");
-      (e.currentTarget as HTMLFormElement).reset();
+      if (!res.ok) throw new Error(json?.error || "Não foi possível vincular.");
+      form.reset();
       router.refresh();
+      setSuccess("Cuidador vinculado com sucesso.");
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Não foi possível vincular.");
     } finally {
@@ -48,11 +52,13 @@ export function AssignmentsManager({
   async function handleDeactivate(id: string) {
     setLoading(true);
     setError(null);
+    setSuccess(null);
     try {
       const response = await fetch(`/api/admin/assignments/${id}`, { method: "PATCH" });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || "Não foi possível encerrar o vínculo.");
+      if (!response.ok) throw new Error(result?.error || "Não foi possível encerrar o vínculo.");
       router.refresh();
+      setSuccess("Vínculo encerrado com sucesso.");
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Não foi possível encerrar o vínculo.");
     } finally {
@@ -117,7 +123,24 @@ export function AssignmentsManager({
           Todos os cuidadores cadastrados já estão vinculados a este paciente.
         </p>
       )}
-      {error && <p className="mt-2 text-sm text-[var(--status-critical)]">{error}</p>}
+      <div className="mt-2 space-y-2">
+        <p
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className={success ? "rounded-lg bg-[var(--status-good-bg)] px-3 py-2 text-sm text-[var(--brand-deep)]" : "sr-only"}
+        >
+          {success}
+        </p>
+        <p
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          className={error ? "text-sm text-[var(--status-critical)]" : "sr-only"}
+        >
+          {error}
+        </p>
+      </div>
 
       <style jsx>{`
         .input {

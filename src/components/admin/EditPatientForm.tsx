@@ -3,8 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Patient, User } from "@/lib/data";
-
-const CARE_LEVELS = ["Período diurno (8h/dia)", "Período noturno (12h/dia)", "Integral (12h/dia)", "24 horas"];
+import { CarePlanField } from "./CarePlanField";
 
 export function EditPatientForm({ patient, familyUsers, currentFamily }: { patient: Patient; familyUsers: User[]; currentFamily?: User }) {
   const router = useRouter();
@@ -18,7 +17,8 @@ export function EditPatientForm({ patient, familyUsers, currentFamily }: { patie
     setLoading(true);
     setError(null);
     setSaved(false);
-    const data = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const data = new FormData(form);
     const payload: Record<string, unknown> = {
       name: data.get("name"),
       birth_date: data.get("birth_date") || null,
@@ -43,10 +43,9 @@ export function EditPatientForm({ patient, familyUsers, currentFamily }: { patie
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const json = await res.json();
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         setError(json.error || "Não foi possível salvar.");
-        setLoading(false);
         return;
       }
       setSaved(true);
@@ -73,15 +72,7 @@ export function EditPatientForm({ patient, familyUsers, currentFamily }: { patie
           <Field label="Endereço" className="sm:col-span-2">
             <input name="address" defaultValue={patient.address || ""} className="input" />
           </Field>
-          <Field label="Plano de cuidado">
-            <select name="care_level" className="input" defaultValue={patient.care_level || CARE_LEVELS[0]}>
-              {CARE_LEVELS.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          </Field>
+          <CarePlanField initialValue={patient.care_level} preserveLegacy />
           <Field label="Status">
             <select name="status" className="input" defaultValue={patient.status}>
               <option value="pendente">Pendente</option>
@@ -153,8 +144,8 @@ export function EditPatientForm({ patient, familyUsers, currentFamily }: { patie
         )}
       </section>
 
-      {error && <p className="text-sm text-[var(--status-critical)]">{error}</p>}
-      {saved && <p className="text-sm text-[var(--status-good)]">Alterações salvas.</p>}
+      {error && <p role="alert" className="text-sm text-[var(--status-critical)]">{error}</p>}
+      {saved && <p role="status" className="text-sm text-[var(--status-good)]">Alterações salvas.</p>}
 
       <div className="border-t border-[var(--border)] pt-6">
         <button
@@ -203,8 +194,10 @@ function ModeButton({ active, onClick, label }: { active: boolean; onClick: () =
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <label className="block text-xs font-medium text-[var(--muted)] mb-1">{label}</label>
-      {children}
+      <label className="block">
+        <span className="block text-xs font-medium text-[var(--muted)] mb-1">{label}</span>
+        {children}
+      </label>
     </div>
   );
 }

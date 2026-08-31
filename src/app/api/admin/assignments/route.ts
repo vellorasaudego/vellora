@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "@/lib/guard";
 import { createAssignment } from "@/lib/data";
 import { apiError } from "@/lib/api-error";
+import { AssignmentConflictError } from "@/lib/assignment-errors";
 
 export async function POST(req: NextRequest) {
   const guard = await requireRole("admin");
@@ -20,6 +21,9 @@ export async function POST(req: NextRequest) {
     const assignment = await createAssignment({ patient_id: patientId, caregiver_user_id: caregiverUserId, start_date: startDate });
     return NextResponse.json({ ok: true, id: assignment.id });
   } catch (error) {
+    if (error instanceof AssignmentConflictError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 409 });
+    }
     return apiError(error, "api/admin/assignments", "Não foi possível vincular o cuidador.");
   }
 }

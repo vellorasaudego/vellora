@@ -11,6 +11,13 @@ import { diffDailyRecord, snapshotDailyRecord } from "./record-utils";
 import * as supabaseData from "./supabase/data";
 import { resolveAuthProvider } from "./auth-provider";
 import { runtimeValue } from "./runtime-config";
+import {
+  ASSIGNMENT_ACTIVE_CONFLICT_MESSAGE,
+  ASSIGNMENT_DUPLICATE_CONFLICT_MESSAGE,
+  ASSIGNMENT_HISTORY_CONFLICT_MESSAGE,
+  AssignmentConflictError,
+  isAssignmentUniqueViolation,
+} from "./assignment-errors";
 
 export type User = {
   id: string;
@@ -312,12 +319,68 @@ export async function listAssignmentsForPatient(patientId: string): Promise<Assi
 
 export async function createAssignment(input: { patient_id: string; caregiver_user_id: string; start_date: string }): Promise<Assignment> {
   if (shouldUseSupabaseData()) return supabaseData.createAssignment(input);
-  const id = randomUUID();
-  await query(
-    `INSERT INTO caregiver_assignments (id, patient_id, caregiver_user_id, start_date, active) VALUES ($1,$2,$3,$4,1)`,
-    [id, input.patient_id, input.caregiver_user_id, input.start_date]
+
+  const inactiveAssignments = await query<Assignment>(
+    `SELECT * FROM caregiver_assignments
+     WHERE patient_id = $1 AND caregiver_user_id = $2 AND start_date = $3 AND active = 0
+     ORDER BY created_at DESC, id DESC
+     LIMIT 2`,
+    [input.patient_id, input.caregiver_user_id, input.start_date]
   );
-  return (await queryOne<Assignment>("SELECT * FROM caregiver_assignments WHERE id = $1", [id]))!;
+  if (inactiveAssignments.length > 1) {
+    throw new AssignmentConflictError("duplicate_history", ASSIGNMENT_HISTORY_CONFLICT_MESSAGE);
+  }
+
+  const activeAssignment = await queryOne<Assignment>(
+    `SELECT * FROM caregiver_assignments
+     WHERE patient_id = $1 AND caregiver_user_id = $2 AND active = 1
+     ORDER BY start_date DESC, created_at DESC
+     LIMIT 1`,
+    [input.patient_id, input.caregiver_user_id]
+  );
+  if (activeAssignment) {
+    throw new AssignmentConflictError("active_duplicate", ASSIGNMENT_ACTIVE_CONFLICT_MESSAGE);
+  }
+
+  const inactiveAssignment = inactiveAssignments[0];
+  if (inactiveAssignment) {
+    const restored = await query<Assignment>(
+      `UPDATE caregiver_assignments
+       SET active = 1, end_date = NULL
+       WHERE id = $1 AND active = 0
+       RETURNING *`,
+      [inactiveAssignment.id]
+    );
+    if (restored[0]) return restored[0];
+
+    const activeAfterRace = await queryOne<Assignment>(
+      `SELECT * FROM caregiver_assignments
+       WHERE patient_id = $1 AND caregiver_user_id = $2 AND active = 1
+       LIMIT 1`,
+      [input.patient_id, input.caregiver_user_id]
+    );
+    if (activeAfterRace) {
+      throw new AssignmentConflictError("active_duplicate", ASSIGNMENT_ACTIVE_CONFLICT_MESSAGE);
+    }
+    throw new Error("Não foi possível reativar o vínculo.");
+  }
+
+  const id = randomUUID();
+  try {
+    await query(
+      `INSERT INTO caregiver_assignments (id, patient_id, caregiver_user_id, start_date, active) VALUES ($1,$2,$3,$4,1)`,
+      [id, input.patient_id, input.caregiver_user_id, input.start_date]
+    );
+  } catch (error) {
+    if (isAssignmentUniqueViolation(error)) {
+      throw new AssignmentConflictError("duplicate_assignment", ASSIGNMENT_DUPLICATE_CONFLICT_MESSAGE);
+    }
+    throw error;
+  }
+
+  const created = await queryOne<Assignment>("SELECT * FROM caregiver_assignments WHERE id = $1", [id]);
+  if (!created) throw new Error("Não foi possível confirmar o vínculo criado.");
+  return created;
 }
 
 export async function deactivateAssignment(id: string): Promise<void> {

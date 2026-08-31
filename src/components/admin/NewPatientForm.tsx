@@ -3,8 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/lib/data";
-
-const CARE_LEVELS = ["Período diurno (8h/dia)", "Período noturno (12h/dia)", "Integral (12h/dia)", "24 horas"];
+import { CarePlanField } from "./CarePlanField";
 
 export function NewPatientForm({
   familyUsers,
@@ -50,10 +49,9 @@ export function NewPatientForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const json = await res.json();
+      const json = (await res.json().catch(() => ({}))) as { error?: string; id?: string };
       if (!res.ok) {
         setError(json.error || "Não foi possível criar o paciente.");
-        setLoading(false);
         return;
       }
       router.push(`/admin/pacientes/${json.id}`);
@@ -78,15 +76,7 @@ export function NewPatientForm({
           <Field label="Endereço" className="sm:col-span-2">
             <input name="address" className="input" />
           </Field>
-          <Field label="Plano de cuidado">
-            <select name="care_level" className="input" defaultValue={defaults?.careType || CARE_LEVELS[0]}>
-              {CARE_LEVELS.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          </Field>
+          <CarePlanField initialValue={defaults?.careType} />
           <Field label="Status">
             <select name="status" className="input" defaultValue="pendente">
               <option value="pendente">Pendente</option>
@@ -150,7 +140,7 @@ export function NewPatientForm({
         )}
       </section>
 
-      {error && <p className="text-sm text-[var(--status-critical)]">{error}</p>}
+      {error && <p role="alert" className="text-sm text-[var(--status-critical)]">{error}</p>}
 
       <div className="border-t border-[var(--border)] pt-6">
         <button
@@ -199,8 +189,10 @@ function ModeButton({ active, onClick, label }: { active: boolean; onClick: () =
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <label className="block text-xs font-medium text-[var(--muted)] mb-1">{label}</label>
-      {children}
+      <label className="block">
+        <span className="block text-xs font-medium text-[var(--muted)] mb-1">{label}</span>
+        {children}
+      </label>
     </div>
   );
 }
