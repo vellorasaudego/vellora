@@ -17,6 +17,33 @@ export type SupabaseCookieState = {
   headers: Record<string, string>;
 };
 
+function isHttpsUrl(url: string | undefined): boolean {
+  if (!url) return false;
+  try {
+    return new URL(url).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function shouldUseSecureCookies(url?: string): boolean {
+  if (url) return isHttpsUrl(url);
+
+  if (isHttpsUrl(runtimeValue("VELLORA_APP_URL")?.trim())) return true;
+  if (["production", "preview"].includes(runtimeValue("VERCEL_ENV")?.trim().toLowerCase() || "")) {
+    return true;
+  }
+  return runtimeValue("NODE_ENV")?.trim().toLowerCase() === "production";
+}
+
+function hardenedCookieOptions(options: CookieOptions, url?: string): CookieOptions {
+  if (!shouldUseSecureCookies(url)) return options;
+  // Do not set HttpOnly here: @supabase/ssr stores a refresh token in a cookie
+  // that the browser client must be able to read and rotate. Secure only
+  // restricts transport to HTTPS and remains compatible with that flow.
+  return { ...options, secure: true };
+}
+
 function serverSupabaseConfig() {
   return validateSupabaseConfig(
     runtimeValue("NEXT_PUBLIC_SUPABASE_URL") || runtimeValue("SUPABASE_URL"),
@@ -43,7 +70,9 @@ export async function createSupabaseServerClient(): Promise<SupabaseClient> {
       },
       setAll(cookiesToSet) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, hardenedCookieOptions(options)),
+          );
         } catch {
           // Server Components cannot always mutate response cookies. The
           // proxy refreshes the session and owns the response in that case.
@@ -54,7 +83,7 @@ export async function createSupabaseServerClient(): Promise<SupabaseClient> {
 }
 
 export function createSupabaseRequestClient(
-  request: Pick<NextRequest, "cookies">,
+  request: Pick<NextRequest, "cookies"> & Partial<Pick<NextRequest, "url">>,
   state: SupabaseCookieState,
 ): SupabaseClient {
   const config = serverSupabaseConfig();
@@ -69,7 +98,13 @@ export function createSupabaseRequestClient(
         // Keep the request view in sync before the proxy creates the upstream
         // response. This is required when getUser() refreshes an expired token.
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        state.cookies.push(...cookiesToSet);
+        state.cookies.push(
+          ...cookiesToSet.map(({ name, value, options }) => ({
+            name,
+            value,
+            options: hardenedCookieOptions(options, request.url),
+          })),
+        );
         Object.assign(state.headers, responseHeaders);
       },
     },

@@ -32,13 +32,13 @@ export function PublicFooter() {
           <p className="mt-4 max-w-xs text-sm leading-6 text-white/68">
             Famílias, profissionais e equipe Vellora entram por um único acesso seguro.
           </p>
-          <Link
+          <a
             href="/login"
             className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-bold text-[var(--brand-deep)] shadow-sm hover:-translate-y-0.5"
           >
             Acessar painel
             <LineIcon name="arrow" className="h-4 w-4" />
-          </Link>
+          </a>
         </div>
       </div>
       <div className="border-t border-white/10">

@@ -107,7 +107,8 @@ describe("fronteira segura entre Supabase e legacy", () => {
     expect(server).toContain("createServerClient");
     expect(server).toContain("cookies");
     expect(server).toContain("request.cookies.set(name, value)");
-    expect(server).toContain("state.cookies.push(...cookiesToSet)");
+    expect(server).toContain("state.cookies.push(");
+    expect(server).toContain("hardenedCookieOptions(options, request.url)");
     expect(proxy).toContain("NextResponse.next({ request })");
     expect(proxy).toContain("getSupabaseProxySession");
     expect(proxySession).toContain("getClaims");

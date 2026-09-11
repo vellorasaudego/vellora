@@ -29,13 +29,40 @@ const MAX_RATE_LIMIT_SCOPE_LENGTH = 80;
 const MAX_RATE_LIMIT_LIMIT = 10_000;
 const MAX_RATE_LIMIT_WINDOW_SECONDS = 86_400;
 
+function normalizedAddress(value: string | null): string | undefined {
+  const candidate = value?.split(",", 1)[0]?.trim();
+  if (!candidate || candidate.length > 128 || /[\u0000-\u001f\u007f]/.test(candidate)) {
+    return undefined;
+  }
+  return candidate;
+}
+
+function cloudflareAddressIsExplicitlyTrusted(): boolean {
+  // The Cloudflare-specific header is never trusted merely because it exists.
+  // Both values must be provisioned server-side. This prevents a direct client
+  // from choosing an arbitrary cf-connecting-ip value on Vercel or locally.
+  return (
+    runtimeValue("VELLORA_TRUSTED_PROXY")?.trim().toLowerCase() === "cloudflare" &&
+    runtimeValue("VELLORA_TRUST_CF_CONNECTING_IP")?.trim().toLowerCase() === "true"
+  );
+}
+
 export function getClientAddress(request: Pick<Request, "headers">): string {
   const headers = request.headers;
-  const direct = headers.get("cf-connecting-ip") || headers.get("x-real-ip");
-  if (direct?.trim()) return direct.trim();
+  if (cloudflareAddressIsExplicitlyTrusted()) {
+    const cloudflare = normalizedAddress(headers.get("cf-connecting-ip"));
+    if (cloudflare) return cloudflare;
+  }
 
-  const forwarded = headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  if (forwarded) return forwarded;
+  // Vercel/managed reverse proxies provide x-real-ip or x-forwarded-for.
+  // These headers are trusted only at that edge boundary; if the app is
+  // exposed directly, configure the edge accordingly instead of treating an
+  // arbitrary client-supplied header as authentication. Unknown is a
+  // conservative shared bucket and is never persisted as a raw address.
+  const platformAddress =
+    normalizedAddress(headers.get("x-real-ip")) ??
+    normalizedAddress(headers.get("x-forwarded-for"));
+  if (platformAddress) return platformAddress;
   return "unknown";
 }
 

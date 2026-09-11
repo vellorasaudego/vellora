@@ -1,42 +1,17 @@
 import {
   listCaregiverProfiles,
-  listContractDocuments,
-  listPatientsByCaregiver,
   listUsersByRole,
 } from "@/lib/data";
 import { CaregiverBank } from "@/components/admin/CaregiverBank";
+import { CaregiverDirectoryTable } from "@/components/admin/CaregiverDirectoryTable";
 import { NewCaregiverForm } from "@/components/admin/NewCaregiverForm";
-import { ContractManager } from "@/components/admin/ContractManager";
-import { DeleteButton } from "@/components/admin/DeleteButton";
+import { manualAccountDirectoryEntry } from "@/components/admin/caregiver-directory";
 
 export default async function AdminCaregiversPage() {
   const [profiles, caregiverUsers] = await Promise.all([
     listCaregiverProfiles(),
     listUsersByRole("cuidador"),
   ]);
-  const [patientLists, profileContractLists, manualContractLists] = await Promise.all([
-    Promise.all(caregiverUsers.map((caregiver) => listPatientsByCaregiver(caregiver.id))),
-    Promise.all(profiles.map((profile) => listContractDocuments("caregiver_profile", profile.id))),
-    Promise.all(caregiverUsers.map((caregiver) => listContractDocuments("caregiver_user", caregiver.id))),
-  ]);
-  const patientNamesByUser = new Map(
-    caregiverUsers.map((caregiver, index) => [
-      caregiver.id,
-      patientLists[index].map((patient) => patient.name),
-    ])
-  );
-  const patientsByProfile = Object.fromEntries(
-    profiles.map((profile) => [
-      profile.id,
-      profile.user_id ? patientNamesByUser.get(profile.user_id) || [] : [],
-    ])
-  );
-  const contractsByProfile = Object.fromEntries(
-    profiles.map((profile, index) => [profile.id, profileContractLists[index]])
-  );
-  const contractsByManualUser = Object.fromEntries(
-    caregiverUsers.map((caregiver, index) => [caregiver.id, manualContractLists[index]])
-  );
   const linkedUserIds = new Set(profiles.map((profile) => profile.user_id).filter(Boolean));
   const manuallyCreatedUsers = caregiverUsers.filter((caregiver) => !linkedUserIds.has(caregiver.id));
 
@@ -52,8 +27,6 @@ export default async function AdminCaregiversPage() {
 
       <CaregiverBank
         profiles={profiles}
-        patientsByProfile={patientsByProfile}
-        contractsByProfile={contractsByProfile}
       />
 
       <section className="mt-10 border-t border-[var(--border)] pt-8">
@@ -66,55 +39,10 @@ export default async function AdminCaregiversPage() {
           </div>
           <NewCaregiverForm />
         </div>
-
-        {manuallyCreatedUsers.length > 0 ? (
-          <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border)] text-left text-xs uppercase tracking-wide text-[var(--muted-2)]">
-                  <th className="px-5 py-3 font-medium">Nome</th>
-                  <th className="px-5 py-3 font-medium">Contato</th>
-                  <th className="px-5 py-3 font-medium">Pacientes atribuídos</th>
-                  <th className="px-5 py-3 font-medium">Contratos e ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {manuallyCreatedUsers.map((caregiver) => (
-                  <tr key={caregiver.id} className="border-b border-[var(--border)] last:border-0">
-                    <td className="px-5 py-4 font-medium text-[var(--foreground)]">{caregiver.name}</td>
-                    <td className="px-5 py-4 text-[var(--muted)]">
-                      {caregiver.email}
-                      <br />
-                      {caregiver.phone}
-                    </td>
-                    <td className="px-5 py-4 text-[var(--foreground)]">
-                      {(patientNamesByUser.get(caregiver.id) || []).join(", ") || "Nenhum"}
-                    </td>
-                    <td className="min-w-[380px] px-5 py-4">
-                      <ContractManager
-                        ownerType="caregiver_user"
-                        ownerId={caregiver.id}
-                        contracts={contractsByManualUser[caregiver.id] || []}
-                      />
-                      <div className="mt-3">
-                        <DeleteButton
-                          endpoint={`/api/admin/caregiver-users/${caregiver.id}`}
-                          confirmText={`Excluir o cadastro de ${caregiver.name}? O acesso será encerrado, vínculos ativos serão removidos e os registros históricos serão preservados sem os dados pessoais.`}
-                          label="Excluir cuidador"
-                          compact
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="rounded-xl bg-[var(--surface-soft)] p-4 text-sm text-[var(--muted-2)]">
-            Nenhum cuidador foi criado manualmente.
-          </p>
-        )}
+        <CaregiverDirectoryTable
+          entries={manuallyCreatedUsers.map(manualAccountDirectoryEntry)}
+          emptyMessage="Nenhum cuidador foi criado manualmente."
+        />
       </section>
     </div>
   );

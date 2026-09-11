@@ -9,10 +9,13 @@ import { validateSupabaseConfig } from "./config";
 import type {
   Assignment,
   CaregiverProfile,
+  CaregiverProfileUpdate,
+  CaregiverUserUpdate,
   ContractDocument,
   ContractOwnerType,
   DailyRecord,
   DailyRecordAuditEvent,
+  FamilyUserUpdate,
   Lead,
   Patient,
   ProfessionalApplication,
@@ -82,6 +85,13 @@ const CAREGIVER_STATUS_VALUES = new Set<CaregiverProfile["account_status"]>([
   "ativo",
   "inativo",
 ]);
+
+// Family and caregiver portals do not display the administrative patient
+// notes. Keeping the projection explicit prevents those columns from being
+// selected by ordinary portal reads while preserving full rows for admin
+// operations below.
+const PORTAL_PATIENT_COLUMNS =
+  "id, name, birth_date, address, care_level, condition_summary, family_user_id, status, created_at";
 
 function serverOnly(): void {
   if (typeof window !== "undefined") {
@@ -660,6 +670,22 @@ export async function createUser(input: {
   return createAuthProfile(serviceClient(), input);
 }
 
+export async function updateFamilyUser(id: string, fields: FamilyUserUpdate): Promise<void> {
+  const client = await requestClient();
+  const userId = assertUuid(id, "Família");
+  const update: SupabaseRow = {};
+  if ("name" in fields) update.name = fields.name;
+  if ("phone" in fields) update.phone = fields.phone ?? null;
+  if (!Object.keys(update).length) return;
+  const { error } = await client
+    .from("profiles")
+    .update(update)
+    .eq("id", userId)
+    .eq("role", "familia")
+    .eq("active", true);
+  requireNoError("Não foi possível atualizar cadastro da família Supabase", error);
+}
+
 // ---------- Patients ----------
 export async function listPatients(): Promise<Patient[]> {
   const client = await requestClient();
@@ -675,11 +701,22 @@ export async function getPatient(id: string): Promise<Patient | undefined> {
   return data ? mapPatient(data as SupabaseRow) : undefined;
 }
 
+export async function getPatientForPortal(id: string): Promise<Patient | undefined> {
+  const client = await requestClient();
+  const { data, error } = await client
+    .from("patients")
+    .select(PORTAL_PATIENT_COLUMNS)
+    .eq("id", assertUuid(id, "Paciente"))
+    .maybeSingle();
+  requireNoError("Não foi possível consultar paciente do portal Supabase", error);
+  return data ? mapPatient(data as SupabaseRow) : undefined;
+}
+
 export async function listPatientsByFamily(familyUserId: string): Promise<Patient[]> {
   const client = await requestClient();
   const { data, error } = await client
     .from("patients")
-    .select("*")
+    .select(PORTAL_PATIENT_COLUMNS)
     .eq("family_user_id", assertUuid(familyUserId, "Família"))
     .order("created_at", { ascending: false });
   requireNoError("Não foi possível listar pacientes da família", error);
@@ -699,7 +736,7 @@ export async function listPatientsByCaregiver(caregiverUserId: string): Promise<
     .map((row) => asNullableString(row.patient_id))
     .filter((id): id is string => Boolean(id));
   if (!patientIds.length) return [];
-  const { data, error } = await client.from("patients").select("*").in("id", patientIds).order("name");
+  const { data, error } = await client.from("patients").select(PORTAL_PATIENT_COLUMNS).in("id", patientIds).order("name");
   requireNoError("Não foi possível listar pacientes do cuidador", error);
   return ((data || []) as SupabaseRow[]).map(mapPatient);
 }
@@ -1110,6 +1147,47 @@ export async function getCaregiverProfileByUserId(userId: string): Promise<Careg
   const row = result.data as SupabaseRow;
   const authRows = row.user_id ? await profilesWithAuth([asString(row.user_id)]) : [];
   return mapCaregiverProfile(row, authRows[0]?.authUser?.email || null);
+}
+
+export async function updateCaregiverProfile(id: string, fields: CaregiverProfileUpdate): Promise<void> {
+  const client = await requestClient();
+  const profileId = assertUuid(id, "Perfil de cuidador");
+  const allowed: (keyof CaregiverProfileUpdate)[] = [
+    "name",
+    "contact_email",
+    "phone",
+    "city",
+    "profession",
+    "coren",
+    "experience",
+    "availability_days",
+    "availability_shifts",
+    "available_from",
+    "notes",
+  ];
+  const update: SupabaseRow = {};
+  for (const key of allowed) {
+    if (key in fields) update[key] = fields[key] ?? null;
+  }
+  if (!Object.keys(update).length) return;
+  const { error } = await client.from("caregiver_profiles").update(update).eq("id", profileId);
+  requireNoError("Não foi possível atualizar perfil de cuidador Supabase", error);
+}
+
+export async function updateCaregiverUser(id: string, fields: CaregiverUserUpdate): Promise<void> {
+  const client = await requestClient();
+  const userId = assertUuid(id, "Cuidador");
+  const update: SupabaseRow = {};
+  if ("name" in fields) update.name = fields.name;
+  if ("phone" in fields) update.phone = fields.phone ?? null;
+  if (!Object.keys(update).length) return;
+  const { error } = await client
+    .from("profiles")
+    .update(update)
+    .eq("id", userId)
+    .eq("role", "cuidador")
+    .eq("active", true);
+  requireNoError("Não foi possível atualizar cadastro manual Supabase", error);
 }
 
 export async function createCaregiverAccess(input: {
@@ -1551,6 +1629,24 @@ export async function updateRecord(
   const oldPhotoKey = asNullableString(existingRow.photo_storage_key);
   if (oldPhotoKey && oldPhotoKey !== newPhotoKey) await deleteStoredFile(oldPhotoKey).catch(() => undefined);
   return hydratePhoto(mapDailyRecord(updatedData as SupabaseRow), updatedData as SupabaseRow);
+}
+
+export async function deleteRecord(id: string): Promise<boolean> {
+  const client = await requestClient();
+  const recordId = assertUuid(id, "Registro");
+  const { data, error: selectError } = await client
+    .from("daily_records")
+    .select("photo_storage_key")
+    .eq("id", recordId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar registro diário Supabase", selectError);
+  if (!data) return false;
+
+  const photoKey = asNullableString((data as SupabaseRow).photo_storage_key);
+  const { error: deleteError } = await client.from("daily_records").delete().eq("id", recordId);
+  requireNoError("Não foi possível excluir registro diário Supabase", deleteError);
+  if (photoKey) await cleanupContracts([photoKey]);
+  return true;
 }
 
 export async function listRecordAuditForPatient(patientId: string, limit = 50): Promise<DailyRecordAuditEvent[]> {

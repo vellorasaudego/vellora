@@ -53,6 +53,7 @@ export function ProfessionalApplicationsTable({ applications }: { applications: 
   const [pending, startTransition] = useTransition();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(() => new Set());
 
   function updateStatus(id: string, status: ProfessionalApplication["status"]) {
     setUpdatingId(id);
@@ -65,6 +66,9 @@ export function ProfessionalApplicationsTable({ applications }: { applications: 
           body: JSON.stringify({ status }),
         });
         if (!response.ok) throw new Error("Não foi possível atualizar o status.");
+        if (status === "aprovado") {
+          setHiddenIds((current) => new Set(current).add(id));
+        }
         router.refresh();
       } catch (updateError) {
         setError(updateError instanceof Error ? updateError.message : "Erro ao atualizar o cadastro.");
@@ -91,7 +95,7 @@ export function ProfessionalApplicationsTable({ applications }: { applications: 
             </tr>
           </thead>
           <tbody>
-            {applications.map((application) => (
+            {applications.filter((application) => !hiddenIds.has(application.id)).map((application) => (
               <tr key={application.id} className="border-b border-[var(--border)] align-top last:border-0">
                 <td className="px-5 py-4">
                   <p className="font-medium text-[var(--foreground)]">{application.name}</p>
@@ -143,7 +147,7 @@ export function ProfessionalApplicationsTable({ applications }: { applications: 
             ))}
           </tbody>
         </table>
-        {applications.length === 0 ? (
+        {applications.filter((application) => !hiddenIds.has(application.id)).length === 0 ? (
           <p className="p-6 text-sm text-[var(--muted-2)]">Nenhuma candidatura recebida ainda.</p>
         ) : null}
       </div>

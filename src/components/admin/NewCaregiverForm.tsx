@@ -7,42 +7,57 @@ export function NewCaregiverForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
   const [open, setOpen] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSaved(false);
     const data = new FormData(e.currentTarget);
-    const res = await fetch("/api/admin/caregivers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: data.get("name"),
-        email: data.get("email"),
-        phone: data.get("phone"),
-        password: data.get("password"),
-      }),
-    });
-    const json = await res.json();
-    setLoading(false);
-    if (!res.ok) {
-      setError(json.error || "Não foi possível cadastrar.");
-      return;
+    try {
+      const res = await fetch("/api/admin/caregivers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          email: data.get("email"),
+          phone: data.get("phone"),
+          password: data.get("password"),
+        }),
+      });
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setError(json.error || "Não foi possível cadastrar.");
+        return;
+      }
+      (e.target as HTMLFormElement).reset();
+      setSaved(true);
+      setOpen(false);
+      router.refresh();
+    } catch {
+      setError("Erro de conexão. O cuidador não foi cadastrado. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
-    (e.target as HTMLFormElement).reset();
-    setOpen(false);
-    router.refresh();
   }
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded-lg bg-[var(--brand)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--brand-dark)]"
-      >
-        + Novo cuidador
-      </button>
+      <div>
+        <button
+          onClick={() => {
+            setError(null);
+            setSaved(false);
+            setOpen(true);
+          }}
+          className="rounded-lg bg-[var(--brand)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--brand-dark)]"
+        >
+          + Novo cuidador
+        </button>
+        {saved ? <p className="mt-2 text-sm text-[var(--status-good)]" role="status">Cuidador cadastrado.</p> : null}
+      </div>
     );
   }
 
@@ -71,7 +86,7 @@ export function NewCaregiverForm() {
           />
         </Field>
       </div>
-      {error && <p className="mt-3 text-sm text-[var(--status-critical)]">{error}</p>}
+      {error && <p className="mt-3 text-sm text-[var(--status-critical)]" role="alert">{error}</p>}
       <div className="mt-4 flex gap-3">
         <button
           type="submit"

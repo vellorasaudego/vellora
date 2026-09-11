@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
-import { getPatient, listRecordsForPatient, getCaregiverNamesMap, listAssignmentsForPatient } from "@/lib/data";
+import { getPatientForPortal, listRecordsForPatient, getCaregiverNamesMap, listAssignmentsForPatient } from "@/lib/data";
 import { RecordCard } from "@/components/RecordCard";
 import { BloodPressureChart, HeartRateChart, TemperatureChart, Spo2Chart, GlucoseChart, VitalsPoint } from "@/components/charts/VitalsChart";
 import { Pill } from "@/components/ui/Badge";
@@ -9,7 +9,7 @@ import { Pill } from "@/components/ui/Badge";
 export default async function FamiliaPatientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getSession();
-  const patient = await getPatient(id);
+  const patient = await getPatientForPortal(id);
 
   if (!patient || !session || patient.family_user_id !== session.userId) {
     notFound();

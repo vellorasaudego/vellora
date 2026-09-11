@@ -26,7 +26,7 @@ const NUMERIC_FIELDS = {
   pain_level: { min: 0, max: 10, integer: true },
 } as const;
 
-type RecordFieldValues = Omit<
+export type RecordFieldValues = Omit<
   DailyRecord,
   "id" | "created_at" | "updated_at" | "patient_id" | "caregiver_user_id" | "photo_data"
 >;
@@ -57,7 +57,7 @@ function validImageSignature(type: string, bytes: Uint8Array): boolean {
   return false;
 }
 
-async function readPhoto(form: FormData): Promise<PhotoReadResult> {
+export async function readPhoto(form: FormData): Promise<PhotoReadResult> {
   const photo = form.get("photo");
   if (!photo || typeof photo === "string" || photo.size === 0) {
     return { provided: false, data: null };
@@ -77,7 +77,7 @@ async function readPhoto(form: FormData): Promise<PhotoReadResult> {
   return { provided: true, data: `data:${photo.type};base64,${buffer.toString("base64")}` };
 }
 
-function parseRecordFields(form: FormData): { values?: RecordFieldValues; error?: string } {
+export function parseRecordFields(form: FormData): { values?: RecordFieldValues; error?: string } {
   const recordDate = limitedText(form, "record_date", 10);
   const recordTime = limitedText(form, "record_time", 5);
   if (!recordDate || !isValidIsoDate(recordDate)) {
@@ -131,7 +131,7 @@ function isPhotoRemovalRequested(form: FormData): boolean {
   return value === "on" || value === "true";
 }
 
-function photoFieldsForPatch(form: FormData, photo: PhotoReadResult): { photo_data?: string | null } {
+export function photoFieldsForPatch(form: FormData, photo: PhotoReadResult): { photo_data?: string | null } {
   if (photo.provided) return { photo_data: photo.data };
   if (isPhotoRemovalRequested(form)) return { photo_data: null };
   return {};
@@ -144,7 +144,7 @@ function rateLimitedResponse(retryAfterSeconds: number) {
   );
 }
 
-async function parseForm(req: NextRequest): Promise<FormData | NextResponse> {
+export async function parseForm(req: NextRequest): Promise<FormData | NextResponse> {
   try {
     return await req.formData();
   } catch {

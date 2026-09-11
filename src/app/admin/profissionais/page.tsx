@@ -3,6 +3,7 @@ import { listProfessionalApplications } from "@/lib/data";
 
 export default async function AdminProfessionalsPage() {
   const applications = await listProfessionalApplications();
+  const pendingApplications = applications.filter((application) => application.status !== "aprovado");
 
   return (
     <div>
@@ -14,7 +15,7 @@ export default async function AdminProfessionalsPage() {
           incluído automaticamente no banco de cuidadores; depois, basta criar o e-mail e a senha de acesso.
         </p>
       </div>
-      <ProfessionalApplicationsTable applications={applications} />
+      <ProfessionalApplicationsTable applications={pendingApplications} />
     </div>
   );
 }

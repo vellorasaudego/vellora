@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import Script from "next/script";
 
 const GOOGLE_ADS_ID = "AW-18418885759";
+const GOOGLE_ADS_EXTERNAL_SCRIPT_ID = "vellora-google-ads-external";
+const GOOGLE_ADS_INLINE_SCRIPT_ID = "vellora-google-ads-inline";
+const GOOGLE_ADS_SCRIPT_MARKER = "data-vellora-google-ads";
 
 type GoogleTagCommand = unknown[] | IArguments;
 
@@ -13,6 +16,7 @@ declare global {
     dataLayer?: GoogleTagCommand[];
     gtag?: (...args: unknown[]) => void;
     __velloraGoogleAdsInitialized?: boolean;
+    __velloraGoogleAdsBlocked?: boolean;
   }
 }
 
@@ -32,7 +36,7 @@ function isPrivateRoute(pathname: string) {
 }
 
 function initializeGoogleAds() {
-  if (window.__velloraGoogleAdsInitialized) return;
+  if (window.__velloraGoogleAdsBlocked || window.__velloraGoogleAdsInitialized) return;
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || ((...args: unknown[]) => {
@@ -43,11 +47,25 @@ function initializeGoogleAds() {
   window.__velloraGoogleAdsInitialized = true;
 }
 
+function cleanupGoogleAds() {
+  document.querySelectorAll(`script[${GOOGLE_ADS_SCRIPT_MARKER}]`).forEach((script) => script.remove());
+  window.gtag = undefined;
+  window.dataLayer = undefined;
+  window.__velloraGoogleAdsInitialized = false;
+  window.__velloraGoogleAdsBlocked = true;
+}
+
 export function GoogleAdsTag() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname && !isPrivateRoute(pathname)) initializeGoogleAds();
+    if (!pathname || isPrivateRoute(pathname)) {
+      cleanupGoogleAds();
+      return;
+    }
+
+    window.__velloraGoogleAdsBlocked = false;
+    initializeGoogleAds();
   }, [pathname]);
 
   if (!pathname || isPrivateRoute(pathname)) return null;
@@ -55,14 +73,17 @@ export function GoogleAdsTag() {
   return (
     <>
       <Script
+        id={GOOGLE_ADS_EXTERNAL_SCRIPT_ID}
         src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
         strategy="afterInteractive"
+        data-vellora-google-ads="external"
       />
       <Script
-        id="google-ads-gtag"
+        id={GOOGLE_ADS_INLINE_SCRIPT_ID}
         strategy="afterInteractive"
+        data-vellora-google-ads="inline"
       >{`
-        if (!window.__velloraGoogleAdsInitialized) {
+        if (!window.__velloraGoogleAdsInitialized && !window.__velloraGoogleAdsBlocked) {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());

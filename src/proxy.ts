@@ -4,6 +4,7 @@ import { isSafePreview } from "@/lib/preview";
 import { runtimeValue } from "@/lib/runtime-config";
 import { getAuthProvider, type Role } from "@/lib/auth";
 import { proxySupabaseAuth } from "@/lib/supabase/proxy";
+import { enforceAdminMutationSecurity } from "@/lib/request-security";
 
 const SESSION_COOKIE = "vellora_session";
 
@@ -14,6 +15,9 @@ const ROLE_PREFIX: Record<string, Role> = {
 };
 
 export async function proxy(req: NextRequest) {
+  const mutationSecurityResponse = enforceAdminMutationSecurity(req);
+  if (mutationSecurityResponse) return mutationSecurityResponse;
+
   const { pathname } = req.nextUrl;
   const matchedPrefix = Object.keys(ROLE_PREFIX).find((p) => pathname.startsWith(p));
   if (!matchedPrefix) return NextResponse.next();
@@ -77,5 +81,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/familia/:path*", "/cuidador/:path*"],
+  matcher: ["/admin/:path*", "/familia/:path*", "/cuidador/:path*", "/api/admin/:path*"],
 };

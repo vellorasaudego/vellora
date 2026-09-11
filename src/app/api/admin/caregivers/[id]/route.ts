@@ -1,7 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "@/lib/guard";
-import { deleteCaregiverProfile } from "@/lib/data";
+import { deleteCaregiverProfile, getCaregiverProfile, updateCaregiverProfile } from "@/lib/data";
 import { apiError } from "@/lib/api-error";
+import { isValidCaregiverId, parseCaregiverProfileUpdate } from "@/lib/caregiver-update";
+
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const guard = await requireRole("admin");
+  if ("error" in guard) return guard.error;
+
+  const { id } = await params;
+  if (!isValidCaregiverId(id)) {
+    return NextResponse.json({ error: "Identificador do cuidador inválido." }, { status: 400 });
+  }
+
+  const body = await req.json().catch(() => null);
+  const parsed = parseCaregiverProfileUpdate(body);
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+
+  try {
+    const profile = await getCaregiverProfile(id);
+    if (!profile) {
+      return NextResponse.json({ error: "Cadastro profissional não encontrado." }, { status: 404 });
+    }
+    await updateCaregiverProfile(id, parsed.value);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return apiError(error, "api/admin/caregivers/[id]", "Não foi possível salvar os dados do cuidador.");
+  }
+}
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const guard = await requireRole("admin");

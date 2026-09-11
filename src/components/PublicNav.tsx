@@ -110,12 +110,12 @@ export function PublicNav() {
         </nav>
 
         <div className="hidden items-center gap-3 xl:flex">
-          <Link
+          <a
             href="/login"
             className="text-sm font-medium text-[var(--foreground)] hover:text-[var(--brand-dark)]"
           >
             Acessar painel
-          </Link>
+          </a>
           <Link
             href="/trabalhe-conosco"
             className="inline-flex min-h-10 items-center rounded-lg border border-[var(--brand-dark)] px-3.5 text-sm font-semibold text-[var(--brand-dark)] hover:bg-[var(--brand-light)]"
@@ -156,12 +156,12 @@ export function PublicNav() {
         }`}
       >
         <div className="container-page grid gap-2 sm:grid-cols-3">
-          <Link
+          <a
             href="/login"
             className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--border-strong)] px-4 text-sm font-semibold text-[var(--foreground)] hover:border-[var(--brand)] hover:bg-[var(--brand-light)]"
           >
             Acessar painel
-          </Link>
+          </a>
           <Link
             href="/trabalhe-conosco"
             className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--brand-dark)] px-4 text-sm font-semibold text-[var(--brand-dark)] hover:bg-[var(--brand-light)]"

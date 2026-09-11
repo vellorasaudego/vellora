@@ -8,6 +8,9 @@ function readProjectFile(relativePath: string): string {
 
 const route = readProjectFile("src/app/api/records/route.ts");
 const form = readProjectFile("src/components/DailyRecordForm.tsx");
+const caregiverHome = readProjectFile("src/app/cuidador/page.tsx");
+const caregiverEntryPage = readProjectFile("src/app/cuidador/paciente/[id]/registro/page.tsx");
+const caregiverHistoryPage = readProjectFile("src/app/cuidador/paciente/[id]/historico/page.tsx");
 
 function sectionBetween(source: string, start: string, end: string): string {
   const startIndex = source.indexOf(start);
@@ -71,5 +74,27 @@ describe("RECORD-02 intenção enviada pela UI", () => {
     expect(form).toContain("checked={removePhoto}");
     expect(form).toContain("onChange={(event) => setRemovePhoto(event.target.checked)}");
     expect(form).toContain("if (event.target.files?.length) setRemovePhoto(false);");
+  });
+});
+
+describe("RECORD-03 múltiplas checagens no mesmo dia", () => {
+  it("sempre abre um novo registro a partir da lista de pacientes", () => {
+    expect(caregiverHome).toContain('href={`/cuidador/paciente/${patient.id}/registro`}');
+    expect(caregiverHome).toContain(">\n                  Novo registro\n");
+    expect(caregiverHome).not.toContain("filledToday");
+    expect(caregiverHome).not.toContain("Editar registro de hoje");
+  });
+
+  it("só entra em edição quando a URL informa um recordId", () => {
+    expect(caregiverEntryPage).toContain("const requestedRecord = requestedRecordId ? await getRecord(requestedRecordId) : undefined;");
+    expect(caregiverEntryPage).toContain("const existingRecord = requestedRecord;");
+    expect(caregiverEntryPage).not.toContain("getRecordForCaregiverOnDate");
+  });
+
+  it("agrupa por data sem colapsar as checagens individuais", () => {
+    expect(caregiverHistoryPage).toContain("function groupRecordsByDate");
+    expect(caregiverHistoryPage).toContain("{recordsForDate.length} {recordsForDate.length === 1 ? \"checagem\" : \"checagens\"}");
+    expect(caregiverHistoryPage).toContain("key={record.id}");
+    expect(caregiverHistoryPage).toContain("showDate={false}");
   });
 });

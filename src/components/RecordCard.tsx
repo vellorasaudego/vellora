@@ -2,6 +2,7 @@ import { DailyRecord } from "@/lib/data";
 import { statusBP, statusHeartRate, statusTemperature, statusSpo2, statusGlucose, worstStatus } from "@/lib/vitals";
 import { StatusBadge } from "./ui/Badge";
 import Link from "next/link";
+import { DeleteButton } from "@/components/admin/DeleteButton";
 
 const MOOD_LABEL: Record<string, string> = {
   bem: "😊 Bem",
@@ -20,10 +21,16 @@ export function RecordCard({
   record,
   caregiverName,
   editHref,
+  deleteEndpoint,
+  showDate = true,
+  deleteConfirmText = "Excluir este registro diário? Esta ação não pode ser desfeita.",
 }: {
   record: DailyRecord;
   caregiverName?: string;
   editHref?: string;
+  deleteEndpoint?: string;
+  showDate?: boolean;
+  deleteConfirmText?: string;
 }) {
   const overall = worstStatus(
     statusBP(record.bp_systolic, record.bp_diastolic),
@@ -37,8 +44,8 @@ export function RecordCard({
     <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <div>
-          <p className="text-sm font-semibold text-[var(--foreground)] capitalize">{formatDate(record.record_date)}</p>
-          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-[var(--muted-2)]">
+          {showDate && <p className="text-sm font-semibold text-[var(--foreground)] capitalize">{formatDate(record.record_date)}</p>}
+          <p className={`${showDate ? "mt-1 " : ""}flex flex-wrap items-center gap-x-2 text-xs text-[var(--muted-2)]`}>
             <span>{record.record_time ? `Sinais vitais medidos às ${record.record_time}` : "Horário da medição não informado"}</span>
             {caregiverName && (
               <>
@@ -130,14 +137,26 @@ export function RecordCard({
         />
       )}
 
-      {editHref && (
+      {(editHref || deleteEndpoint) && (
         <div className="mt-5 border-t border-[var(--border)] pt-4">
-          <Link
-            href={editHref}
-            className="inline-flex rounded-lg border border-[var(--border-strong)] px-3.5 py-2 text-sm font-semibold text-[var(--brand-dark)] hover:border-[var(--brand)] hover:bg-[var(--brand-light)]"
-          >
-            Editar registro
-          </Link>
+          <div className="flex flex-wrap items-start gap-3">
+            {editHref ? (
+              <Link
+                href={editHref}
+                className="inline-flex rounded-lg border border-[var(--border-strong)] px-3.5 py-2 text-sm font-semibold text-[var(--brand-dark)] hover:border-[var(--brand)] hover:bg-[var(--brand-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+              >
+                Editar registro
+              </Link>
+            ) : null}
+            {deleteEndpoint ? (
+              <DeleteButton
+                endpoint={deleteEndpoint}
+                confirmText={deleteConfirmText}
+                label="Excluir registro"
+                compact
+              />
+            ) : null}
+          </div>
         </div>
       )}
     </div>

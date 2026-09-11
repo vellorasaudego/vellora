@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
-import { getPatient, getRecord, getRecordForCaregiverOnDate, isCaregiverAssignedToPatient } from "@/lib/data";
+import { getPatientForPortal, getRecord, isCaregiverAssignedToPatient } from "@/lib/data";
 import { DailyRecordForm } from "@/components/DailyRecordForm";
 import { saoPauloDateTime } from "@/lib/record-utils";
 
@@ -15,7 +15,7 @@ export default async function RegistroDiarioPage({
   const { id } = await params;
   const query = await searchParams;
   const session = await getSession();
-  const patient = await getPatient(id);
+  const patient = await getPatientForPortal(id);
 
   if (!patient || !session || !(await isCaregiverAssignedToPatient(session.userId, id))) {
     notFound();
@@ -27,7 +27,9 @@ export default async function RegistroDiarioPage({
   if (requestedRecordId && (!requestedRecord || requestedRecord.patient_id !== id || requestedRecord.caregiver_user_id !== session.userId)) {
     notFound();
   }
-  const existingToday = requestedRecord || (await getRecordForCaregiverOnDate(id, session.userId, measurement.date));
+  // A missing recordId means a new check, even when another check exists for
+  // the same day. Editing is always explicit and record-specific.
+  const existingRecord = requestedRecord;
 
   return (
     <div className="max-w-3xl">
@@ -36,12 +38,12 @@ export default async function RegistroDiarioPage({
       </Link>
       <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 md:p-8">
         <h2 className="text-lg font-semibold text-[var(--foreground)]">
-          {existingToday ? "Editar registro" : "Registro diário"} — {patient.name}
+          {existingRecord ? "Editar registro" : "Novo registro"} — {patient.name}
         </h2>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          {existingToday
-            ? "Atualize as informações salvas. O histórico manterá o registro da alteração."
-            : "Preencha as informações do atendimento de hoje. Os campos de sinais vitais são opcionais quando não aferidos, mas recomendamos preenchê-los sempre que possível."}
+          {existingRecord
+            ? "Atualize esta checagem específica. O histórico manterá o registro da alteração."
+            : "Registre uma nova checagem, mesmo que já exista outra no mesmo dia. Os campos de sinais vitais são opcionais quando não aferidos, mas recomendamos preenchê-los sempre que possível."}
         </p>
         <div className="mt-6">
           <DailyRecordForm
@@ -49,7 +51,7 @@ export default async function RegistroDiarioPage({
             patientName={patient.name}
             initialRecordDate={measurement.date}
             initialRecordTime={measurement.time}
-            initialRecord={existingToday}
+            initialRecord={existingRecord}
           />
         </div>
       </div>

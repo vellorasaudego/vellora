@@ -109,6 +109,33 @@ export type CaregiverProfile = {
   created_at: string;
 };
 
+const PORTAL_PATIENT_COLUMNS =
+  "id, name, birth_date, address, care_level, condition_summary, family_user_id, status, created_at";
+
+export type CaregiverProfileUpdate = {
+  name?: string;
+  contact_email?: string;
+  phone?: string;
+  city?: string | null;
+  profession?: CaregiverProfile["profession"];
+  coren?: string | null;
+  experience?: string | null;
+  availability_days?: string[];
+  availability_shifts?: string[];
+  available_from?: string | null;
+  notes?: string | null;
+};
+
+export type CaregiverUserUpdate = {
+  name?: string;
+  phone?: string | null;
+};
+
+export type FamilyUserUpdate = {
+  name?: string;
+  phone?: string | null;
+};
+
 export type ContractDocument = {
   id: string;
   family_user_id: string | null;
@@ -219,6 +246,27 @@ export async function createUser(input: {
   return (await getUserById(id))!;
 }
 
+export async function updateFamilyUser(id: string, fields: FamilyUserUpdate): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateFamilyUser(id, fields);
+  const allowed: (keyof FamilyUserUpdate)[] = ["name", "phone"];
+  const sets: string[] = [];
+  const values: unknown[] = [];
+  let index = 1;
+  for (const key of allowed) {
+    if (key in fields) {
+      sets.push(`${key} = $${index}`);
+      values.push(fields[key] ?? null);
+      index += 1;
+    }
+  }
+  if (!sets.length) return;
+  values.push(id);
+  await query(
+    `UPDATE users SET ${sets.join(", ")} WHERE id = $${index} AND role = 'familia' AND deleted_at IS NULL`,
+    values,
+  );
+}
+
 // ---------- Patients ----------
 export async function listPatients(): Promise<Patient[]> {
   if (shouldUseSupabaseData()) return supabaseData.listPatients();
@@ -230,15 +278,28 @@ export async function getPatient(id: string): Promise<Patient | undefined> {
   return queryOne<Patient>("SELECT * FROM patients WHERE id = $1", [id]);
 }
 
+export async function getPatientForPortal(id: string): Promise<Patient | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getPatientForPortal(id);
+  return queryOne<Patient>(
+    `SELECT ${PORTAL_PATIENT_COLUMNS}
+     FROM patients WHERE id = $1`,
+    [id],
+  );
+}
+
 export async function listPatientsByFamily(familyUserId: string): Promise<Patient[]> {
   if (shouldUseSupabaseData()) return supabaseData.listPatientsByFamily(familyUserId);
-  return query<Patient>("SELECT * FROM patients WHERE family_user_id = $1 ORDER BY created_at DESC", [familyUserId]);
+  return query<Patient>(
+    `SELECT ${PORTAL_PATIENT_COLUMNS}
+     FROM patients WHERE family_user_id = $1 ORDER BY created_at DESC`,
+    [familyUserId],
+  );
 }
 
 export async function listPatientsByCaregiver(caregiverUserId: string): Promise<Patient[]> {
   if (shouldUseSupabaseData()) return supabaseData.listPatientsByCaregiver(caregiverUserId);
   return query<Patient>(
-    `SELECT p.* FROM patients p
+    `SELECT p.${PORTAL_PATIENT_COLUMNS.replaceAll(", ", ", p.")} FROM patients p
      JOIN caregiver_assignments a ON a.patient_id = p.id
      WHERE a.caregiver_user_id = $1 AND a.active = 1
      ORDER BY p.name`,
@@ -623,6 +684,57 @@ export async function getCaregiverProfileByUserId(userId: string): Promise<Careg
      LEFT JOIN users u ON u.id = cp.user_id
      WHERE cp.user_id = $1`,
     [userId]
+  );
+}
+
+export async function updateCaregiverProfile(id: string, fields: CaregiverProfileUpdate): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateCaregiverProfile(id, fields);
+  const allowed: (keyof CaregiverProfileUpdate)[] = [
+    "name",
+    "contact_email",
+    "phone",
+    "city",
+    "profession",
+    "coren",
+    "experience",
+    "availability_days",
+    "availability_shifts",
+    "available_from",
+    "notes",
+  ];
+  const sets: string[] = [];
+  const values: unknown[] = [];
+  let index = 1;
+  for (const key of allowed) {
+    if (key in fields) {
+      sets.push(`${key} = $${index}`);
+      values.push(fields[key] ?? null);
+      index += 1;
+    }
+  }
+  if (!sets.length) return;
+  values.push(id);
+  await query(`UPDATE caregiver_profiles SET ${sets.join(", ")} WHERE id = $${index}`, values);
+}
+
+export async function updateCaregiverUser(id: string, fields: CaregiverUserUpdate): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateCaregiverUser(id, fields);
+  const allowed: (keyof CaregiverUserUpdate)[] = ["name", "phone"];
+  const sets: string[] = [];
+  const values: unknown[] = [];
+  let index = 1;
+  for (const key of allowed) {
+    if (key in fields) {
+      sets.push(`${key} = $${index}`);
+      values.push(fields[key] ?? null);
+      index += 1;
+    }
+  }
+  if (!sets.length) return;
+  values.push(id);
+  await query(
+    `UPDATE users SET ${sets.join(", ")} WHERE id = $${index} AND role = 'cuidador' AND deleted_at IS NULL`,
+    values,
   );
 }
 
@@ -1019,6 +1131,14 @@ export async function updateRecord(
   ]);
 
   return (await getRecord(id))!;
+}
+
+export async function deleteRecord(id: string): Promise<boolean> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteRecord(id);
+  const existing = await getRecord(id);
+  if (!existing) return false;
+  await query("DELETE FROM daily_records WHERE id = $1", [id]);
+  return true;
 }
 
 export async function listRecordAuditForPatient(

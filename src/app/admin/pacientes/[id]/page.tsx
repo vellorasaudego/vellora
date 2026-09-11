@@ -7,27 +7,24 @@ import {
   listAssignmentsForPatient,
   listRecordsForPatient,
   getCaregiverNamesMap,
-  listRecordAuditForPatient,
 } from "@/lib/data";
 import { EditPatientForm } from "@/components/admin/EditPatientForm";
 import { AssignmentsManager } from "@/components/admin/AssignmentsManager";
 import { RecordCard } from "@/components/RecordCard";
 import { Card } from "@/components/ui/Card";
 import { DeleteButton } from "@/components/admin/DeleteButton";
-import { RecordAuditTimeline } from "@/components/admin/RecordAuditTimeline";
 
 export default async function AdminPatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const patient = await getPatient(id);
   if (!patient) notFound();
 
-  const [currentFamily, familyUsers, caregivers, assignmentsRaw, records, auditEvents] = await Promise.all([
+  const [currentFamily, familyUsers, caregivers, assignmentsRaw, records] = await Promise.all([
     patient.family_user_id ? getUserById(patient.family_user_id) : Promise.resolve(undefined),
     listUsersByRole("familia"),
     listUsersByRole("cuidador"),
     listAssignmentsForPatient(patient.id),
     listRecordsForPatient(patient.id, 10),
-    listRecordAuditForPatient(patient.id, 30),
   ]);
 
   const nameIds = [...assignmentsRaw.map((a) => a.caregiver_user_id), ...records.map((r) => r.caregiver_user_id)];
@@ -61,14 +58,18 @@ export default async function AdminPatientDetailPage({ params }: { params: Promi
         </Card>
       </div>
 
-      <h3 className="mt-10 mb-4 text-lg font-semibold text-[var(--foreground)]">Histórico de alterações</h3>
-      <RecordAuditTimeline events={auditEvents} />
-
       <h3 className="mt-10 mb-4 text-lg font-semibold text-[var(--foreground)]">Últimos registros diários</h3>
       <div className="space-y-4">
         {records.length === 0 && <p className="text-sm text-[var(--muted-2)]">Nenhum registro ainda.</p>}
         {records.map((r) => (
-          <RecordCard key={r.id} record={r} caregiverName={namesMap[r.caregiver_user_id] || "Cuidador"} />
+          <RecordCard
+            key={r.id}
+            record={r}
+            caregiverName={namesMap[r.caregiver_user_id] || "Cuidador"}
+            editHref={`/admin/pacientes/${patient.id}/registros/${r.id}`}
+            deleteEndpoint={`/api/admin/patients/${patient.id}/records/${r.id}`}
+            deleteConfirmText={`Excluir o registro de ${r.record_date}? Todas as alterações desse registro também serão removidas do histórico.`}
+          />
         ))}
       </div>
     </div>

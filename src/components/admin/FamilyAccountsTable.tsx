@@ -1,23 +1,19 @@
 import Link from "next/link";
-import type { ContractDocument, Patient, User } from "@/lib/data";
-import { ContractManager } from "./ContractManager";
-import { DeleteButton } from "./DeleteButton";
+import type { Patient, User } from "@/lib/data";
 
-type FamilyAccount = Pick<User, "id" | "name" | "email" | "phone" | "created_at">;
+type FamilyAccount = Pick<User, "id" | "name">;
 
 export function FamilyAccountsTable({
   families,
   patientsByFamily,
-  contractsByFamily,
 }: {
   families: FamilyAccount[];
   patientsByFamily: Record<string, Patient[]>;
-  contractsByFamily: Record<string, ContractDocument[]>;
 }) {
   if (!families.length) {
     return (
       <div className="rounded-2xl border border-dashed border-[var(--border)] p-10 text-center text-sm text-[var(--muted)]">
-        Nenhuma conta de família cadastrada.
+        Nenhuma família cadastrada ainda.
       </div>
     );
   }
@@ -28,18 +24,11 @@ export function FamilyAccountsTable({
         const patients = patientsByFamily[family.id] || [];
         return (
           <article key={family.id} className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h3 className="font-semibold text-[var(--foreground)]">{family.name}</h3>
-                <p className="mt-1 text-sm text-[var(--muted)]">{family.email}</p>
-                <p className="mt-1 text-sm text-[var(--muted-2)]">{family.phone || "Telefone não informado"}</p>
-              </div>
-              <DeleteButton
-                endpoint={`/api/admin/families/${family.id}`}
-                label="Excluir família"
-                confirmText={`Excluir o acesso de ${family.name}? A conta será removida, os contratos serão apagados e os pacientes ficarão sem vínculo familiar. Os registros de cuidado serão preservados.`}
-              />
-            </div>
+            <h3 className="font-semibold text-[var(--foreground)]">
+              <Link href={`/admin/familias/${family.id}`} className="text-[var(--brand)] hover:underline">
+                {family.name}
+              </Link>
+            </h3>
 
             <div className="mt-5 border-t border-[var(--border)] pt-4">
               <h4 className="text-sm font-semibold text-[var(--foreground)]">Pacientes vinculados</h4>
@@ -56,15 +45,17 @@ export function FamilyAccountsTable({
                   ))}
                 </div>
               ) : (
-                <p className="mt-2 text-sm text-[var(--muted-2)]">Nenhum paciente vinculado.</p>
+                <div className="mt-2 space-y-1 text-sm text-[var(--muted-2)]">
+                  <p>Nenhum paciente vinculado a esta família.</p>
+                  <p>
+                    Para vincular um paciente, abra o cadastro dele e selecione esta família em <strong>Conta da família</strong>.
+                  </p>
+                  <Link href="/admin/pacientes" className="inline-block pt-1 font-semibold text-[var(--brand)] hover:underline">
+                    Ver pacientes
+                  </Link>
+                </div>
               )}
             </div>
-
-            <ContractManager
-              ownerType="family"
-              ownerId={family.id}
-              contracts={contractsByFamily[family.id] || []}
-            />
           </article>
         );
       })}

@@ -22,12 +22,16 @@ export function DailyRecordForm({
   initialRecordDate,
   initialRecordTime,
   initialRecord,
+  endpoint = "/api/records",
+  redirectTo,
 }: {
   patientId: string;
   patientName: string;
   initialRecordDate: string;
   initialRecordTime: string;
   initialRecord?: DailyRecord | null;
+  endpoint?: string;
+  redirectTo?: string;
 }) {
   const router = useRouter();
   const isEditing = Boolean(initialRecord);
@@ -48,7 +52,7 @@ export function DailyRecordForm({
     if (!incident) formData.delete("incident_description");
 
     try {
-      const response = await fetch("/api/records", {
+      const response = await fetch(endpoint, {
         method: isEditing ? "PATCH" : "POST",
         body: formData,
       });
@@ -58,7 +62,11 @@ export function DailyRecordForm({
         setLoading(false);
         return;
       }
-      router.push("/cuidador");
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        router.push("/cuidador");
+      }
       router.refresh();
     } catch {
       setError("Erro de conexão. Tente novamente.");
