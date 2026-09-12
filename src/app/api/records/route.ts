@@ -144,6 +144,13 @@ function rateLimitedResponse(retryAfterSeconds: number) {
   );
 }
 
+function rateLimitUnavailableResponse() {
+  return NextResponse.json(
+    { error: "O serviço está temporariamente indisponível. Tente novamente em alguns instantes." },
+    { status: 503 }
+  );
+}
+
 export async function parseForm(req: NextRequest): Promise<FormData | NextResponse> {
   try {
     return await req.formData();
@@ -174,8 +181,6 @@ async function saveRecord(req: NextRequest, mode: "create" | "update") {
 
   const patientId = cleanText(form.get("patient_id"), 100);
   const recordId = cleanText(form.get("record_id"), 100);
-  const rate = await consumeRateLimit(req, `records:${session.userId}`, { limit: 60, windowSeconds: 3_600 }, patientId);
-  if (!rate.allowed) return rateLimitedResponse(rate.retryAfterSeconds);
 
   if (!patientId || !(await isCaregiverAssignedToPatient(session.userId, patientId))) {
     return NextResponse.json({ error: "Você não está vinculado a este paciente." }, { status: 403 });
@@ -187,6 +192,26 @@ async function saveRecord(req: NextRequest, mode: "create" | "update") {
   if (photo.error) return NextResponse.json({ error: photo.error }, { status: 400 });
 
   try {
+    let existing: DailyRecord | null | undefined;
+    if (mode === "update") {
+      if (!recordId.length) {
+        return NextResponse.json({ error: "Registro não informado." }, { status: 400 });
+      }
+      existing = await getRecord(recordId);
+      if (!existing || existing.patient_id !== patientId || existing.caregiver_user_id !== session.userId) {
+        return NextResponse.json({ error: "Registro não encontrado ou sem permissão para edição." }, { status: 404 });
+      }
+    }
+
+    const rate = await consumeRateLimit(
+      req,
+      `records:${session.userId}`,
+      { limit: 60, windowSeconds: 3_600 },
+      patientId,
+    );
+    if (rate.reason === "provider_unavailable") return rateLimitUnavailableResponse();
+    if (!rate.allowed) return rateLimitedResponse(rate.retryAfterSeconds);
+
     if (mode === "create") {
       const record = await createRecord(
         {
@@ -217,10 +242,7 @@ async function saveRecord(req: NextRequest, mode: "create" | "update") {
     }
 
     if (!recordId) return NextResponse.json({ error: "Registro não informado." }, { status: 400 });
-    const existing = await getRecord(recordId);
-    if (!existing || existing.patient_id !== patientId || existing.caregiver_user_id !== session.userId) {
-      return NextResponse.json({ error: "Registro não encontrado ou sem permissão para edição." }, { status: 404 });
-    }
+    if (!existing) return NextResponse.json({ error: "Registro não encontrado." }, { status: 404 });
 
     const updated = await updateRecord(
       recordId,

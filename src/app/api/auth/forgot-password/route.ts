@@ -24,6 +24,12 @@ export async function POST(req: NextRequest) {
   }
 
   const rate = await consumeRateLimit(req, "auth-forgot-password", { limit: 5, windowSeconds: 900 }, email);
+  if (rate.reason === "provider_unavailable") {
+    return NextResponse.json(
+      { error: "O serviço está temporariamente indisponível. Tente novamente em alguns instantes." },
+      { status: 503 }
+    );
+  }
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Muitas solicitações em pouco tempo. Aguarde alguns minutos e tente novamente." },

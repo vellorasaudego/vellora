@@ -61,6 +61,51 @@ describe("RECORD-02 contrato de PATCH e ciclo de vida da foto", () => {
   });
 });
 
+describe("TEST-REC-01 contrato do rate limit", () => {
+  it("valida, autoriza, lê a foto e confirma ownership antes de consumir o limite", () => {
+    const consumeIndex = route.indexOf("const rate = await consumeRateLimit");
+    expect(consumeIndex).toBeGreaterThan(0);
+    expect(route.indexOf("isCaregiverAssignedToPatient(session.userId, patientId)")).toBeLessThan(consumeIndex);
+    expect(route.indexOf("parseRecordFields(form)")).toBeLessThan(consumeIndex);
+    expect(route.indexOf("const photo = await readPhoto(form)")).toBeLessThan(consumeIndex);
+
+    const ownershipBlock = sectionBetween(route, 'if (mode === "update") {', "const rate = await consumeRateLimit");
+    expect(ownershipBlock).toContain("existing = await getRecord(recordId);");
+    expect(ownershipBlock).toContain("existing.patient_id !== patientId");
+    expect(ownershipBlock).toContain("existing.caregiver_user_id !== session.userId");
+  });
+
+  it("só cria ou atualiza depois de um rate limit permitido", () => {
+    const consumeIndex = route.indexOf("const rate = await consumeRateLimit");
+    expect(route.indexOf("await createRecord(")).toBeGreaterThan(consumeIndex);
+    expect(route.indexOf("await updateRecord(")).toBeGreaterThan(consumeIndex);
+
+    const decision = sectionBetween(route, "const rate = await consumeRateLimit", 'if (mode === "create")');
+    expect(decision).toContain('if (rate.reason === "provider_unavailable") return rateLimitUnavailableResponse();');
+    expect(decision).toContain("if (!rate.allowed) return rateLimitedResponse(rate.retryAfterSeconds);");
+  });
+
+  it("responde 503 genérico ao provider indisponível e mantém 429 com Retry-After para limite real", () => {
+    const decision = sectionBetween(route, "const rate = await consumeRateLimit", 'if (mode === "create")');
+    const unavailable = sectionBetween(decision, 'if (rate.reason === "provider_unavailable")', "if (!rate.allowed)");
+    const exceeded = decision.slice(decision.indexOf("if (!rate.allowed)"));
+
+    expect(unavailable).toContain("rateLimitUnavailableResponse()");
+    expect(unavailable).not.toContain("rateLimitedResponse");
+    expect(unavailable).not.toContain("rate.retryAfterSeconds");
+    expect(route).toContain('function rateLimitUnavailableResponse()');
+    expect(route).toContain(genericUnavailableResponse());
+    expect(route).toContain("{ status: 503 }");
+    expect(exceeded).toContain("rateLimitedResponse(rate.retryAfterSeconds)");
+    expect(route).toContain('headers: { "Retry-After": String(retryAfterSeconds) }');
+    expect(unavailable).not.toContain("error.message");
+  });
+});
+
+function genericUnavailableResponse(): string {
+  return 'error: "O serviço está temporariamente indisponível. Tente novamente em alguns instantes."';
+}
+
 describe("RECORD-02 intenção enviada pela UI", () => {
   it("usa PATCH e record_id ao editar o registro existente", () => {
     expect(form).toContain('method: isEditing ? "PATCH" : "POST"');

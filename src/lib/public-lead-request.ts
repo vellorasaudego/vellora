@@ -10,6 +10,12 @@ export async function handlePublicLeadRequest(req: NextRequest, logLabel: string
   }
 
   const rate = await consumeRateLimit(req, logLabel, { limit: 5, windowSeconds: 600 });
+  if (rate.reason === "provider_unavailable") {
+    return NextResponse.json(
+      { error: "O serviço está temporariamente indisponível. Tente novamente em alguns instantes." },
+      { status: 503 }
+    );
+  }
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Muitas solicitações em pouco tempo. Aguarde alguns minutos e tente novamente." },

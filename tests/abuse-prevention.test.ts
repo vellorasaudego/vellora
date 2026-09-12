@@ -7,7 +7,7 @@ import {
 } from "../src/lib/supabase/rate-limit-policy";
 
 function readProjectFile(relativePath: string): string {
-  return readFileSync(resolve(process.cwd(), relativePath), "utf8");
+  return readFileSync(resolve(process.cwd(), relativePath), "utf8").replaceAll("\r\n", "\n");
 }
 
 const abuseSource = readProjectFile("src/lib/abuse-prevention.ts");
@@ -21,6 +21,32 @@ const normalizedMigration = migration
   .replace(/\s+/g, " ")
   .trim()
   .toLowerCase();
+
+const rateLimitConsumers = [
+  "src/lib/public-lead-request.ts",
+  "src/app/api/professionals/route.ts",
+  "src/app/api/auth/login/route.ts",
+  "src/app/api/auth/forgot-password/route.ts",
+  "src/app/api/auth/reset-password/route.ts",
+  "src/app/api/records/route.ts",
+];
+
+const genericUnavailableMessage =
+  "O serviço está temporariamente indisponível. Tente novamente em alguns instantes.";
+
+function rateDecisionSection(source: string): string {
+  const start = source.indexOf("const rate = await consumeRateLimit");
+  const end = source.indexOf("\n\n", start);
+  if (start < 0 || end < 0) throw new Error("Bloco de decisão do rate limit não encontrado.");
+  return source.slice(start, end);
+}
+
+function sectionBetween(source: string, start: string, end: string): string {
+  const startIndex = source.indexOf(start);
+  const endIndex = source.indexOf(end, startIndex + start.length);
+  if (startIndex < 0 || endIndex < 0) throw new Error(`Seção não encontrada: ${start}`);
+  return source.slice(startIndex, endIndex);
+}
 
 describe("SEC-02 provider e política", () => {
   it("só habilita o backend Supabase com a seleção explícita", () => {
@@ -50,6 +76,20 @@ describe("SEC-02 provider e política", () => {
     expect(abuseSource.slice(supabaseBranchStart, legacyBranchStart)).not.toContain(
       "memoryRateLimit(",
     );
+  });
+
+  it("mantém o contrato reason nos caminhos permitido, limite excedido e provider indisponível", () => {
+    const memoryPath = sectionBetween(abuseSource, "function memoryRateLimit", "function assertRateLimitOptions");
+    const supabaseSuccessPath = sectionBetween(abuseSource, "const databaseRetryAfter", "    } catch (error)");
+    const failClosedPath = sectionBetween(abuseSource, "function failClosedRateLimit", "function safeOperation");
+
+    expect(abuseSource).toContain(
+      'reason: "allowed" | "limit_exceeded" | "provider_unavailable"',
+    );
+    expect(memoryPath).toContain('reason: bucket.count <= options.limit ? "allowed" : "limit_exceeded"');
+    expect(supabaseSuccessPath).toContain('reason: bucket.count <= options.limit ? "allowed" : "limit_exceeded"');
+    expect(failClosedPath).toContain("allowed: false");
+    expect(failClosedPath).toContain('reason: "provider_unavailable"');
   });
 });
 
@@ -98,18 +138,77 @@ describe("SEC-02 fronteira server-side e respostas", () => {
   });
 
   it("mantém Retry-After em todos os consumidores do rate limit", () => {
-    const consumers = [
-      "src/lib/public-lead-request.ts",
-      "src/app/api/professionals/route.ts",
-      "src/app/api/auth/login/route.ts",
-      "src/app/api/auth/forgot-password/route.ts",
-      "src/app/api/auth/reset-password/route.ts",
-      "src/app/api/records/route.ts",
-    ];
-
-    for (const consumer of consumers) {
+    for (const consumer of rateLimitConsumers) {
       const source = readProjectFile(consumer);
       expect(source, consumer).toMatch(/status:\s*429[\s\S]{0,300}Retry-After/);
     }
+  });
+
+  it("trata provider_unavailable como 503 genérico e reserva 429 ao limite real", () => {
+    for (const consumer of rateLimitConsumers) {
+      const source = readProjectFile(consumer);
+      const decision = rateDecisionSection(source);
+      const unavailableStart = decision.indexOf('if (rate.reason === "provider_unavailable")');
+      const exceededStart = decision.indexOf("if (!rate.allowed)");
+      expect(unavailableStart, consumer).toBeGreaterThanOrEqual(0);
+      expect(exceededStart, consumer).toBeGreaterThan(unavailableStart);
+
+      const unavailableBranch = decision.slice(unavailableStart, exceededStart);
+      const exceededBranch = decision.slice(exceededStart);
+
+      const usesRecordResponseHelper = consumer === "src/app/api/records/route.ts";
+      if (usesRecordResponseHelper) {
+        expect(unavailableBranch, consumer).toContain("rateLimitUnavailableResponse()");
+        expect(source, consumer).toContain(genericUnavailableMessage);
+        expect(source, consumer).toContain("{ status: 503 }");
+      } else {
+        expect(unavailableBranch, consumer).toContain(genericUnavailableMessage);
+        expect(unavailableBranch, consumer).toContain("status: 503");
+      }
+      expect(unavailableBranch, consumer).not.toContain("status: 429");
+      expect(unavailableBranch, consumer).not.toContain("Retry-After");
+      expect(unavailableBranch, consumer).not.toContain("error.message");
+      expect(unavailableBranch, consumer).not.toContain("sanitizedTechnicalReason");
+
+      if (usesRecordResponseHelper) {
+        expect(exceededBranch, consumer).toContain("rateLimitedResponse(rate.retryAfterSeconds)");
+        expect(source, consumer).toContain("status: 429");
+      } else {
+        expect(exceededBranch, consumer).toContain("status: 429");
+      }
+      if (usesRecordResponseHelper) {
+        expect(source, consumer).toContain("Retry-After");
+      } else {
+        expect(exceededBranch, consumer).toContain("Retry-After");
+      }
+      expect(exceededBranch, consumer).toContain("rate.retryAfterSeconds");
+    }
+  });
+
+  it("emite nos logs somente operação, motivo técnico sanitizado e correlação validada", () => {
+    const providerLog = sectionBetween(
+      abuseSource,
+      'console.error("[rate-limit] Provider',
+      "return failClosedRateLimit",
+    );
+    const legacyFallbackLog = sectionBetween(
+      abuseSource,
+      'console.warn("[rate-limit] D1 indisponível; usando proteção local temporária."',
+      "return memoryRateLimit",
+    );
+
+    for (const log of [providerLog, legacyFallbackLog]) {
+      expect(log).toContain("operation:");
+      expect(log).toContain("reason: sanitizedTechnicalReason(error)");
+      expect(log).not.toContain("scope:");
+      expect(log).not.toContain("getClientAddress");
+      expect(log).not.toContain("patient_id");
+      expect(log).not.toContain("form");
+      expect(log).not.toContain("error.message");
+    }
+    expect(providerLog).toContain("operation: safeOperation(normalizedScope)");
+    expect(legacyFallbackLog).toContain("operation: safeOperation(scope)");
+    expect(providerLog).toContain("correlationId");
+    expect(legacyFallbackLog).toContain("correlationId");
   });
 });

@@ -18,6 +18,7 @@ export type RateLimitResult = {
   limit: number;
   remaining: number;
   retryAfterSeconds: number;
+  reason: "allowed" | "limit_exceeded" | "provider_unavailable";
 };
 
 type MemoryBucket = { count: number; resetAt: number };
@@ -90,6 +91,7 @@ function memoryRateLimit(key: string, options: RateLimitOptions): RateLimitResul
     limit: options.limit,
     remaining: Math.max(0, options.limit - bucket.count),
     retryAfterSeconds: Math.max(1, Math.ceil((bucket.resetAt - now) / 1000)),
+    reason: bucket.count <= options.limit ? "allowed" : "limit_exceeded",
   };
 }
 
@@ -125,7 +127,25 @@ function failClosedRateLimit(options: RateLimitOptions, retryAfterSeconds: numbe
     limit: options.limit,
     remaining: 0,
     retryAfterSeconds: Math.max(1, retryAfterSeconds),
+    reason: "provider_unavailable",
   };
+}
+
+function safeOperation(scope: string): string {
+  const operation = scope.trim().split(":", 1)[0] || "unknown";
+  return operation.replace(/[^a-zA-Z0-9._/-]/g, "_").slice(0, 80) || "unknown";
+}
+
+function existingCorrelationId(request: Pick<Request, "headers">): string | undefined {
+  const value = request.headers.get("x-request-id") ?? request.headers.get("x-correlation-id");
+  if (!value || value.length > 128 || /[^a-zA-Z0-9._:-]/.test(value)) return undefined;
+  return value;
+}
+
+function sanitizedTechnicalReason(error: unknown): string {
+  if (!(error instanceof Error)) return "unknown_error";
+  const name = error.name.trim();
+  return /^[a-zA-Z][a-zA-Z0-9._-]{0,63}$/.test(name) ? name : "provider_error";
 }
 
 /**
@@ -160,14 +180,17 @@ export async function consumeRateLimit(
         limit: options.limit,
         remaining: Math.max(0, options.limit - bucket.count),
         retryAfterSeconds: databaseRetryAfter,
+        reason: bucket.count <= options.limit ? "allowed" : "limit_exceeded",
       };
     } catch (error) {
       // A Supabase production deployment must never silently downgrade its
       // distributed limit to a process-local map. Returning allowed=false
       // makes every caller reject the request while preserving Retry-After.
-      console.error("[rate-limit] Supabase indispon\u00edvel; bloqueando a solicita\u00e7\u00e3o.", {
-        scope: normalizedScope,
-        error: error instanceof Error ? error.message : "Erro desconhecido",
+      const correlationId = existingCorrelationId(request);
+      console.error("[rate-limit] Provider indispon\u00edvel.", {
+        operation: safeOperation(normalizedScope),
+        reason: sanitizedTechnicalReason(error),
+        ...(correlationId ? { correlationId } : {}),
       });
       return failClosedRateLimit(options, retryAfterSeconds);
     }
@@ -192,11 +215,14 @@ export async function consumeRateLimit(
       limit: options.limit,
       remaining: Math.max(0, options.limit - count),
       retryAfterSeconds,
+      reason: count <= options.limit ? "allowed" : "limit_exceeded",
     };
   } catch (error) {
+    const correlationId = existingCorrelationId(request);
     console.warn("[rate-limit] D1 indisponível; usando proteção local temporária.", {
-      scope,
-      error: error instanceof Error ? error.message : "Erro desconhecido",
+      operation: safeOperation(scope),
+      reason: sanitizedTechnicalReason(error),
+      ...(correlationId ? { correlationId } : {}),
     });
     return memoryRateLimit(bucketKey, options);
   }

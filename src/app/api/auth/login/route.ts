@@ -31,6 +31,12 @@ export async function POST(req: NextRequest) {
   }
 
   const rate = await consumeRateLimit(req, "auth-login", { limit: 10, windowSeconds: 900 }, email);
+  if (rate.reason === "provider_unavailable") {
+    return NextResponse.json(
+      { error: "O serviço está temporariamente indisponível. Tente novamente em alguns instantes." },
+      { status: 503 }
+    );
+  }
   if (!rate.allowed) {
     return NextResponse.json(
       { error: "Muitas tentativas de acesso. Aguarde alguns minutos e tente novamente." },
