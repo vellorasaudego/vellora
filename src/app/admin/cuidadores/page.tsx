@@ -18,7 +18,7 @@ export default async function AdminCaregiversPage() {
   return (
     <div className="max-w-6xl">
       <div className="mb-6 max-w-3xl">
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">Banco de cuidadores e técnicos</h2>
+        <h2 className="text-xl font-semibold text-[var(--foreground)]">Banco de profissionais</h2>
         <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
           Ao aprovar uma candidatura, o perfil entra automaticamente nesta lista. O acesso ao painel só é ativado
           quando você definir o e-mail e uma senha provisória.
@@ -41,7 +41,7 @@ export default async function AdminCaregiversPage() {
         </div>
         <CaregiverDirectoryTable
           entries={manuallyCreatedUsers.map(manualAccountDirectoryEntry)}
-          emptyMessage="Nenhum cuidador foi criado manualmente."
+          emptyMessage="Nenhum profissional foi criado manualmente."
         />
       </section>
     </div>

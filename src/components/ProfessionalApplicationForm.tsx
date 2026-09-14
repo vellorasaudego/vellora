@@ -3,13 +3,7 @@
 import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import { TurnstileWidget } from "./TurnstileWidget";
-
-const PROFESSIONS = [
-  { value: "cuidador", label: "Cuidador(a)" },
-  { value: "tecnico_enfermagem", label: "Técnico(a) de enfermagem" },
-  { value: "enfermeiro", label: "Enfermeiro(a)" },
-  { value: "outros", label: "Outros" },
-] as const;
+import { PROFESSION_OPTIONS } from "@/components/admin/caregiver-directory";
 
 const DAYS = [
   { value: "segunda", label: "Segunda" },
@@ -168,7 +162,7 @@ export function ProfessionalApplicationForm({
           value={profession}
           onChange={(event) => setProfession(event.target.value)}
         >
-          {PROFESSIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          {PROFESSION_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
         </select>
       </div>
       <div>

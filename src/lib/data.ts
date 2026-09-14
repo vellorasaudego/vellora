@@ -246,6 +246,34 @@ export async function createUser(input: {
   return (await getUserById(id))!;
 }
 
+export async function createManualCaregiver(input: {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  profession: CaregiverProfile["profession"];
+}): Promise<User> {
+  if (shouldUseSupabaseData()) return supabaseData.createManualCaregiver(input);
+
+  const userId = randomUUID();
+  const profileId = randomUUID();
+  const normalizedEmail = input.email.toLowerCase().trim();
+  await executeBatch([
+    {
+      text: "INSERT INTO users (id, name, email, password_hash, role, phone) VALUES ($1,$2,$3,$4,'cuidador',$5)",
+      params: [userId, input.name, normalizedEmail, hashPassword(input.password), input.phone || null],
+    },
+    {
+      text: `INSERT INTO caregiver_profiles
+        (id, application_id, user_id, name, contact_email, phone, profession,
+         availability_days, availability_shifts, account_status, approved_at)
+       VALUES ($1,NULL,$2,$3,$4,$5,$6,'[]','[]','ativo',CURRENT_TIMESTAMP)`,
+      params: [profileId, userId, input.name, normalizedEmail, input.phone || "", input.profession],
+    },
+  ]);
+  return (await getUserById(userId))!;
+}
+
 export async function updateFamilyUser(id: string, fields: FamilyUserUpdate): Promise<void> {
   if (shouldUseSupabaseData()) return supabaseData.updateFamilyUser(id, fields);
   const allowed: (keyof FamilyUserUpdate)[] = ["name", "phone"];

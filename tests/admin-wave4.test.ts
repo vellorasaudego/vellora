@@ -12,6 +12,7 @@ const familyForm = readProjectFile("src/components/admin/FamilyEditForm.tsx");
 const professionalPage = readProjectFile("src/app/admin/profissionais/page.tsx");
 const professionalTable = readProjectFile("src/components/admin/ProfessionalApplicationsTable.tsx");
 const manualCaregiverForm = readProjectFile("src/components/admin/NewCaregiverForm.tsx");
+const manualCaregiverRoute = readProjectFile("src/app/api/admin/caregivers/route.ts");
 const adminRecordRoute = readProjectFile("src/app/api/admin/patients/[id]/records/[recordId]/route.ts");
 const patientDetail = readProjectFile("src/app/admin/pacientes/[id]/page.tsx");
 const recordEditPage = readProjectFile("src/app/admin/pacientes/[id]/registros/[recordId]/page.tsx");
@@ -62,17 +63,27 @@ describe("Wave 4 administrativa — contratos de fonte", () => {
     });
   });
 
-  describe("cadastro manual de cuidador", () => {
+  describe("cadastro manual de profissionais", () => {
     it("exibe o erro retornado pela API e sempre encerra o estado de carregamento", () => {
       expect(manualCaregiverForm).toContain("setLoading(true);");
       expect(manualCaregiverForm).toContain("if (!res.ok)");
       expect(manualCaregiverForm).toContain("setError(json.error || \"Não foi possível cadastrar.\");");
       expect(manualCaregiverForm).toContain(
-        "setError(\"Erro de conexão. O cuidador não foi cadastrado. Tente novamente.\");",
+        "setError(\"Erro de conexão. O profissional não foi cadastrado. Tente novamente.\");",
       );
       expect(manualCaregiverForm).toContain("finally {");
       expect(manualCaregiverForm).toContain("setLoading(false);");
       expect(manualCaregiverForm).toContain("router.refresh();");
+    });
+
+    it("usa a mesma área profissional da candidatura pública e persiste a escolha", () => {
+      expect(manualCaregiverForm).toContain("Cadastrar profissional");
+      expect(manualCaregiverForm).toContain('name="profession"');
+      expect(manualCaregiverForm).toContain("PROFESSION_OPTIONS.map");
+      expect(manualCaregiverForm).toContain('profession: data.get("profession")');
+      expect(manualCaregiverRoute).toContain("const VALID_PROFESSIONS = new Set");
+      expect(manualCaregiverRoute).toContain("createManualCaregiver");
+      expect(manualCaregiverRoute).toContain("Informe uma área profissional válida.");
     });
   });
 

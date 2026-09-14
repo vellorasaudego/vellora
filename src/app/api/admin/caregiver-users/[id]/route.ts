@@ -15,7 +15,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   if (!isValidCaregiverId(id)) {
-    return NextResponse.json({ error: "Identificador do cuidador inválido." }, { status: 400 });
+    return NextResponse.json({ error: "Identificador do profissional inválido." }, { status: 400 });
   }
 
   const body = await req.json().catch(() => null);
@@ -25,15 +25,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   try {
     const caregiver = await getUserById(id);
     if (!caregiver || caregiver.role !== "cuidador" || caregiver.deleted_at) {
-      return NextResponse.json({ error: "Cadastro manual de cuidador não encontrado." }, { status: 404 });
+      return NextResponse.json({ error: "Cadastro manual de profissional não encontrado." }, { status: 404 });
     }
     if (await getCaregiverProfileByUserId(id)) {
-      return NextResponse.json({ error: "Este cuidador possui um perfil aprovado; use a página de perfil." }, { status: 404 });
+      return NextResponse.json({ error: "Este profissional possui um perfil; use a página de perfil." }, { status: 404 });
     }
     await updateCaregiverUser(id, parsed.value);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return apiError(error, "api/admin/caregiver-users/[id]", "Não foi possível salvar os dados do cuidador.");
+    return apiError(error, "api/admin/caregiver-users/[id]", "Não foi possível salvar os dados do profissional.");
   }
 }
 
@@ -46,6 +46,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     await deleteCaregiverUser(id);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return apiError(error, "api/admin/caregiver-users", "Não foi possível excluir a conta do cuidador.");
+    return apiError(error, "api/admin/caregiver-users", "Não foi possível excluir a conta do profissional.");
   }
 }

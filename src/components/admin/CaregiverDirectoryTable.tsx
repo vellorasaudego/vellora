@@ -19,7 +19,7 @@ export function CaregiverDirectoryTable({
 
   return (
     <>
-      <div className="space-y-3 sm:hidden" aria-label="Diretório de cuidadores">
+      <div className="space-y-3 sm:hidden" aria-label="Diretório de profissionais">
         {entries.map((entry) => (
           <article key={`${entry.href}-${entry.id}`} className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
             <div className="flex items-start justify-between gap-3">
@@ -47,7 +47,7 @@ export function CaregiverDirectoryTable({
 
       <div className="hidden overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] sm:block">
         <table className="w-full table-fixed text-sm">
-          <caption className="sr-only">Diretório de cuidadores</caption>
+          <caption className="sr-only">Diretório de profissionais</caption>
           <thead>
             <tr className="border-b border-[var(--border)] text-left text-xs uppercase tracking-wide text-[var(--muted-2)]">
               <th className="w-[35%] px-3 py-3 font-medium sm:px-5">Nome</th>

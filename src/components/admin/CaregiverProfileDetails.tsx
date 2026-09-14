@@ -77,7 +77,9 @@ export function CaregiverProfileDetails({
 
       <div className="mt-4 mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-dark)]">Perfil aprovado</p>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent-dark)]">
+            {profile.application_id ? "Perfil aprovado" : "Cadastro manual"}
+          </p>
           <h2 className="mt-1 break-words text-xl font-semibold text-[var(--foreground)]">{profile.name}</h2>
           <p className="mt-1 text-sm text-[var(--muted)]">{profile.phone || "Telefone não informado"}</p>
         </div>
@@ -87,7 +89,7 @@ export function CaregiverProfileDetails({
             endpoint={`/api/admin/caregivers/${profile.id}`}
             redirectTo="/admin/cuidadores"
             confirmText={`Excluir o cadastro de ${profile.name}? O acesso será encerrado, vínculos ativos serão removidos e os registros históricos serão preservados sem os dados pessoais do profissional.`}
-            label="Excluir cuidador"
+            label="Excluir profissional"
           />
         </div>
       </div>
@@ -197,7 +199,7 @@ export function CaregiverProfileDetails({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 id="caregiver-actions" className="font-semibold text-[var(--foreground)]">Ações e acesso</h3>
-            <p className="mt-1 text-sm text-[var(--muted)]">Ações existentes do banco de cuidadores.</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">Ações existentes do banco de profissionais.</p>
           </div>
           {profile.account_status === "aguardando_acesso" && !profile.user_id ? (
             <button

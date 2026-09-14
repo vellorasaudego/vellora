@@ -5,6 +5,7 @@ import {
   isValidCaregiverId,
   manualAccountDirectoryEntry,
   profileDirectoryEntry,
+  PROFESSION_OPTIONS,
 } from "../src/components/admin/caregiver-directory";
 
 function readProjectFile(...parts: string[]): string {
@@ -52,6 +53,15 @@ describe("ADM-CARE-01 diretório de cuidadores", () => {
       status: "ativo",
       href: `/admin/cuidadores/conta/${approvedProfile.id}`,
     });
+  });
+
+  it("mantém as mesmas quatro opções profissionais usadas no formulário público", () => {
+    expect(PROFESSION_OPTIONS).toEqual([
+      { value: "cuidador", label: "Cuidador(a)" },
+      { value: "tecnico_enfermagem", label: "Técnico(a) de enfermagem" },
+      { value: "enfermeiro", label: "Enfermeiro(a)" },
+      { value: "outros", label: "Outros" },
+    ]);
   });
 
   it("mantém a listagem compacta e desloca dados e ações para os detalhes", () => {

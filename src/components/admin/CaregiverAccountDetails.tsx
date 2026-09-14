@@ -38,7 +38,7 @@ export function CaregiverAccountDetails({
             endpoint={`/api/admin/caregiver-users/${caregiver.id}`}
             redirectTo="/admin/cuidadores"
             confirmText={`Excluir o cadastro de ${caregiver.name}? O acesso será encerrado, vínculos ativos serão removidos e os registros históricos serão preservados sem os dados pessoais.`}
-            label="Excluir cuidador"
+            label="Excluir profissional"
           />
         </div>
       </div>

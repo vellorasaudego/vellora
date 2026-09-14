@@ -670,6 +670,42 @@ export async function createUser(input: {
   return createAuthProfile(serviceClient(), input);
 }
 
+export async function createManualCaregiver(input: {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  profession: CaregiverProfile["profession"];
+}): Promise<User> {
+  const client = serviceClient();
+  const user = await createAuthProfile(client, {
+    name: input.name,
+    email: input.email,
+    password: input.password,
+    role: "cuidador",
+    phone: input.phone,
+  });
+  const { error } = await client.from("caregiver_profiles").insert({
+    id: randomUUID(),
+    application_id: null,
+    user_id: user.id,
+    name: input.name.trim(),
+    contact_email: input.email.trim().toLowerCase(),
+    phone: input.phone?.trim() || "",
+    profession: input.profession,
+    availability_days: [],
+    availability_shifts: [],
+    account_status: "ativo",
+    approved_at: new Date().toISOString(),
+  });
+  if (error) {
+    await client.from("profiles").delete().eq("id", user.id);
+    await client.auth.admin.deleteUser(user.id).catch(() => undefined);
+    throw operationError("Não foi possível criar perfil profissional Supabase", error);
+  }
+  return user;
+}
+
 export async function updateFamilyUser(id: string, fields: FamilyUserUpdate): Promise<void> {
   const client = await requestClient();
   const userId = assertUuid(id, "Família");

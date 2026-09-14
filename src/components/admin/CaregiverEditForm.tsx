@@ -220,7 +220,7 @@ function ProfileEditForm({ caregiver }: { caregiver: CaregiverProfile }) {
       const result = (await response.json().catch(() => null)) as { error?: string } | null;
       if (!response.ok) throw new Error(result?.error || "Não foi possível salvar os dados.");
 
-      setMessage("Dados do cuidador atualizados com sucesso.");
+      setMessage("Dados do profissional atualizados com sucesso.");
       setEditing(false);
       router.refresh();
     } catch (submissionError) {
@@ -450,7 +450,7 @@ function ManualEditForm({ caregiver }: { caregiver: CaregiverAccountData }) {
       const result = (await response.json().catch(() => null)) as { error?: string } | null;
       if (!response.ok) throw new Error(result?.error || "Não foi possível salvar os dados.");
 
-      setMessage("Dados do cuidador atualizados com sucesso.");
+      setMessage("Dados do profissional atualizados com sucesso.");
       setEditing(false);
       router.refresh();
     } catch (submissionError) {

@@ -132,13 +132,13 @@ export function ProfessionalApplicationsTable({ applications }: { applications: 
                   </select>
                   <div className="mt-2"><Pill value={application.status} /></div>
                   {application.status === "aprovado" ? (
-                    <p className="mt-2 text-xs leading-5 text-[var(--accent)]">Incluído no banco de cuidadores.</p>
+                    <p className="mt-2 text-xs leading-5 text-[var(--accent)]">Incluído no banco de profissionais.</p>
                   ) : null}
                 </td>
                 <td className="min-w-[150px] px-5 py-4">
                   <DeleteButton
                     endpoint={`/api/admin/professionals/${application.id}`}
-                    confirmText={`Excluir definitivamente a candidatura de ${application.name}? O perfil aprovado no banco de cuidadores será preservado.`}
+                    confirmText={`Excluir definitivamente a candidatura de ${application.name}? O perfil aprovado no banco de profissionais será preservado.`}
                     label="Excluir formulário"
                     compact
                   />

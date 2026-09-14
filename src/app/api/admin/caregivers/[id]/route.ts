@@ -10,7 +10,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   if (!isValidCaregiverId(id)) {
-    return NextResponse.json({ error: "Identificador do cuidador inválido." }, { status: 400 });
+    return NextResponse.json({ error: "Identificador do profissional inválido." }, { status: 400 });
   }
 
   const body = await req.json().catch(() => null);
@@ -25,7 +25,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await updateCaregiverProfile(id, parsed.value);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return apiError(error, "api/admin/caregivers/[id]", "Não foi possível salvar os dados do cuidador.");
+    return apiError(error, "api/admin/caregivers/[id]", "Não foi possível salvar os dados do profissional.");
   }
 }
 

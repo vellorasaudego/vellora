@@ -29,6 +29,13 @@ export const SHIFT_LABELS: Record<string, string> = {
   plantao_24h: "24h",
 };
 
+export const PROFESSION_OPTIONS = [
+  { value: "cuidador", label: "Cuidador(a)" },
+  { value: "tecnico_enfermagem", label: "Técnico(a) de enfermagem" },
+  { value: "enfermeiro", label: "Enfermeiro(a)" },
+  { value: "outros", label: "Outros" },
+] as const;
+
 export const PROFESSION_LABELS: Record<CaregiverProfile["profession"], string> = {
   cuidador: "Cuidador(a)",
   tecnico_enfermagem: "Técnico(a) de enfermagem",

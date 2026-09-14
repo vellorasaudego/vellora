@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { PROFESSION_OPTIONS } from "@/components/admin/caregiver-directory";
 
 export function NewCaregiverForm() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export function NewCaregiverForm() {
           email: data.get("email"),
           phone: data.get("phone"),
           password: data.get("password"),
+          profession: data.get("profession"),
         }),
       });
       const json = (await res.json().catch(() => ({}))) as { error?: string };
@@ -37,7 +39,7 @@ export function NewCaregiverForm() {
       setOpen(false);
       router.refresh();
     } catch {
-      setError("Erro de conexão. O cuidador não foi cadastrado. Tente novamente.");
+      setError("Erro de conexão. O profissional não foi cadastrado. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -54,28 +56,38 @@ export function NewCaregiverForm() {
           }}
           className="rounded-lg bg-[var(--brand)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--brand-dark)]"
         >
-          + Novo cuidador
+          + Novo profissional
         </button>
-        {saved ? <p className="mt-2 text-sm text-[var(--status-good)]" role="status">Cuidador cadastrado.</p> : null}
+        {saved ? <p className="mt-2 text-sm text-[var(--status-good)]" role="status">Profissional cadastrado.</p> : null}
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 max-w-xl">
-      <h3 className="font-semibold text-[var(--foreground)] mb-4">Cadastrar cuidador</h3>
+      <h3 className="font-semibold text-[var(--foreground)] mb-4">Cadastrar profissional</h3>
       <div className="grid sm:grid-cols-2 gap-4">
-        <Field label="Nome completo *">
-          <input name="name" required className="input" />
+        <Field id="manual-professional-name" label="Nome completo *">
+          <input id="manual-professional-name" name="name" required className="input" />
         </Field>
-        <Field label="Telefone">
-          <input name="phone" className="input" />
+        <Field id="manual-professional-phone" label="Telefone">
+          <input id="manual-professional-phone" name="phone" className="input" />
         </Field>
-        <Field label="E-mail de acesso *">
-          <input type="email" name="email" required className="input" />
+        <Field id="manual-professional-role" label="Área profissional *">
+          <select id="manual-professional-role" name="profession" required defaultValue="cuidador" className="input">
+            {PROFESSION_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </Field>
-        <Field label="Senha provisória *">
+        <Field id="manual-professional-email" label="E-mail de acesso *">
+          <input id="manual-professional-email" type="email" name="email" required className="input" />
+        </Field>
+        <Field id="manual-professional-password" label="Senha provisória *">
           <input
+            id="manual-professional-password"
             type="password"
             name="password"
             required
@@ -118,10 +130,10 @@ export function NewCaregiverForm() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ id, label, children }: { id?: string; label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-[var(--muted)] mb-1">{label}</label>
+      <label htmlFor={id} className="block text-xs font-medium text-[var(--muted)] mb-1">{label}</label>
       {children}
     </div>
   );
