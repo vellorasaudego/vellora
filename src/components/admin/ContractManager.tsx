@@ -4,6 +4,7 @@ import { Upload } from "tus-js-client";
 import { useEffect, useId, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { ContractDocument, ContractOwnerType } from "@/lib/data";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const DIRECT_UPLOAD_MAX_BYTES = 10_000_000;
 const LEGACY_UPLOAD_MAX_BYTES = 4 * 1024 * 1024;
@@ -61,6 +62,19 @@ async function cancelDirectUpload(ticket: string): Promise<void> {
     credentials: "same-origin",
     body: JSON.stringify({ ticket }),
   }).catch(() => undefined);
+}
+
+async function getSupabaseAccessToken(): Promise<string> {
+  const {
+    data: { session },
+    error,
+  } = await createSupabaseBrowserClient().auth.getSession();
+
+  if (error || !session?.access_token) {
+    throw new Error("Sua sessão expirou. Atualize a página e entre novamente.");
+  }
+
+  return session.access_token;
 }
 
 export function ContractManager({
@@ -158,6 +172,8 @@ export function ContractManager({
   }
 
   async function uploadWithTus(file: File, details: DirectUploadDetails): Promise<void> {
+    const accessToken = await getSupabaseAccessToken();
+
     await new Promise<void>((resolve, reject) => {
       let settled = false;
       const finish = (callback: () => void) => {
@@ -169,7 +185,10 @@ export function ContractManager({
       const upload = new Upload(file, {
         endpoint: details.tusEndpoint,
         headers: {
-          Authorization: `Bearer ${details.token}`,
+          // The signed upload token authorizes only this object and belongs in
+          // x-signature. Authorization must carry the current Supabase user
+          // token so Storage RLS can verify the administrator identity.
+          Authorization: `Bearer ${accessToken}`,
           "x-signature": details.token,
         },
         metadata: {
