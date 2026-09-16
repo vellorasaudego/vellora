@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "@/lib/guard";
 import {
   deleteCaregiverUser,
-  getCaregiverProfileByUserId,
   getUserById,
   updateCaregiverUser,
 } from "@/lib/data";
@@ -27,11 +26,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (!caregiver || caregiver.role !== "cuidador" || caregiver.deleted_at) {
       return NextResponse.json({ error: "Cadastro manual de profissional não encontrado." }, { status: 404 });
     }
-    if (await getCaregiverProfileByUserId(id)) {
-      return NextResponse.json({ error: "Este profissional possui um perfil; use a página de perfil." }, { status: 404 });
-    }
-    await updateCaregiverUser(id, parsed.value);
-    return NextResponse.json({ ok: true });
+    const result = await updateCaregiverUser(id, parsed.value);
+    return NextResponse.json({ ok: true, profileId: result.profileId });
   } catch (error) {
     return apiError(error, "api/admin/caregiver-users/[id]", "Não foi possível salvar os dados do profissional.");
   }

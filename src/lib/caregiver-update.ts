@@ -27,7 +27,14 @@ const PROFILE_FIELDS = new Set([
   "available_from",
   "notes",
 ]);
-const USER_FIELDS = new Set(["name", "phone"]);
+const USER_FIELDS = new Set([
+  "name",
+  "phone",
+  "profession",
+  "availability_days",
+  "availability_shifts",
+  "available_from",
+]);
 
 export type ParseUpdateResult<T> =
   | { ok: true; value: T }
@@ -166,6 +173,28 @@ export function parseCaregiverUserUpdate(body: unknown): ParseUpdateResult<Careg
     const result = parsePhone(body.phone, "Telefone", true);
     if (!result.ok) return result;
     value.phone = result.value;
+  }
+  if ("profession" in body) {
+    if (typeof body.profession !== "string" || !VALID_PROFESSIONS.has(body.profession)) {
+      return { ok: false, error: "Profissão inválida." };
+    }
+    value.profession = body.profession as CaregiverUserUpdate["profession"];
+  }
+  if ("availability_days" in body) {
+    const result = parseSelection(body.availability_days, "Dias disponíveis", VALID_DAYS, 7);
+    if (!result.ok) return result;
+    value.availability_days = result.value;
+  }
+  if ("availability_shifts" in body) {
+    const result = parseSelection(body.availability_shifts, "Turnos disponíveis", VALID_SHIFTS, 6);
+    if (!result.ok) return result;
+    value.availability_shifts = result.value;
+  }
+  if ("available_from" in body) {
+    const result = parseNullableText(body.available_from, "Data inicial", 10);
+    if (!result.ok) return result;
+    if (result.value && !isValidIsoDate(result.value)) return { ok: false, error: "Informe uma data inicial válida." };
+    value.available_from = result.value;
   }
   return { ok: true, value };
 }

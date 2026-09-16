@@ -95,7 +95,8 @@ describe("ADM-CARE-01 diretório de cuidadores", () => {
     expect(profilePage).toContain("if (!profile) notFound();");
     expect(accountPage).toContain("if (!isValidCaregiverId(id)) notFound();");
     expect(accountPage).toContain("if (!caregiver || caregiver.role !== \"cuidador\" || caregiver.deleted_at) notFound();");
-    expect(accountPage).toContain("if (linkedProfile) notFound();");
+    expect(accountPage).toContain("if (linkedProfile) redirect(`/admin/cuidadores/perfil/${linkedProfile.id}`);");
+    expect(accountPage).not.toContain("if (linkedProfile) notFound();");
     expect(profileDetails).toContain("Nenhum paciente vinculado.");
     expect(accountDetails).toContain("Nenhum paciente vinculado.");
     expect(contractManager).toContain("Nenhum contrato anexado.");

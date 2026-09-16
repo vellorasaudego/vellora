@@ -230,16 +230,53 @@ describe("PATCH /api/admin/caregiver-users/[id]", () => {
 
   it("aceita somente name e phone para cadastro manual", async () => {
     const payload = { name: "Cuidador Manual", phone: "62999990000" };
+    mocks.updateCaregiverUser.mockResolvedValue({ profileId });
     const response = await updateCaregiverUserRoute(
       jsonRequest(`https://vellora.test/api/admin/caregiver-users/${userId}`, payload),
       routeParams(userId),
     );
 
     expect(response.status).toBe(200);
-    await expect(responseBody(response)).resolves.toEqual({ ok: true });
+    await expect(responseBody(response)).resolves.toEqual({ ok: true, profileId });
     expect(mocks.updateCaregiverUser).toHaveBeenCalledOnce();
     expect(mocks.updateCaregiverUser).toHaveBeenCalledWith(userId, payload);
-    expect(mocks.getCaregiverProfileByUserId).toHaveBeenCalledWith(userId);
+  });
+
+  it("valida e encaminha os dados profissionais do cadastro manual", async () => {
+    const payload = {
+      name: "Cuidador Manual",
+      phone: "62999990000",
+      profession: "tecnico_enfermagem",
+      availability_days: ["segunda", "quarta"],
+      availability_shifts: ["manha", "noite"],
+      available_from: "2026-10-01",
+    };
+    mocks.updateCaregiverUser.mockResolvedValue({ profileId });
+
+    const response = await updateCaregiverUserRoute(
+      jsonRequest(`https://vellora.test/api/admin/caregiver-users/${userId}`, payload),
+      routeParams(userId),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(responseBody(response)).resolves.toEqual({ ok: true, profileId });
+    expect(mocks.updateCaregiverUser).toHaveBeenCalledWith(userId, payload);
+  });
+
+  it.each([
+    ["profissão fora do enum", { profession: "fisioterapeuta" }],
+    ["dia fora da lista", { availability_days: ["feriado"] }],
+    ["turno fora da lista", { availability_shifts: ["madrugada"] }],
+    ["data inexistente", { available_from: "2026-02-30" }],
+  ])("rejeita %s antes de chamar o provider", async (_caseName, payload) => {
+    const response = await updateCaregiverUserRoute(
+      jsonRequest(`https://vellora.test/api/admin/caregiver-users/${userId}`, payload),
+      routeParams(userId),
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.getUserById).not.toHaveBeenCalled();
+    expect(mocks.updateCaregiverUser).not.toHaveBeenCalled();
   });
 
   it("rejeita email, status, senha e outros campos de conta manual", async () => {
@@ -283,8 +320,9 @@ describe("PATCH /api/admin/caregiver-users/[id]", () => {
     expect(mocks.updateCaregiverUser).not.toHaveBeenCalled();
   });
 
-  it("rejeita cadastro manual quando o usuário já possui perfil aprovado", async () => {
+  it("permite repetir a operação quando o usuário já possui perfil", async () => {
     mocks.getCaregiverProfileByUserId.mockResolvedValue({ id: profileId, user_id: userId });
+    mocks.updateCaregiverUser.mockResolvedValue({ profileId });
 
     const response = await updateCaregiverUserRoute(
       jsonRequest(`https://vellora.test/api/admin/caregiver-users/${userId}`, {
@@ -294,9 +332,12 @@ describe("PATCH /api/admin/caregiver-users/[id]", () => {
       routeParams(userId),
     );
 
-    expect(response.status).toBe(404);
-    expect(mocks.getCaregiverProfileByUserId).toHaveBeenCalledWith(userId);
-    expect(mocks.updateCaregiverUser).not.toHaveBeenCalled();
+    expect(response.status).toBe(200);
+    await expect(responseBody(response)).resolves.toEqual({ ok: true, profileId });
+    expect(mocks.updateCaregiverUser).toHaveBeenCalledWith(userId, {
+      name: "Cuidador Manual",
+      phone: "62999990000",
+    });
   });
 
   it("converte erro do provider manual em resposta apropriada", async () => {

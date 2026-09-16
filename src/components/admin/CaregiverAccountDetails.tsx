@@ -61,6 +61,14 @@ export function CaregiverAccountDetails({
               <dd className="mt-1 break-words text-sm text-[var(--foreground)]">{caregiver.email}</dd>
             </div>
             <div>
+              <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted-2)]">Senha</dt>
+              <dd className="mt-1 text-sm text-[var(--muted)]">Não exibida por segurança. Somente leitura.</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted-2)]">Status</dt>
+              <dd className="mt-1"><Pill value="ativo" /></dd>
+            </div>
+            <div>
               <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted-2)]">Telefone</dt>
               <dd className="mt-1 text-sm text-[var(--foreground)]">{caregiver.phone || "Não informado"}</dd>
             </div>

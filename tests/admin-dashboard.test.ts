@@ -3,6 +3,7 @@ import {
   buildEntrySeries,
   buildOperationalDistribution,
   calculateConversionRate,
+  countActiveProfessionals,
   filterByPeriod,
   getDashboardMetrics,
   getPeriodStart,
@@ -49,11 +50,47 @@ function application(id: string, created_at: string, status: "novo" | "em_analis
   } as DashboardData["professionalApplications"][number];
 }
 
+function caregiver(
+  id: string,
+  account_status: "aguardando_acesso" | "ativo" | "inativo",
+  user_id: string | null = null,
+) {
+  return {
+    id,
+    application_id: null,
+    user_id,
+    name: id,
+    contact_email: `${id}@example.com`,
+    access_email: user_id ? `${id}@example.com` : null,
+    phone: "62999999999",
+    city: null,
+    profession: "cuidador",
+    coren: null,
+    experience: null,
+    availability_days: [],
+    availability_shifts: [],
+    available_from: null,
+    notes: null,
+    account_status,
+    approved_at: "2026-09-01T10:00:00.000Z",
+    created_at: "2026-09-01T10:00:00.000Z",
+  } as DashboardData["caregivers"][number];
+}
+
+function caregiverUser(id: string, deleted_at: string | null = null) {
+  return {
+    id,
+    role: "cuidador" as const,
+    deleted_at,
+  } as DashboardData["caregiverUsers"][number];
+}
+
 const emptyData: DashboardData = {
   leads: [],
   patients: [],
   caregivers: [],
   professionalApplications: [],
+  caregiverUsers: [],
 };
 
 describe("agregações do dashboard administrativo", () => {
@@ -75,6 +112,7 @@ describe("agregações do dashboard administrativo", () => {
         { id: "active", name: "Ativo", birth_date: null, address: null, care_level: null, condition_summary: null, family_user_id: "family", status: "ativo", notes: null, created_at: "2026-09-01T10:00:00.000Z" },
         { id: "pending", name: "Pendente", birth_date: null, address: null, care_level: null, condition_summary: null, family_user_id: null, status: "pendente", notes: null, created_at: "2026-09-01T10:00:00.000Z" },
       ],
+      caregiverUsers: [],
       caregivers: [
         { id: "active", application_id: null, user_id: "user", name: "Ativo", contact_email: "ativo@example.com", access_email: "ativo@example.com", phone: "62999999999", city: null, profession: "cuidador", coren: null, experience: null, availability_days: [], availability_shifts: [], available_from: null, notes: null, account_status: "ativo", approved_at: "2026-09-01T10:00:00.000Z", created_at: "2026-09-01T10:00:00.000Z" },
         { id: "waiting", application_id: null, user_id: null, name: "Aguardando", contact_email: "aguardando@example.com", access_email: null, phone: "62999999999", city: null, profession: "cuidador", coren: null, experience: null, availability_days: [], availability_shifts: [], available_from: null, notes: null, account_status: "aguardando_acesso", approved_at: "2026-09-01T10:00:00.000Z", created_at: "2026-09-01T10:00:00.000Z" },
@@ -91,6 +129,39 @@ describe("agregações do dashboard administrativo", () => {
       professionalsWaitingAccess: 1,
       conversionRate: 50,
     });
+  });
+
+  it("conta somente perfis ativos quando não há usuários carregados", () => {
+    expect(countActiveProfessionals([
+      caregiver("active-without-user", "ativo"),
+      caregiver("active-with-user", "ativo", "linked-user"),
+      caregiver("waiting", "aguardando_acesso"),
+      caregiver("inactive", "inativo"),
+    ], [])).toBe(2);
+  });
+
+  it("conta usuários manuais ativos quando não há perfis", () => {
+    expect(countActiveProfessionals([], [caregiverUser("manual-1"), caregiverUser("manual-2")])).toBe(2);
+  });
+
+  it("conta perfil e usuário correspondentes uma única vez", () => {
+    expect(countActiveProfessionals(
+      [caregiver("linked-profile", "ativo", "linked-user")],
+      [caregiverUser("linked-user")],
+    )).toBe(1);
+  });
+
+  it("ignora usuários inativos na contagem de profissionais ativos", () => {
+    expect(countActiveProfessionals([], [
+      caregiverUser("active-manual"),
+      caregiverUser("inactive-manual", "2026-09-09T10:00:00.000Z"),
+    ])).toBe(1);
+  });
+
+  it("retorna zero com dados vazios", () => {
+    expect(getDashboardMetrics(emptyData, "6m", now).activeProfessionals).toBe(0);
+    expect(buildOperationalDistribution(emptyData).find((point) => point.key === "active-professionals"))
+      .toEqual({ key: "active-professionals", label: "Profissionais ativos", value: 0 });
   });
 
   it("monta a distribuição operacional com os indicadores acionáveis", () => {

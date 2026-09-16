@@ -3,6 +3,7 @@ import type {
   Lead,
   Patient,
   ProfessionalApplication,
+  User,
 } from "@/lib/data";
 
 export const DASHBOARD_PERIODS = [
@@ -15,11 +16,14 @@ export const DASHBOARD_PERIODS = [
 
 export type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number]["value"];
 
+export type CaregiverDashboardUser = Pick<User, "id" | "role" | "deleted_at">;
+
 export type DashboardData = {
   leads: Lead[];
   patients: Patient[];
   caregivers: CaregiverProfile[];
   professionalApplications: ProfessionalApplication[];
+  caregiverUsers: CaregiverDashboardUser[];
 };
 
 export type DashboardMetrics = {
@@ -97,12 +101,37 @@ export function filterDashboardData(
     patients: filterByPeriod(data.patients, period, now),
     caregivers: filterByPeriod(data.caregivers, period, now),
     professionalApplications: filterByPeriod(data.professionalApplications, period, now),
+    caregiverUsers: data.caregiverUsers,
   };
 }
 
 export function calculateConversionRate(leads: Pick<Lead, "status">[]): number {
   if (leads.length === 0) return 0;
   return (leads.filter((lead) => lead.status === "convertido").length / leads.length) * 100;
+}
+
+export function countActiveProfessionals(
+  caregivers: CaregiverProfile[],
+  caregiverUsers: CaregiverDashboardUser[],
+): number {
+  const linkedUserIds = new Set(
+    caregivers
+      .map((caregiver) => caregiver.user_id)
+      .filter((userId): userId is string => Boolean(userId)),
+  );
+  const professionalIds = new Set<string>();
+
+  for (const caregiver of caregivers) {
+    if (caregiver.account_status !== "ativo") continue;
+    professionalIds.add(caregiver.user_id ? `user:${caregiver.user_id}` : `profile:${caregiver.id}`);
+  }
+
+  for (const user of caregiverUsers) {
+    if (user.role !== "cuidador" || user.deleted_at !== null || linkedUserIds.has(user.id)) continue;
+    professionalIds.add(`user:${user.id}`);
+  }
+
+  return professionalIds.size;
 }
 
 function currentOperationalMetrics(data: DashboardData) {
@@ -112,7 +141,7 @@ function currentOperationalMetrics(data: DashboardData) {
       OPEN_APPLICATION_STATUSES.includes(application.status),
     ).length,
     activePatients: data.patients.filter((patient) => patient.status === "ativo").length,
-    activeProfessionals: data.caregivers.filter((caregiver) => caregiver.account_status === "ativo").length,
+    activeProfessionals: countActiveProfessionals(data.caregivers, data.caregiverUsers),
     pendingPatients: data.patients.filter((patient) => patient.status === "pendente").length,
     patientsWithoutFamily: data.patients.filter((patient) => !patient.family_user_id).length,
     professionalsWaitingAccess: data.caregivers.filter(

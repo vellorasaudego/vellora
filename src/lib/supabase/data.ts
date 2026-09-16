@@ -11,6 +11,7 @@ import type {
   CaregiverProfile,
   CaregiverProfileUpdate,
   CaregiverUserUpdate,
+  CaregiverUserUpdateResult,
   ContractDocument,
   ContractOwnerType,
   DailyRecord,
@@ -174,6 +175,13 @@ function requireValue<T>(context: string, data: T | null | undefined, error: unk
   requireNoError(context, error);
   if (data == null) throw new SupabaseDataError(`${context}: nenhum registro retornado.`);
   return data;
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const code = "code" in error && typeof error.code === "string" ? error.code : "";
+  const message = "message" in error && typeof error.message === "string" ? error.message.toLowerCase() : "";
+  return code === "23505" || message.includes("duplicate key") || message.includes("unique constraint");
 }
 
 function asString(value: unknown, fallback = ""): string {
@@ -1210,20 +1218,114 @@ export async function updateCaregiverProfile(id: string, fields: CaregiverProfil
   requireNoError("Não foi possível atualizar perfil de cuidador Supabase", error);
 }
 
-export async function updateCaregiverUser(id: string, fields: CaregiverUserUpdate): Promise<void> {
+export async function updateCaregiverUser(
+  id: string,
+  fields: CaregiverUserUpdate,
+): Promise<CaregiverUserUpdateResult> {
   const client = await requestClient();
   const userId = assertUuid(id, "Cuidador");
+
+  const { data: existingData, error: existingError } = await client
+    .from("caregiver_profiles")
+    .select("id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar perfil do cuidador Supabase", existingError);
+  const existingProfile = existingData as SupabaseRow | null;
+
+  const { data: userData, error: userError } = await client
+    .from("profiles")
+    .select("name, phone")
+    .eq("id", userId)
+    .eq("role", "cuidador")
+    .eq("active", true)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar cadastro do cuidador Supabase", userError);
+  const userProfile = userData as SupabaseRow | null;
+  if (!userProfile) throw new SupabaseDataError("Cadastro manual de profissional não encontrado.");
+
   const update: SupabaseRow = {};
   if ("name" in fields) update.name = fields.name;
   if ("phone" in fields) update.phone = fields.phone ?? null;
-  if (!Object.keys(update).length) return;
-  const { error } = await client
-    .from("profiles")
-    .update(update)
-    .eq("id", userId)
-    .eq("role", "cuidador")
-    .eq("active", true);
-  requireNoError("Não foi possível atualizar cadastro manual Supabase", error);
+  if (Object.keys(update).length) {
+    const { error } = await client
+      .from("profiles")
+      .update(update)
+      .eq("id", userId)
+      .eq("role", "cuidador")
+      .eq("active", true);
+    requireNoError("Não foi possível atualizar cadastro manual Supabase", error);
+  }
+
+  const profileFields: (keyof CaregiverUserUpdate)[] = [
+    "name",
+    "phone",
+    "profession",
+    "availability_days",
+    "availability_shifts",
+    "available_from",
+  ];
+  const profileUpdate: SupabaseRow = {};
+  for (const key of profileFields) {
+    if (key in fields) profileUpdate[key] = key === "phone" ? fields.phone ?? "" : fields[key] ?? null;
+  }
+
+  async function updateProfile(profileId: string): Promise<void> {
+    if (!Object.keys(profileUpdate).length) return;
+    const { error } = await client.from("caregiver_profiles").update(profileUpdate).eq("id", profileId);
+    requireNoError("Não foi possível atualizar perfil de cuidador Supabase", error);
+  }
+
+  if (existingProfile) {
+    const profileId = assertUuid(asString(existingProfile.id), "Perfil de cuidador");
+    await updateProfile(profileId);
+    return { profileId };
+  }
+
+  const authClient = serviceClient();
+  const { data: authData, error: authError } = await authClient.auth.admin.getUserById(userId);
+  requireNoError("Não foi possível consultar e-mail de acesso Supabase", authError);
+  const accessEmail = authData.user?.email?.trim().toLowerCase();
+  if (!accessEmail) throw new SupabaseDataError("O cuidador não possui e-mail de acesso válido.");
+
+  const profileInsert = {
+    user_id: userId,
+    name: "name" in fields ? fields.name! : asString(userProfile.name),
+    contact_email: accessEmail,
+    phone: "phone" in fields ? fields.phone ?? "" : asNullableString(userProfile.phone) || "",
+    profession: fields.profession ?? "cuidador",
+    availability_days: fields.availability_days ?? [],
+    availability_shifts: fields.availability_shifts ?? [],
+    available_from: fields.available_from ?? null,
+    account_status: "ativo" as const,
+    approved_at: new Date().toISOString(),
+  };
+  const { data: insertedData, error: insertError } = await client
+    .from("caregiver_profiles")
+    .insert(profileInsert)
+    .select("id")
+    .single();
+  if (insertError) {
+    if (!isUniqueViolation(insertError)) {
+      throw operationError("Não foi possível criar perfil profissional Supabase", insertError);
+    }
+    const { data: concurrentData, error: concurrentError } = await client
+      .from("caregiver_profiles")
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    requireNoError("Não foi possível recuperar perfil profissional Supabase", concurrentError);
+    const concurrentProfileId = assertUuid(asString((concurrentData as SupabaseRow | null)?.id), "Perfil de cuidador");
+    await updateProfile(concurrentProfileId);
+    return { profileId: concurrentProfileId };
+  }
+
+  const insertedProfile = requireValue(
+    "Não foi possível criar perfil profissional Supabase",
+    insertedData as SupabaseRow | null,
+    null,
+  );
+  return { profileId: assertUuid(asString(insertedProfile.id), "Perfil de cuidador") };
 }
 
 export async function createCaregiverAccess(input: {

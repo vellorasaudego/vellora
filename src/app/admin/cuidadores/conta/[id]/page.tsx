@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   getCaregiverProfileByUserId,
   getUserById,
@@ -20,7 +20,7 @@ export default async function AdminCaregiverAccountPage({
   if (!caregiver || caregiver.role !== "cuidador" || caregiver.deleted_at) notFound();
 
   const linkedProfile = await getCaregiverProfileByUserId(id);
-  if (linkedProfile) notFound();
+  if (linkedProfile) redirect(`/admin/cuidadores/perfil/${linkedProfile.id}`);
 
   const [patients, contracts] = await Promise.all([
     listPatientsByCaregiver(caregiver.id),

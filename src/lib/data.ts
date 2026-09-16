@@ -129,6 +129,14 @@ export type CaregiverProfileUpdate = {
 export type CaregiverUserUpdate = {
   name?: string;
   phone?: string | null;
+  profession?: CaregiverProfile["profession"];
+  availability_days?: string[];
+  availability_shifts?: string[];
+  available_from?: string | null;
+};
+
+export type CaregiverUserUpdateResult = {
+  profileId: string;
 };
 
 export type FamilyUserUpdate = {
@@ -745,8 +753,23 @@ export async function updateCaregiverProfile(id: string, fields: CaregiverProfil
   await query(`UPDATE caregiver_profiles SET ${sets.join(", ")} WHERE id = $${index}`, values);
 }
 
-export async function updateCaregiverUser(id: string, fields: CaregiverUserUpdate): Promise<void> {
+export async function updateCaregiverUser(
+  id: string,
+  fields: CaregiverUserUpdate,
+): Promise<CaregiverUserUpdateResult> {
   if (shouldUseSupabaseData()) return supabaseData.updateCaregiverUser(id, fields);
+
+  const user = await queryOne<User>(
+    "SELECT * FROM users WHERE id = $1 AND role = 'cuidador' AND deleted_at IS NULL",
+    [id],
+  );
+  if (!user) throw new Error("Cadastro manual de profissional não encontrado.");
+
+  const existingProfile = await queryOne<CaregiverProfile>(
+    "SELECT * FROM caregiver_profiles WHERE user_id = $1",
+    [id],
+  );
+
   const allowed: (keyof CaregiverUserUpdate)[] = ["name", "phone"];
   const sets: string[] = [];
   const values: unknown[] = [];
@@ -758,12 +781,81 @@ export async function updateCaregiverUser(id: string, fields: CaregiverUserUpdat
       index += 1;
     }
   }
-  if (!sets.length) return;
-  values.push(id);
-  await query(
-    `UPDATE users SET ${sets.join(", ")} WHERE id = $${index} AND role = 'cuidador' AND deleted_at IS NULL`,
-    values,
+  const commands: Array<{ text: string; params: unknown[] }> = [];
+  if (sets.length) {
+    values.push(id);
+    commands.push({
+      text: `UPDATE users SET ${sets.join(", ")} WHERE id = $${index} AND role = 'cuidador' AND deleted_at IS NULL`,
+      params: values,
+    });
+  }
+
+  const profileFields: (keyof CaregiverUserUpdate)[] = [
+    "name",
+    "phone",
+    "profession",
+    "availability_days",
+    "availability_shifts",
+    "available_from",
+  ];
+
+  if (existingProfile) {
+    const profileSets: string[] = [];
+    const profileValues: unknown[] = [];
+    let profileIndex = 1;
+    for (const key of profileFields) {
+      if (!(key in fields)) continue;
+      profileSets.push(`${key} = $${profileIndex}`);
+      profileValues.push(key === "phone" ? fields.phone ?? "" : fields[key] ?? null);
+      profileIndex += 1;
+    }
+    if (profileSets.length) {
+      profileValues.push(existingProfile.id);
+      commands.push({
+        text: `UPDATE caregiver_profiles SET ${profileSets.join(", ")} WHERE id = $${profileIndex}`,
+        params: profileValues,
+      });
+    }
+    if (commands.length) await executeBatch(commands);
+    return { profileId: existingProfile.id };
+  }
+
+  const profileId = randomUUID();
+  const profileName = "name" in fields ? fields.name! : user.name;
+  const profilePhone = "phone" in fields ? fields.phone ?? "" : user.phone ?? "";
+  const profileProfession = fields.profession ?? "cuidador";
+  commands.push({
+    text: `INSERT INTO caregiver_profiles
+      (id, application_id, user_id, name, contact_email, phone, profession,
+       availability_days, availability_shifts, available_from, account_status, approved_at)
+     VALUES ($1,NULL,$2,$3,$4,$5,$6,$7,$8,$9,'ativo',CURRENT_TIMESTAMP)
+     ON CONFLICT(user_id) DO UPDATE SET
+       name = excluded.name,
+       phone = excluded.phone,
+       profession = excluded.profession,
+       availability_days = excluded.availability_days,
+       availability_shifts = excluded.availability_shifts,
+       available_from = excluded.available_from`,
+    params: [
+      profileId,
+      id,
+      profileName,
+      user.email,
+      profilePhone,
+      profileProfession,
+      fields.availability_days ?? [],
+      fields.availability_shifts ?? [],
+      fields.available_from ?? null,
+    ],
+  });
+
+  await executeBatch(commands);
+  const persistedProfile = await queryOne<Pick<CaregiverProfile, "id">>(
+    "SELECT id FROM caregiver_profiles WHERE user_id = $1",
+    [id],
   );
+  if (!persistedProfile?.id) throw new Error("O perfil profissional não foi persistido.");
+  return { profileId: persistedProfile.id };
 }
 
 export async function createCaregiverAccess(input: {

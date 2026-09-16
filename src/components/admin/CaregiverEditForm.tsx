@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { CaregiverProfile, User } from "@/lib/data";
 import {
   DAY_LABELS,
+  isValidCaregiverId,
   PROFESSION_LABELS,
   SHIFT_LABELS,
 } from "@/components/admin/caregiver-directory";
@@ -28,6 +29,10 @@ type ProfileDraft = {
 type ManualDraft = {
   name: string;
   phone: string;
+  profession: CaregiverProfile["profession"];
+  availability_days: string[];
+  availability_shifts: string[];
+  available_from: string;
 };
 
 type CaregiverEditFormProps =
@@ -60,22 +65,28 @@ function manualDraft(caregiver: CaregiverAccountData): ManualDraft {
   return {
     name: caregiver.name,
     phone: caregiver.phone || "",
+    profession: "cuidador",
+    availability_days: [],
+    availability_shifts: [],
+    available_from: "",
   };
 }
 
 function Feedback({
   message,
   error,
+  saving,
   feedbackRef,
-  }: {
+}: {
   message: string | null;
   error: string | null;
+  saving: boolean;
   feedbackRef: React.RefObject<HTMLDivElement | null>;
 }) {
   return (
     <div ref={feedbackRef} tabIndex={-1} className="mt-4 space-y-1">
       <p role="status" aria-live="polite" className="text-sm text-[var(--status-good)]">
-        {message || ""}
+        {saving ? "Salvando dados do profissional..." : message || ""}
       </p>
       <p role="alert" aria-live="assertive" className="text-sm text-[var(--status-critical)]">
         {error || ""}
@@ -150,7 +161,7 @@ function EditSection({
         </button>
       </div>
       {editing ? children : null}
-      <Feedback message={message} error={error} feedbackRef={feedbackRef} />
+      <Feedback message={message} error={error} saving={saving} feedbackRef={feedbackRef} />
     </section>
   );
 }
@@ -435,24 +446,45 @@ function ManualEditForm({ caregiver }: { caregiver: CaregiverAccountData }) {
     setEditing(false);
   }
 
+  function toggleSelection(field: "availability_days" | "availability_shifts", value: string) {
+    setDraft((current) => ({
+      ...current,
+      [field]: current[field].includes(value)
+        ? current[field].filter((item) => item !== value)
+        : [...current[field], value],
+    }));
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
     setMessage(null);
     setError(null);
 
+    const payload = {
+      name: draft.name.trim(),
+      phone: draft.phone.trim() || null,
+      profession: draft.profession,
+      availability_days: draft.availability_days,
+      availability_shifts: draft.availability_shifts,
+      available_from: draft.available_from || null,
+    };
+
     try {
       const response = await fetch(`/api/admin/caregiver-users/${caregiver.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: draft.name.trim(), phone: draft.phone.trim() || null }),
+        body: JSON.stringify(payload),
       });
-      const result = (await response.json().catch(() => null)) as { error?: string } | null;
+      const result = (await response.json().catch(() => null)) as { error?: string; profileId?: string } | null;
       if (!response.ok) throw new Error(result?.error || "Não foi possível salvar os dados.");
+      if (!result?.profileId || !isValidCaregiverId(result.profileId)) {
+        throw new Error("O perfil do profissional não foi identificado. Tente novamente.");
+      }
 
       setMessage("Dados do profissional atualizados com sucesso.");
       setEditing(false);
-      router.refresh();
+      router.replace(`/admin/cuidadores/perfil/${result.profileId}`);
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Erro de conexão. Tente novamente.");
     } finally {
@@ -463,7 +495,7 @@ function ManualEditForm({ caregiver }: { caregiver: CaregiverAccountData }) {
   return (
     <EditSection
       title="Dados cadastrais"
-      description="Atualize o nome e o telefone deste cadastro manual. E-mail de acesso, senha e status permanecem somente para consulta."
+      description="Atualize os dados do profissional, a profissão e a disponibilidade. E-mail de acesso, senha e status permanecem somente para consulta."
       editing={editing}
       saving={saving}
       onEdit={startEditing}
@@ -497,6 +529,79 @@ function ManualEditForm({ caregiver }: { caregiver: CaregiverAccountData }) {
             className={inputClassName}
           />
         </Field>
+        <Field id={`manual-caregiver-profession-${caregiver.id}`} label="Profissão *">
+          <select
+            id={`manual-caregiver-profession-${caregiver.id}`}
+            name="profession"
+            required
+            value={draft.profession}
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                profession: event.target.value as ManualDraft["profession"],
+              }))
+            }
+            className={inputClassName}
+          >
+            {professionOptions.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field id={`manual-caregiver-available-from-${caregiver.id}`} label="Data inicial">
+          <input
+            id={`manual-caregiver-available-from-${caregiver.id}`}
+            name="available_from"
+            type="date"
+            value={draft.available_from}
+            onChange={(event) => setDraft((current) => ({ ...current, available_from: event.target.value }))}
+            className={inputClassName}
+          />
+        </Field>
+        <fieldset className="sm:col-span-2">
+          <legend className="text-xs font-medium text-[var(--muted)]">Dias disponíveis</legend>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {dayOptions.map(([value, label]) => (
+              <label
+                key={value}
+                className="flex min-h-10 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--foreground)]"
+              >
+                <input
+                  type="checkbox"
+                  name="availability_days"
+                  value={value}
+                  checked={draft.availability_days.includes(value)}
+                  onChange={() => toggleSelection("availability_days", value)}
+                  className="h-4 w-4 accent-[var(--brand)]"
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset className="sm:col-span-2">
+          <legend className="text-xs font-medium text-[var(--muted)]">Turnos disponíveis</legend>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {shiftOptions.map(([value, label]) => (
+              <label
+                key={value}
+                className="flex min-h-10 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--foreground)]"
+              >
+                <input
+                  type="checkbox"
+                  name="availability_shifts"
+                  value={value}
+                  checked={draft.availability_shifts.includes(value)}
+                  onChange={() => toggleSelection("availability_shifts", value)}
+                  className="h-4 w-4 accent-[var(--brand)]"
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <div className="flex flex-wrap items-center gap-3 border-t border-[var(--border)] pt-4 sm:col-span-2">
           <button
             type="submit"

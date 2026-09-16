@@ -50,9 +50,9 @@ function sorted(values: ReadonlyArray<string>): string[] {
 }
 
 function manualPatchPayload(source: string): string {
-  const endpointStart = source.indexOf("/api/admin/caregiver-users/");
-  const request = source.slice(endpointStart, endpointStart + 2400);
-  const match = request.match(/body:\s*JSON\.stringify\(\s*\{([\s\S]*?)\}\s*\)/);
+  const manualStart = source.indexOf("function ManualEditForm");
+  const manualForm = source.slice(manualStart);
+  const match = manualForm.match(/const payload = \{([\s\S]*?)\n\s*\};/);
   return match?.[1] || "";
 }
 
@@ -74,7 +74,7 @@ describe("ADM-CARE-03 edição de cuidadores", () => {
     expect(sharedForm.match(/method:\s*["']PATCH["']/g)).toHaveLength(2);
   });
 
-  it("expõe todos os campos editáveis do perfil e apenas nome/telefone no cadastro manual", () => {
+  it("expõe todos os campos editáveis do perfil e os dados profissionais no cadastro manual", () => {
     const profileForm = functionSource(sharedForm, "ProfileEditForm", "ManualEditForm");
     const manualForm = functionSource(sharedForm, "ManualEditForm", "CaregiverEditForm");
     const profileControls = new Set(namedControls(profileForm));
@@ -83,7 +83,14 @@ describe("ADM-CARE-03 edição de cuidadores", () => {
     for (const field of PROFILE_FIELDS) {
       expect(profileControls, `o campo ${field} precisa estar ligado a um controle do formulário`).toContain(field);
     }
-    expect([...manualControls].sort()).toEqual(["name", "phone"]);
+    expect([...manualControls].sort()).toEqual([
+      "availability_days",
+      "availability_shifts",
+      "available_from",
+      "name",
+      "phone",
+      "profession",
+    ]);
   });
 
   it("não envia e-mail de acesso, senha ou status da conta nos payloads de edição", () => {
@@ -94,7 +101,9 @@ describe("ADM-CARE-03 edição de cuidadores", () => {
     expect(profilePayload, "o perfil aprovado deve declarar um payload de edição").not.toBe("");
     expect(manualPayload, "o cadastro manual deve declarar um payload de edição").not.toBe("");
     expect(sorted(objectKeys(profilePayload))).toEqual(sorted([...PROFILE_FIELDS]));
-    expect(sorted(objectKeys(manualPayload))).toEqual(sorted(["name", "phone"]));
+    expect(sorted(objectKeys(manualPayload))).toEqual(
+      sorted(["name", "phone", "profession", "availability_days", "availability_shifts", "available_from"]),
+    );
 
     for (const payload of [profilePayload, manualPayload]) {
       for (const field of FORBIDDEN_ACCOUNT_FIELDS) {
@@ -118,8 +127,18 @@ describe("ADM-CARE-03 edição de cuidadores", () => {
 
   it("atualiza a tela após sucesso e preserva a navegação sem chamada real ao provider no teste", () => {
     expect(uiSource).toMatch(/router\.refresh\(\)/);
+    expect(sharedForm).toContain("profileId");
+    expect(sharedForm).toMatch(/router\.replace\(`\/admin\/cuidadores\/perfil\/\$\{result\.profileId\}`\)/);
     expect(uiSource).toMatch(/response\.ok|res\.ok/);
     expect(uiSource).toMatch(/catch/);
+  });
+
+  it("mantém credenciais e status fora da edição manual e como consulta", () => {
+    expect(accountDetails).toContain("E-mail de acesso");
+    expect(accountDetails).toContain("Senha");
+    expect(accountDetails).toContain("Status");
+    expect(accountDetails).toContain("Somente leitura");
+    expect(manualPatchPayload(sharedForm)).not.toMatch(/email|password|status/i);
   });
 
   it("cancela a edição restaurando o snapshot original nos dois modos", () => {
