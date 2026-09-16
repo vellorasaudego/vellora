@@ -5,6 +5,19 @@ import {
   getSupabaseFile,
   putSupabaseFile,
 } from "./supabase/storage";
+export {
+  createSupabaseSignedUploadUrl,
+  deleteSupabaseFileWithServiceRole,
+  inspectSupabaseFile,
+  listSupabasePendingFiles,
+  moveSupabaseFile,
+  removeStaleSupabasePendingFiles,
+} from "./supabase/storage";
+export type {
+  SupabaseFileInspection,
+  SupabasePendingFile,
+  SupabaseSignedUpload,
+} from "./supabase/storage";
 import { resolveStorageProvider } from "./supabase/storage-config";
 
 type R2ObjectBodyLike = {

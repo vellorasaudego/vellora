@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Selecione o cadastro e o arquivo PDF." }, { status: 400 });
   }
   if (file.size <= 0 || file.size > MAX_FILE_SIZE) {
-    return NextResponse.json({ error: "O contrato deve ter no máximo 4 MB." }, { status: 400 });
+    return NextResponse.json({ error: "O contrato deve ter no máximo 4 MiB." }, { status: 400 });
   }
 
   const bytes = Buffer.from(await file.arrayBuffer());

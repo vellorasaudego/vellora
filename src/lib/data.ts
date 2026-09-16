@@ -156,6 +156,17 @@ export type ContractDocument = {
   created_at: string;
 };
 
+export type StoredContractDocumentInput = {
+  id: string;
+  ownerType: ContractOwnerType;
+  ownerId: string;
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  storageKey: string;
+  uploadedBy: string;
+};
+
 type StoredContractDocument = ContractDocument & { storage_key: string };
 
 export type DailyRecord = {
@@ -1088,6 +1099,27 @@ export async function createContractDocument(input: {
      FROM contract_documents WHERE id = $1`,
     [id]
   ))!;
+}
+
+/**
+ * Registers a contract whose bytes were already written directly to Storage.
+ * The Supabase implementation uses the upload UUID as the database id so a
+ * retry after a network timeout is safe and does not create a duplicate row.
+ */
+export async function registerStoredContractDocument(
+  input: StoredContractDocumentInput,
+): Promise<ContractDocument> {
+  if (shouldUseSupabaseData()) return supabaseData.registerStoredContractDocument(input);
+  throw new Error("Upload direto de contratos exige o provider Supabase.");
+}
+
+export async function isContractStorageKeyRegistered(storageKey: string): Promise<boolean> {
+  if (shouldUseSupabaseData()) return supabaseData.isContractStorageKeyRegistered(storageKey);
+  const row = await queryOne<{ id: string }>(
+    "SELECT id FROM contract_documents WHERE storage_key = $1 LIMIT 1",
+    [storageKey],
+  );
+  return Boolean(row);
 }
 
 export async function deleteContractDocument(id: string): Promise<void> {

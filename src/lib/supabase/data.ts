@@ -21,6 +21,7 @@ import type {
   Patient,
   ProfessionalApplication,
   RecordAuditActor,
+  StoredContractDocumentInput,
   User,
 } from "../data";
 import { diffDailyRecord, snapshotDailyRecord } from "../record-utils";
@@ -1526,6 +1527,97 @@ export async function createContractDocument(input: {
     throw operationError("Não foi possível criar metadados do contrato Supabase", error);
   }
   return mapContract(data as SupabaseRow);
+}
+
+export async function registerStoredContractDocument(
+  input: StoredContractDocumentInput,
+): Promise<ContractDocument> {
+  const client = serviceClient();
+  const contractId = assertUuid(input.id, "Contrato");
+  const ownerId = assertUuid(input.ownerId, "Proprietário do contrato");
+  const uploadedBy = assertUuid(input.uploadedBy, "Autor do upload");
+  const column = contractColumn(input.ownerType);
+  const expectedStorageKey = `contracts/${contractId}.pdf`;
+  if (input.storageKey !== expectedStorageKey) {
+    throw new SupabaseDataError("Chave do contrato não corresponde ao identificador do upload.");
+  }
+  if (input.mimeType !== "application/pdf" || !Number.isSafeInteger(input.fileSize) || input.fileSize <= 0) {
+    throw new SupabaseDataError("Metadados do contrato inválidos.");
+  }
+
+  const selectColumns =
+    "id, family_user_id, caregiver_profile_id, caregiver_user_id, file_name, mime_type, file_size, storage_key, uploaded_by, created_at";
+  const existingById = await client
+    .from("contract_documents")
+    .select(selectColumns)
+    .eq("id", contractId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar contrato idempotente Supabase", existingById.error);
+  if (existingById.data) {
+    const row = existingById.data as SupabaseRow;
+    if (
+      row.storage_key !== input.storageKey ||
+      row[column] !== ownerId ||
+      row.file_name !== input.fileName ||
+      Number(row.file_size) !== input.fileSize
+    ) {
+      throw new SupabaseDataError("O ticket do contrato não corresponde ao registro existente.");
+    }
+    return mapContract(row);
+  }
+
+  const existingByKey = await client
+    .from("contract_documents")
+    .select(selectColumns)
+    .eq("storage_key", input.storageKey)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar chave de contrato Supabase", existingByKey.error);
+  if (existingByKey.data) {
+    const row = existingByKey.data as SupabaseRow;
+    if (row.id !== contractId) {
+      throw new SupabaseDataError("A chave do contrato já está vinculada a outro registro.");
+    }
+    return mapContract(row);
+  }
+
+  const { data, error } = await client
+    .from("contract_documents")
+    .insert({
+      id: contractId,
+      family_user_id: column === "family_user_id" ? ownerId : null,
+      caregiver_profile_id: column === "caregiver_profile_id" ? ownerId : null,
+      caregiver_user_id: column === "caregiver_user_id" ? ownerId : null,
+      file_name: input.fileName,
+      mime_type: input.mimeType,
+      file_size: input.fileSize,
+      storage_key: input.storageKey,
+      uploaded_by: uploadedBy,
+    })
+    .select(selectColumns)
+    .single();
+  if (!error && data) return mapContract(data as SupabaseRow);
+
+  if (isUniqueViolation(error)) {
+    const retry = await client
+      .from("contract_documents")
+      .select(selectColumns)
+      .eq("id", contractId)
+      .maybeSingle();
+    requireNoError("Não foi possível confirmar contrato idempotente Supabase", retry.error);
+    if (retry.data) return mapContract(retry.data as SupabaseRow);
+  }
+  throw operationError("Não foi possível registrar metadados do contrato Supabase", error);
+}
+
+export async function isContractStorageKeyRegistered(storageKey: string): Promise<boolean> {
+  const client = serviceClient();
+  const { data, error } = await client
+    .from("contract_documents")
+    .select("id")
+    .eq("storage_key", storageKey)
+    .maybeSingle();
+  requireNoError("Não foi possível verificar contrato temporário Supabase", error);
+  return Boolean(data);
 }
 
 export async function deleteContractDocument(id: string): Promise<void> {

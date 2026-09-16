@@ -15,6 +15,10 @@ const migrationPath = resolve(
   "supabase/migrations/20260827172106_storage_01_buckets.sql",
 );
 const migration = readFileSync(migrationPath, "utf8");
+const directUploadMigration = readFileSync(
+  resolve(process.cwd(), "supabase/migrations/20260916200424_storage_02_contract_direct_upload.sql"),
+  "utf8",
+);
 const normalizedMigration = migration
   .replace(/--[^\r\n]*/g, "")
   .replace(/\/\*[\s\S]*?\*\//g, "")
@@ -68,7 +72,25 @@ describe("STORAGE-01 path and provider boundaries", () => {
     expect(() => assertStorageContentType(photo, "image/png")).toThrow();
     expect(() => assertStorageContentType(contract, "application/pdf; charset=binary")).toThrow();
     expect(STORAGE_LIMITS.photoBytes).toBe(3 * 1024 * 1024);
-    expect(STORAGE_LIMITS.contractBytes).toBe(4 * 1024 * 1024);
+    expect(STORAGE_LIMITS.contractBytes).toBe(10_000_000);
+  });
+});
+
+describe("STORAGE-02 upload direto de contratos", () => {
+  it("eleva somente o bucket privado de contratos e permite o caminho temporário", () => {
+    const normalized = directUploadMigration
+      .replace(/--[^\r\n]*/g, "")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+    expect(normalized).toMatch(/^begin;/);
+    expect(normalized).toMatch(/commit;$/);
+    expect(normalized).toContain("file_size_limit = 10000000");
+    expect(normalized).toContain("contracts/pending/");
+    expect(normalized).toContain("private.is_admin()");
+    expect(normalized).toContain("public.contract_documents as cd");
+    expect(normalized).not.toContain("public = true");
   });
 });
 

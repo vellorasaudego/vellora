@@ -19,7 +19,7 @@ Supabase de produção. Existem 2 buckets privados:
 | Bucket | Path aceito | MIME | Limite |
 | --- | --- | --- | --- |
 | `record-photos` | `patients/<patient-uuid>/records/<record-uuid>/<file-uuid>.<ext>` | JPG, PNG, WEBP | 3 MiB |
-| `contracts` | `contracts/<contract-uuid>.pdf` | PDF | 4 MiB |
+| `contracts` | `contracts/<contract-uuid>.pdf` | PDF | 4 MiB (atual; 10 MB / 10.000.000 bytes após Storage-02) |
 
 O `supabase:smoke` confirma, por leitura, a existência, privacidade, limite e
 MIME permitido dos dois buckets. Ele não cria buckets, não envia arquivos e
@@ -59,3 +59,26 @@ Se for necessário um rollback de configuração, altere Auth, dados e Storage
 de forma coordenada. Trocar somente Storage faria o aplicativo procurar paths
 em outro backend; o fallback R2 não deve ser tratado como cópia automática dos
 objetos Supabase.
+
+## STORAGE-02 — upload direto resumível de contratos
+
+O código preparado em `20260916130000_storage_02_contract_direct_upload.sql`
+mantém o bucket privado, eleva o limite do bucket `contracts` para 10 MB
+(10.000.000 bytes) e
+permite somente a administradores o caminho temporário
+`contracts/pending/<uuid>.pdf`. A migration ainda não foi aplicada em produção
+nesta entrega. O limite global do projeto Supabase também deve ser confirmado
+como pelo menos 10.000.000 bytes antes da ativação.
+
+Quando a migration e a configuração operacional forem aprovadas, configure:
+
+```dotenv
+VELLORA_CONTRACT_DIRECT_UPLOAD=true
+CRON_SECRET=<segredo-aleatorio-do-cron>
+```
+
+O navegador solicita um ticket pequeno à Vercel, envia o PDF pelo endpoint TUS
+do Storage e pede a finalização. O service role fica somente no servidor. Se a
+flag estiver desligada, o formulário volta automaticamente ao multipart legado
+para arquivos de até 4 MiB. O cron `/api/cron/contracts` remove temporários
+com mais de 24 horas, protegendo objetos já registrados.

@@ -31,7 +31,7 @@ export const REQUIRED_BUCKETS = Object.freeze({
     allowedMimeTypes: Object.freeze(["image/jpeg", "image/png", "image/webp"]),
   }),
   contracts: Object.freeze({
-    fileSizeLimit: 4 * 1024 * 1024,
+    fileSizeLimit: 10_000_000,
     allowedMimeTypes: Object.freeze(["application/pdf"]),
   }),
 });

@@ -5,7 +5,8 @@ export const STORAGE_BUCKETS = {
 
 export const STORAGE_LIMITS = {
   photoBytes: 3 * 1024 * 1024,
-  contractBytes: 4 * 1024 * 1024,
+  // Product limit: 10 MB decimal (10,000,000 bytes).
+  contractBytes: 10_000_000,
 } as const;
 
 export const STORAGE_MIME_TYPES = {
@@ -18,7 +19,8 @@ const PHOTO_PATH = new RegExp(
   `^patients/(${UUID})/records/(${UUID})/(${UUID})\\.(jpg|jpeg|png|webp)$`,
   "",
 );
-const CONTRACT_PATH = new RegExp(`^contracts/(${UUID})\\.pdf$`);
+const CONTRACT_FINAL_PATH = new RegExp(`^contracts/(${UUID})\\.pdf$`);
+const CONTRACT_PENDING_PATH = new RegExp(`^contracts/pending/(${UUID})\\.pdf$`);
 
 export type StorageObjectPath =
   | {
@@ -36,6 +38,7 @@ export type StorageObjectPath =
       path: string;
       contractId: string;
       extension: "pdf";
+      pending: boolean;
     };
 
 /**
@@ -59,14 +62,27 @@ export function classifyStoragePath(key: string): StorageObjectPath | null {
     };
   }
 
-  const contract = CONTRACT_PATH.exec(key);
-  if (contract) {
+  const pendingContract = CONTRACT_PENDING_PATH.exec(key);
+  if (pendingContract) {
     return {
       kind: "contract",
       bucket: STORAGE_BUCKETS.contracts,
       path: key,
-      contractId: contract[1],
+      contractId: pendingContract[1],
       extension: "pdf",
+      pending: true,
+    };
+  }
+
+  const finalContract = CONTRACT_FINAL_PATH.exec(key);
+  if (finalContract) {
+    return {
+      kind: "contract",
+      bucket: STORAGE_BUCKETS.contracts,
+      path: key,
+      contractId: finalContract[1],
+      extension: "pdf",
+      pending: false,
     };
   }
 
@@ -77,7 +93,7 @@ export function assertStoragePath(key: string): StorageObjectPath {
   const parsed = classifyStoragePath(key);
   if (!parsed) {
     throw new Error(
-      "Chave de armazenamento inválida. Use patients/<patient-uuid>/records/<record-uuid>/<file-uuid>.<ext> para fotos ou contracts/<contract-uuid>.pdf para contratos.",
+      "Chave de armazenamento inválida. Use patients/<patient-uuid>/records/<record-uuid>/<file-uuid>.<ext> para fotos ou contracts/<contract-uuid>.pdf (ou contracts/pending/<contract-uuid>.pdf) para contratos.",
     );
   }
   return parsed;

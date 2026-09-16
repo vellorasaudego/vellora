@@ -7,8 +7,16 @@ function resolveSupabaseOrigins() {
   if (!configuredUrl) return [];
 
   try {
-    const origin = new URL(configuredUrl).origin;
-    return [origin, origin.replace(/^https:/, "wss:")];
+    const parsed = new URL(configuredUrl);
+    const origins = [parsed.origin, parsed.origin.replace(/^https:/, "wss:")];
+    const hostParts = parsed.hostname.split(".");
+    // Resumable Supabase uploads use the Storage subdomain, which is a
+    // different origin from the project REST/Auth endpoint.
+    if (hostParts.length >= 3 && hostParts[1] === "supabase" && hostParts[2] === "co") {
+      const storageOrigin = `${parsed.protocol}//${hostParts[0]}.storage.supabase.co`;
+      origins.push(storageOrigin, storageOrigin.replace(/^https:/, "wss:"));
+    }
+    return origins;
   } catch {
     // Fail closed when a malformed public URL is supplied at build time.
     return [];
