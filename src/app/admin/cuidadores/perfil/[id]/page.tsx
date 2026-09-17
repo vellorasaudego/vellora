@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import {
   getCaregiverProfile,
   listContractDocuments,
+  listContractDocumentsForCaregiver,
   listPatientsByCaregiver,
 } from "@/lib/data";
 import { CaregiverProfileDetails } from "@/components/admin/CaregiverProfileDetails";
@@ -20,7 +21,9 @@ export default async function AdminCaregiverProfilePage({
 
   const [patients, contracts] = await Promise.all([
     profile.user_id ? listPatientsByCaregiver(profile.user_id) : Promise.resolve([]),
-    listContractDocuments("caregiver_profile", profile.id),
+    profile.user_id
+      ? listContractDocumentsForCaregiver(profile.user_id)
+      : listContractDocuments("caregiver_profile", profile.id),
   ]);
 
   return <CaregiverProfileDetails profile={profile} patients={patients} contracts={contracts} />;
