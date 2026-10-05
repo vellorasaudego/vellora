@@ -20,13 +20,13 @@ describe("configuração do ticket SEC-DEPEND-HEADERS-CI", () => {
     };
 
     expect(packageJson.dependencies).toMatchObject({
-      next: "16.3.3",
+      next: "16.3.8",
       sharp: "0.35.4",
     });
-    expect(packageJson.devDependencies?.["eslint-config-next"]).toBe("16.3.3");
-    expect(packageLock.packages?.["node_modules/next"]?.version).toBe("16.3.3");
+    expect(packageJson.devDependencies?.["eslint-config-next"]).toBe("16.3.8");
+    expect(packageLock.packages?.["node_modules/next"]?.version).toBe("16.3.8");
     expect(packageLock.packages?.["node_modules/sharp"]?.version).toBe("0.35.4");
-    expect(packageLock.packages?.["node_modules/eslint-config-next"]?.version).toBe("16.3.3");
+    expect(packageLock.packages?.["node_modules/eslint-config-next"]?.version).toBe("16.3.8");
   });
 
   it("publica os headers defensivos e uma CSP compatível com os serviços usados", async () => {
