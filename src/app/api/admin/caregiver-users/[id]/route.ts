@@ -7,6 +7,7 @@ import {
 } from "@/lib/data";
 import { apiError } from "@/lib/api-error";
 import { isValidCaregiverId, parseCaregiverUserUpdate } from "@/lib/caregiver-update";
+import { ScheduleHistoryConflictError } from "@/lib/schedule-errors";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const guard = await requireRole("admin");
@@ -42,6 +43,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     await deleteCaregiverUser(id);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    if (error instanceof ScheduleHistoryConflictError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     return apiError(error, "api/admin/caregiver-users", "Não foi possível excluir a conta do profissional.");
   }
 }

@@ -64,6 +64,7 @@ function normalizeRow<T>(input: T): T {
   if ("availability_shifts" in row) row.availability_shifts = parseJsonList(row.availability_shifts);
   if ("changed_fields" in row) row.changed_fields = parseJsonList(row.changed_fields);
   if ("lgpd_consent" in row) row.lgpd_consent = Boolean(row.lgpd_consent);
+  if ("ends_next_day" in row) row.ends_next_day = Boolean(row.ends_next_day);
   return row as T;
 }
 

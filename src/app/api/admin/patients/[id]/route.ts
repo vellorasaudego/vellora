@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/guard";
 import { apiError } from "@/lib/api-error";
 import { DUPLICATE_ACCOUNT_EMAIL_MESSAGE, isDuplicateAccountEmailError } from "@/lib/user-errors";
 import { updatePatient, createUser, deleteFamilyUser, deletePatient, getUserByEmail } from "@/lib/data";
+import { ScheduleHistoryConflictError } from "@/lib/schedule-errors";
 
 function duplicateEmailResponse(): NextResponse {
   return NextResponse.json(
@@ -75,6 +76,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     await deletePatient(id);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    if (error instanceof ScheduleHistoryConflictError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     return apiError(error, "api/admin/patients/[id]", "Não foi possível excluir o paciente.");
   }
 }

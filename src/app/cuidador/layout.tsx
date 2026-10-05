@@ -9,7 +9,10 @@ export default async function CuidadorLayout({ children }: { children: React.Rea
       title="Área do cuidador"
       userName={session?.name || ""}
       roleLabel="Cuidador"
-      navItems={[{ href: "/cuidador", label: "Meus pacientes", icon: "🩺" }]}
+      navItems={[
+        { href: "/cuidador", label: "Meus pacientes", icon: "🩺" },
+        { href: "/cuidador/escalas", label: "Escalas", icon: "📅" },
+      ]}
     >
       {children}
     </DashboardShell>

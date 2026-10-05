@@ -91,6 +91,43 @@ export const caregiverAssignments = sqliteTable(
   ]
 );
 
+export const caregiverScheduleEntries = sqliteTable(
+  "caregiver_schedule_entries",
+  {
+    id: text("id").primaryKey(),
+    caregiver_assignment_id: text("caregiver_assignment_id")
+      .notNull()
+      .references(() => caregiverAssignments.id, { onDelete: "restrict" }),
+    scheduled_date: text("scheduled_date").notNull(),
+    start_time: text("start_time").notNull(),
+    end_time: text("end_time").notNull(),
+    ends_next_day: integer("ends_next_day", { mode: "boolean" }).notNull().default(false),
+    profession: text("profession", {
+      enum: ["cuidador", "tecnico_enfermagem", "enfermeiro", "outros"],
+    }).notNull(),
+    created_by: text("created_by").references(() => users.id, { onDelete: "set null" }),
+    updated_by: text("updated_by").references(() => users.id, { onDelete: "set null" }),
+    created_at: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updated_at: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("idx_schedule_assignment_date").on(
+      table.caregiver_assignment_id,
+      table.scheduled_date,
+      table.start_time,
+    ),
+    index("idx_schedule_date_assignment").on(table.scheduled_date, table.caregiver_assignment_id),
+    check(
+      "caregiver_schedule_entries_profession_check",
+      sql`${table.profession} IN ('cuidador','tecnico_enfermagem','enfermeiro','outros')`,
+    ),
+    check(
+      "caregiver_schedule_entries_time_order",
+      sql`(${table.ends_next_day} = 0 AND ${table.end_time} > ${table.start_time}) OR (${table.ends_next_day} = 1 AND ${table.end_time} <= ${table.start_time})`,
+    ),
+  ],
+);
+
 export const leads = sqliteTable(
   "leads",
   {

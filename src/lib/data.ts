@@ -18,6 +18,7 @@ import {
   AssignmentConflictError,
   isAssignmentUniqueViolation,
 } from "./assignment-errors";
+import { ScheduleHistoryConflictError } from "./schedule-errors";
 
 export type User = {
   id: string;
@@ -52,6 +53,29 @@ export type Assignment = {
   end_date: string | null;
   active: number;
   created_at: string;
+};
+
+export type CaregiverScheduleEntry = {
+  id: string;
+  caregiver_assignment_id: string;
+  patient_id: string;
+  caregiver_user_id: string;
+  scheduled_date: string;
+  start_time: string;
+  end_time: string;
+  ends_next_day: boolean;
+  profession: ProfessionalApplication["profession"];
+  created_at: string;
+  updated_at: string;
+};
+
+export type CaregiverScheduleEntryInput = {
+  caregiver_assignment_id: string;
+  scheduled_date: string;
+  start_time: string;
+  end_time: string;
+  ends_next_day: boolean;
+  profession: ProfessionalApplication["profession"];
 };
 
 export type Lead = {
@@ -413,6 +437,15 @@ export async function updatePatient(id: string, fields: Partial<Patient>): Promi
 
 export async function deletePatient(id: string): Promise<void> {
   if (shouldUseSupabaseData()) return supabaseData.deletePatient(id);
+  const scheduledEntry = await queryOne<{ id: string }>(
+    `SELECT s.id
+     FROM caregiver_schedule_entries s
+     JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
+     WHERE a.patient_id = $1
+     LIMIT 1`,
+    [id],
+  );
+  if (scheduledEntry) throw new ScheduleHistoryConflictError();
   await query("DELETE FROM patients WHERE id = $1", [id]);
 }
 
@@ -506,6 +539,139 @@ export async function isCaregiverAssignedToPatient(caregiverUserId: string, pati
     [caregiverUserId, patientId]
   );
   return !!row;
+}
+
+// ---------- Caregiver schedules ----------
+export async function listCaregiverScheduleEntriesForPatient(
+  patientId: string,
+  startDate: string,
+  endDateExclusive: string,
+): Promise<CaregiverScheduleEntry[]> {
+  if (shouldUseSupabaseData()) {
+    return supabaseData.listCaregiverScheduleEntriesForPatient(patientId, startDate, endDateExclusive);
+  }
+  return query<CaregiverScheduleEntry>(
+    `SELECT s.id, s.caregiver_assignment_id, a.patient_id, a.caregiver_user_id,
+            s.scheduled_date, s.start_time, s.end_time, s.ends_next_day,
+            s.profession, s.created_at, s.updated_at
+     FROM caregiver_schedule_entries s
+     JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
+     WHERE a.patient_id = $1 AND s.scheduled_date >= $2 AND s.scheduled_date < $3
+     ORDER BY s.scheduled_date, s.start_time, s.id`,
+    [patientId, startDate, endDateExclusive],
+  );
+}
+
+export async function listCaregiverScheduleEntriesForCaregiver(
+  caregiverUserId: string,
+  startDate: string,
+  endDateExclusive: string,
+): Promise<CaregiverScheduleEntry[]> {
+  if (shouldUseSupabaseData()) {
+    return supabaseData.listCaregiverScheduleEntriesForCaregiver(caregiverUserId, startDate, endDateExclusive);
+  }
+  return query<CaregiverScheduleEntry>(
+    `SELECT s.id, s.caregiver_assignment_id, a.patient_id, a.caregiver_user_id,
+            s.scheduled_date, s.start_time, s.end_time, s.ends_next_day,
+            s.profession, s.created_at, s.updated_at
+     FROM caregiver_schedule_entries s
+     JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
+     WHERE a.caregiver_user_id = $1 AND a.active = 1
+       AND s.scheduled_date >= $2 AND s.scheduled_date < $3
+     ORDER BY s.scheduled_date, s.start_time, s.id`,
+    [caregiverUserId, startDate, endDateExclusive],
+  );
+}
+
+export async function listCaregiverScheduleEntriesForProfessional(
+  caregiverUserId: string,
+  startDate: string,
+  endDateExclusive: string,
+): Promise<CaregiverScheduleEntry[]> {
+  if (shouldUseSupabaseData()) {
+    return supabaseData.listCaregiverScheduleEntriesForProfessional(caregiverUserId, startDate, endDateExclusive);
+  }
+  return query<CaregiverScheduleEntry>(
+    `SELECT s.id, s.caregiver_assignment_id, a.patient_id, a.caregiver_user_id,
+            s.scheduled_date, s.start_time, s.end_time, s.ends_next_day,
+            s.profession, s.created_at, s.updated_at
+     FROM caregiver_schedule_entries s
+     JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
+     WHERE a.caregiver_user_id = $1
+       AND s.scheduled_date >= $2 AND s.scheduled_date < $3
+     ORDER BY s.scheduled_date, s.start_time, s.id`,
+    [caregiverUserId, startDate, endDateExclusive],
+  );
+}
+
+export async function getCaregiverScheduleEntry(id: string): Promise<CaregiverScheduleEntry | undefined> {
+  if (shouldUseSupabaseData()) return supabaseData.getCaregiverScheduleEntry(id);
+  return queryOne<CaregiverScheduleEntry>(
+    `SELECT s.id, s.caregiver_assignment_id, a.patient_id, a.caregiver_user_id,
+            s.scheduled_date, s.start_time, s.end_time, s.ends_next_day,
+            s.profession, s.created_at, s.updated_at
+     FROM caregiver_schedule_entries s
+     JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
+     WHERE s.id = $1`,
+    [id],
+  );
+}
+
+export async function createCaregiverScheduleEntry(
+  input: CaregiverScheduleEntryInput,
+  actorUserId: string,
+): Promise<CaregiverScheduleEntry> {
+  if (shouldUseSupabaseData()) return supabaseData.createCaregiverScheduleEntry(input, actorUserId);
+  const id = randomUUID();
+  await query(
+    `INSERT INTO caregiver_schedule_entries
+       (id, caregiver_assignment_id, scheduled_date, start_time, end_time,
+        ends_next_day, profession, created_by, updated_by)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8)`,
+    [
+      id,
+      input.caregiver_assignment_id,
+      input.scheduled_date,
+      input.start_time,
+      input.end_time,
+      input.ends_next_day,
+      input.profession,
+      actorUserId,
+    ],
+  );
+  const created = await getCaregiverScheduleEntry(id);
+  if (!created) throw new Error("Não foi possível confirmar a escala criada.");
+  return created;
+}
+
+export async function updateCaregiverScheduleEntry(
+  id: string,
+  input: CaregiverScheduleEntryInput,
+  actorUserId: string,
+): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateCaregiverScheduleEntry(id, input, actorUserId);
+  await query(
+    `UPDATE caregiver_schedule_entries
+     SET caregiver_assignment_id = $1, scheduled_date = $2, start_time = $3,
+         end_time = $4, ends_next_day = $5, profession = $6,
+         updated_by = $7, updated_at = CURRENT_TIMESTAMP
+     WHERE id = $8`,
+    [
+      input.caregiver_assignment_id,
+      input.scheduled_date,
+      input.start_time,
+      input.end_time,
+      input.ends_next_day,
+      input.profession,
+      actorUserId,
+      id,
+    ],
+  );
+}
+
+export async function deleteCaregiverScheduleEntry(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteCaregiverScheduleEntry(id);
+  await query("DELETE FROM caregiver_schedule_entries WHERE id = $1", [id]);
 }
 
 // ---------- Leads ----------
@@ -928,6 +1094,15 @@ export async function deleteCaregiverProfile(id: string): Promise<void> {
   if (shouldUseSupabaseData()) return supabaseData.deleteCaregiverProfile(id);
   const profile = await getCaregiverProfile(id);
   if (!profile) return;
+  if (profile.user_id) {
+    const scheduledEntry = await queryOne<{ id: string }>(
+      `SELECT s.id FROM caregiver_schedule_entries s
+       JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
+       WHERE a.caregiver_user_id = $1 LIMIT 1`,
+      [profile.user_id],
+    );
+    if (scheduledEntry) throw new ScheduleHistoryConflictError();
+  }
   const keys = await contractKeysOwnedBy("caregiver_profile_id", id);
   if (profile.user_id) {
     keys.push(...(await contractKeysOwnedBy("caregiver_user_id", profile.user_id)));
@@ -964,6 +1139,13 @@ export async function deleteCaregiverProfile(id: string): Promise<void> {
 
 export async function deleteCaregiverUser(id: string): Promise<void> {
   if (shouldUseSupabaseData()) return supabaseData.deleteCaregiverUser(id);
+  const scheduledEntry = await queryOne<{ id: string }>(
+    `SELECT s.id FROM caregiver_schedule_entries s
+     JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
+     WHERE a.caregiver_user_id = $1 LIMIT 1`,
+    [id],
+  );
+  if (scheduledEntry) throw new ScheduleHistoryConflictError();
   const keys = await contractKeysOwnedBy("caregiver_user_id", id);
   await executeBatch([
     { text: "DELETE FROM contract_documents WHERE caregiver_user_id = $1", params: [id] },

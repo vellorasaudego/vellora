@@ -8,6 +8,8 @@ import {
 import { validateSupabaseConfig } from "./config";
 import type {
   Assignment,
+  CaregiverScheduleEntry,
+  CaregiverScheduleEntryInput,
   CaregiverProfile,
   CaregiverProfileUpdate,
   CaregiverUserUpdate,
@@ -39,13 +41,17 @@ import {
   isAssignmentUniqueViolation,
 } from "../assignment-errors";
 import { DUPLICATE_ACCOUNT_EMAIL_MESSAGE, isDuplicateAccountEmailError } from "../user-errors";
+import { ScheduleHistoryConflictError } from "../schedule-errors";
 
 export type DataProvider = "legacy" | "supabase";
 
 export class SupabaseDataError extends Error {
-  constructor(message: string) {
+  readonly code?: string;
+
+  constructor(message: string, code?: string) {
     super(message);
     this.name = "SupabaseDataError";
+    this.code = code;
   }
 }
 
@@ -161,11 +167,15 @@ function serviceClient(): SupabaseClient {
 type SupabaseRow = Record<string, unknown>;
 
 function operationError(context: string, error: unknown): SupabaseDataError {
+  const code =
+    error && typeof error === "object" && "code" in error && typeof error.code === "string"
+      ? error.code
+      : undefined;
   const message =
     error && typeof error === "object" && "message" in error && typeof error.message === "string"
       ? error.message
       : "erro desconhecido";
-  return new SupabaseDataError(`${context}: ${message}`);
+  return new SupabaseDataError(`${context}: ${message}`, code);
 }
 
 function requireNoError(context: string, error: unknown): void {
@@ -321,6 +331,25 @@ function mapAssignment(row: SupabaseRow): Assignment {
     end_date: asNullableString(row.end_date),
     active: asBoolean(row.active) ? 1 : 0,
     created_at: asString(row.created_at),
+  };
+}
+
+function mapCaregiverScheduleEntry(
+  row: SupabaseRow,
+  assignment: Assignment,
+): CaregiverScheduleEntry {
+  return {
+    id: assertUuid(asString(row.id), "Escala"),
+    caregiver_assignment_id: assertUuid(asString(row.caregiver_assignment_id), "Vínculo da escala"),
+    patient_id: assignment.patient_id,
+    caregiver_user_id: assignment.caregiver_user_id,
+    scheduled_date: asString(row.scheduled_date),
+    start_time: normalizeTime(asString(row.start_time)) || "",
+    end_time: normalizeTime(asString(row.end_time)) || "",
+    ends_next_day: asBoolean(row.ends_next_day),
+    profession: asProfession(row.profession),
+    created_at: asString(row.created_at),
+    updated_at: asString(row.updated_at),
   };
 }
 
@@ -839,8 +868,34 @@ export async function updatePatient(id: string, fields: Partial<Patient>): Promi
 
 export async function deletePatient(id: string): Promise<void> {
   const client = await requestClient();
-  const { error } = await client.from("patients").delete().eq("id", assertUuid(id, "Paciente"));
+  const patientId = assertUuid(id, "Paciente");
+  await assertNoScheduleHistory(client, "patient_id", patientId);
+  const { error } = await client.from("patients").delete().eq("id", patientId);
   requireNoError("Não foi possível excluir paciente Supabase", error);
+}
+
+async function assertNoScheduleHistory(
+  client: SupabaseClient,
+  assignmentField: "patient_id" | "caregiver_user_id",
+  targetId: string,
+): Promise<void> {
+  const { data: assignments, error: assignmentError } = await client
+    .from("caregiver_assignments")
+    .select("id")
+    .eq(assignmentField, targetId);
+  requireNoError("Não foi possível verificar o histórico de escalas Supabase", assignmentError);
+  const assignmentIds = ((assignments || []) as SupabaseRow[])
+    .map((assignment) => asString(assignment.id))
+    .filter(Boolean);
+  if (!assignmentIds.length) return;
+
+  const { data: scheduledEntries, error: scheduleError } = await client
+    .from("caregiver_schedule_entries")
+    .select("id")
+    .in("caregiver_assignment_id", assignmentIds)
+    .limit(1);
+  requireNoError("Não foi possível verificar o histórico de escalas Supabase", scheduleError);
+  if (scheduledEntries?.length) throw new ScheduleHistoryConflictError();
 }
 
 // ---------- Assignments ----------
@@ -964,6 +1019,150 @@ export async function isCaregiverAssignedToPatient(caregiverUserId: string, pati
     .limit(1);
   requireNoError("Não foi possível verificar assignment Supabase", error);
   return ((data || []) as SupabaseRow[]).length > 0;
+}
+
+// ---------- Caregiver schedules ----------
+async function scheduleRowsForAssignments(
+  assignments: Assignment[],
+  startDate: string,
+  endDateExclusive: string,
+): Promise<CaregiverScheduleEntry[]> {
+  if (!assignments.length) return [];
+  const client = await requestClient();
+  const assignmentById = new Map(assignments.map((assignment) => [assignment.id, assignment]));
+  const { data, error } = await client
+    .from("caregiver_schedule_entries")
+    .select("*")
+    .in("caregiver_assignment_id", assignments.map((assignment) => assignment.id))
+    .gte("scheduled_date", startDate)
+    .lt("scheduled_date", endDateExclusive)
+    .order("scheduled_date")
+    .order("start_time");
+  requireNoError("Não foi possível consultar escalas Supabase", error);
+  return ((data || []) as SupabaseRow[]).flatMap((row) => {
+    const assignmentId = asString(row.caregiver_assignment_id);
+    const assignment = assignmentById.get(assignmentId);
+    return assignment ? [mapCaregiverScheduleEntry(row, assignment)] : [];
+  });
+}
+
+export async function listCaregiverScheduleEntriesForPatient(
+  patientId: string,
+  startDate: string,
+  endDateExclusive: string,
+): Promise<CaregiverScheduleEntry[]> {
+  const assignments = await listAssignmentsForPatient(assertUuid(patientId, "Paciente"));
+  return scheduleRowsForAssignments(assignments, startDate, endDateExclusive);
+}
+
+export async function listCaregiverScheduleEntriesForCaregiver(
+  caregiverUserId: string,
+  startDate: string,
+  endDateExclusive: string,
+): Promise<CaregiverScheduleEntry[]> {
+  const client = await requestClient();
+  const userId = assertUuid(caregiverUserId, "Profissional");
+  const { data, error } = await client
+    .from("caregiver_assignments")
+    .select("*")
+    .eq("caregiver_user_id", userId)
+    .eq("active", true);
+  requireNoError("Não foi possível consultar vínculos do profissional Supabase", error);
+  return scheduleRowsForAssignments(((data || []) as SupabaseRow[]).map(mapAssignment), startDate, endDateExclusive);
+}
+
+export async function listCaregiverScheduleEntriesForProfessional(
+  caregiverUserId: string,
+  startDate: string,
+  endDateExclusive: string,
+): Promise<CaregiverScheduleEntry[]> {
+  const client = await requestClient();
+  const { data, error } = await client
+    .from("caregiver_assignments")
+    .select("*")
+    .eq("caregiver_user_id", assertUuid(caregiverUserId, "Profissional"));
+  requireNoError("Não foi possível consultar vínculos do profissional Supabase", error);
+  return scheduleRowsForAssignments(((data || []) as SupabaseRow[]).map(mapAssignment), startDate, endDateExclusive);
+}
+
+export async function getCaregiverScheduleEntry(id: string): Promise<CaregiverScheduleEntry | undefined> {
+  const client = await requestClient();
+  const scheduleId = assertUuid(id, "Escala");
+  const { data, error } = await client
+    .from("caregiver_schedule_entries")
+    .select("*")
+    .eq("id", scheduleId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar escala Supabase", error);
+  if (!data) return undefined;
+
+  const row = data as SupabaseRow;
+  const assignmentId = assertUuid(asString(row.caregiver_assignment_id), "Vínculo da escala");
+  const { data: assignmentData, error: assignmentError } = await client
+    .from("caregiver_assignments")
+    .select("*")
+    .eq("id", assignmentId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar vínculo da escala Supabase", assignmentError);
+  return assignmentData
+    ? mapCaregiverScheduleEntry(row, mapAssignment(assignmentData as SupabaseRow))
+    : undefined;
+}
+
+export async function createCaregiverScheduleEntry(
+  input: CaregiverScheduleEntryInput,
+  actorUserId: string,
+): Promise<CaregiverScheduleEntry> {
+  const client = await requestClient();
+  const { data, error } = await client
+    .from("caregiver_schedule_entries")
+    .insert({
+      caregiver_assignment_id: assertUuid(input.caregiver_assignment_id, "Vínculo da escala"),
+      scheduled_date: input.scheduled_date,
+      start_time: input.start_time,
+      end_time: input.end_time,
+      ends_next_day: input.ends_next_day,
+      profession: input.profession,
+      created_by: assertUuid(actorUserId, "Administrador"),
+      updated_by: assertUuid(actorUserId, "Administrador"),
+    })
+    .select("id")
+    .single();
+  const created = requireValue("Não foi possível criar escala Supabase", data as SupabaseRow | null, error);
+  const schedule = await getCaregiverScheduleEntry(asString(created.id));
+  if (!schedule) throw new SupabaseDataError("Não foi possível confirmar a escala criada.");
+  return schedule;
+}
+
+export async function updateCaregiverScheduleEntry(
+  id: string,
+  input: CaregiverScheduleEntryInput,
+  actorUserId: string,
+): Promise<void> {
+  const client = await requestClient();
+  const { error } = await client
+    .from("caregiver_schedule_entries")
+    .update({
+      caregiver_assignment_id: assertUuid(input.caregiver_assignment_id, "Vínculo da escala"),
+      scheduled_date: input.scheduled_date,
+      start_time: input.start_time,
+      end_time: input.end_time,
+      ends_next_day: input.ends_next_day,
+      profession: input.profession,
+      updated_by: assertUuid(actorUserId, "Administrador"),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", assertUuid(id, "Escala"));
+  requireNoError("Não foi possível atualizar escala Supabase", error);
+}
+
+export async function deleteCaregiverScheduleEntry(id: string): Promise<void> {
+  const client = await requestClient();
+  const { error } = await client
+    .from("caregiver_schedule_entries")
+    .delete()
+    .eq("id", assertUuid(id, "Escala"));
+  requireNoError("Não foi possível remover escala Supabase", error);
 }
 
 // ---------- Leads ----------
@@ -1381,6 +1580,7 @@ export async function deleteCaregiverProfile(id: string): Promise<void> {
   if (!profile) return;
   const row = profile as SupabaseRow;
   const userId = asNullableString(row.user_id);
+  if (userId) await assertNoScheduleHistory(client, "caregiver_user_id", userId);
   const keys = await contractKeys(client, "caregiver_profile_id", profileId);
   if (userId) keys.push(...(await contractKeys(client, "caregiver_user_id", userId)));
   const { error: contractError } = await client.from("contract_documents").delete().or(`caregiver_profile_id.eq.${profileId}${userId ? `,caregiver_user_id.eq.${userId}` : ""}`);
@@ -1398,6 +1598,7 @@ export async function deleteCaregiverProfile(id: string): Promise<void> {
 export async function deleteCaregiverUser(id: string): Promise<void> {
   const client = serviceClient();
   const userId = assertUuid(id, "Cuidador");
+  await assertNoScheduleHistory(client, "caregiver_user_id", userId);
   const keys = await contractKeys(client, "caregiver_user_id", userId);
   const { error: contractError } = await client.from("contract_documents").delete().eq("caregiver_user_id", userId);
   requireNoError("Não foi possível excluir contratos do cuidador Supabase", contractError);
