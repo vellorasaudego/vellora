@@ -12,7 +12,7 @@ vi.mock("../src/lib/supabase/server", () => ({
 vi.mock("../src/lib/auth-provider", () => ({ resolveAuthProvider: mocks.resolveAuthProvider }));
 vi.mock("../src/lib/runtime-config", () => ({ runtimeValue: mocks.runtimeValue }));
 
-import { createAssignment } from "../src/lib/supabase/data";
+import { createAssignment, createCaregiverScheduleEntries } from "../src/lib/supabase/data";
 
 const input = {
   patient_id: "11111111-1111-4111-8111-111111111111",
@@ -114,5 +114,25 @@ describe("createAssignment no adapter Supabase", () => {
       code: "duplicate_assignment",
       message: "Já existe um vínculo para este cuidador, paciente e data.",
     });
+  });
+});
+
+describe("createCaregiverScheduleEntries no adapter Supabase", () => {
+  it("faz uma única inserção em lote para todas as datas", async () => {
+    const insert = queryChain({ data: null, error: null });
+    const from = configureClient(insert);
+    const inputs = [
+      { caregiver_assignment_id: "11111111-1111-4111-8111-111111111111", scheduled_date: "2026-10-05", start_time: "08:00", end_time: "20:00", ends_next_day: false, profession: "cuidador" as const },
+      { caregiver_assignment_id: "11111111-1111-4111-8111-111111111111", scheduled_date: "2026-10-06", start_time: "08:00", end_time: "20:00", ends_next_day: false, profession: "cuidador" as const },
+    ];
+
+    await expect(createCaregiverScheduleEntries(inputs, "22222222-2222-4222-8222-222222222222")).resolves.toBe(2);
+
+    expect(from).toHaveBeenCalledTimes(1);
+    expect(from).toHaveBeenCalledWith("caregiver_schedule_entries");
+    expect(insert.insert).toHaveBeenCalledWith([
+      expect.objectContaining({ caregiver_assignment_id: inputs[0].caregiver_assignment_id, scheduled_date: "2026-10-05", created_by: "22222222-2222-4222-8222-222222222222" }),
+      expect.objectContaining({ caregiver_assignment_id: inputs[1].caregiver_assignment_id, scheduled_date: "2026-10-06", created_by: "22222222-2222-4222-8222-222222222222" }),
+    ]);
   });
 });

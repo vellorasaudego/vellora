@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import type { ProfessionalOption, ScheduleEntry, SchedulePatientOption } from "./types";
-import { dateKey, formatLongDate, formatMonth, formatShiftTime, formatTime, monthDays, PROFESSION_LABELS, timeToMinutes, WEEKDAYS } from "./date-utils";
+import { dateFromKey, dateKey, formatLongDate, formatMonth, formatShiftTime, formatTime, monthDays, PROFESSION_LABELS, timeToMinutes, WEEKDAYS } from "./date-utils";
+import { generateScheduleRecurrence, type ScheduleRecurrencePattern } from "@/lib/schedule-recurrence";
 
 type CalendarProps =
   | { mode: "admin"; patientId: string; patientName: string }
@@ -17,6 +18,47 @@ type ScheduleDraft = {
   end_time: string;
   ends_next_day: boolean;
 };
+
+type RecurrenceDraft = {
+  end_date: string;
+  pattern: ScheduleRecurrencePattern;
+  interval_days: number;
+  weekdays: number[];
+  dates: string[];
+  skip_dates: string[];
+  custom_date: string;
+  skip_date: string;
+};
+
+const RECURRENCE_OPTIONS: { value: ScheduleRecurrencePattern; label: string }[] = [
+  { value: "daily", label: "Todos os dias" },
+  { value: "alternate_days", label: "Dia sim, dia não" },
+  { value: "weekdays", label: "Segunda a sexta" },
+  { value: "weekends", label: "Finais de semana" },
+  { value: "selected_weekdays", label: "Dias escolhidos" },
+  { value: "every_n_days", label: "A cada N dias" },
+  { value: "monthly", label: "Mensal" },
+  { value: "custom_dates", label: "Datas avulsas" },
+];
+
+function endDateAfterOneYear(startDate: string) {
+  const date = dateFromKey(startDate);
+  date.setDate(date.getDate() + 365);
+  return dateKey(date);
+}
+
+function newRecurrenceDraft(startDate: string): RecurrenceDraft {
+  return {
+    end_date: endDateAfterOneYear(startDate),
+    pattern: "daily",
+    interval_days: 2,
+    weekdays: [1, 2, 3, 4, 5],
+    dates: [],
+    skip_dates: [],
+    custom_date: "",
+    skip_date: "",
+  };
+}
 
 const NO_PATIENTS: SchedulePatientOption[] = [];
 
@@ -45,6 +87,7 @@ export function ScheduleCalendar(props: CalendarProps) {
   const patients = props.mode === "professional" ? props.patients : NO_PATIENTS;
   const monthInputId = useId();
   const patientFilterId = useId();
+  const recurrenceGroupId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [month, setMonth] = useState(() => {
     const now = new Date();
@@ -59,6 +102,8 @@ export function ScheduleCalendar(props: CalendarProps) {
   const [loadErrorMonth, setLoadErrorMonth] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [draft, setDraft] = useState<ScheduleDraft | null>(null);
+  const [recurrenceEnabled, setRecurrenceEnabled] = useState(false);
+  const [recurrenceDraft, setRecurrenceDraft] = useState<RecurrenceDraft | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -160,6 +205,18 @@ export function ScheduleCalendar(props: CalendarProps) {
   const eligibleProfessionals = draft
     ? professionals.filter((professional) => isProfessionalEligible(professional, draft.scheduled_date))
     : [];
+  const recurrencePreview = useMemo(() => {
+    if (!recurrenceEnabled || !draft || !recurrenceDraft || editingId) return null;
+    return generateScheduleRecurrence({
+      start_date: draft.scheduled_date,
+      end_date: recurrenceDraft.end_date,
+      pattern: recurrenceDraft.pattern,
+      interval_days: recurrenceDraft.interval_days,
+      weekdays: recurrenceDraft.weekdays,
+      dates: recurrenceDraft.dates,
+      skip_dates: recurrenceDraft.skip_dates,
+    });
+  }, [draft, editingId, recurrenceDraft, recurrenceEnabled]);
 
   function changeMonth(value: string) {
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return;
@@ -201,6 +258,8 @@ export function ScheduleCalendar(props: CalendarProps) {
   function clearDialogState() {
     setSelectedDate(null);
     setDraft(null);
+    setRecurrenceEnabled(false);
+    setRecurrenceDraft(null);
     setEditingId(null);
     setDeleteTargetId(null);
     setMutationError(null);
@@ -216,6 +275,8 @@ export function ScheduleCalendar(props: CalendarProps) {
   function startCreate() {
     if (!selectedDate) return;
     setDraft({ caregiver_user_id: "", scheduled_date: selectedDate, start_time: "08:00", end_time: "20:00", ends_next_day: false });
+    setRecurrenceEnabled(false);
+    setRecurrenceDraft(newRecurrenceDraft(selectedDate));
     setEditingId(null);
     setDeleteTargetId(null);
     setMutationError(null);
@@ -230,6 +291,8 @@ export function ScheduleCalendar(props: CalendarProps) {
       end_time: formatTime(entry.end_time),
       ends_next_day: entry.ends_next_day,
     });
+    setRecurrenceEnabled(false);
+    setRecurrenceDraft(null);
     setEditingId(entry.id);
     setDeleteTargetId(null);
     setMutationError(null);
@@ -266,30 +329,59 @@ export function ScheduleCalendar(props: CalendarProps) {
       setMutationError("A hora de término precisa ser posterior à hora de início. Para terminar no dia seguinte, marque essa opção.");
       return;
     }
+    if (recurrenceEnabled && !editingId && recurrencePreview && "error" in recurrencePreview) {
+      setMutationError(recurrencePreview.error);
+      return;
+    }
 
     const payload = {
+      patient_id: patientId,
       caregiver_user_id: draft.caregiver_user_id,
-      scheduled_date: draft.scheduled_date,
       start_time: draft.start_time,
       end_time: draft.end_time,
       ends_next_day: draft.ends_next_day,
     };
+    const isRecurring = recurrenceEnabled && !editingId && recurrenceDraft !== null;
+    const requestPayload = isRecurring
+      ? {
+          ...payload,
+          start_date: draft.scheduled_date,
+          end_date: recurrenceDraft.end_date,
+          pattern: recurrenceDraft.pattern,
+          interval_days: recurrenceDraft.interval_days,
+          weekdays: recurrenceDraft.weekdays,
+          dates: recurrenceDraft.dates,
+          skip_dates: recurrenceDraft.skip_dates,
+        }
+      : { ...payload, scheduled_date: draft.scheduled_date };
 
     setSaving(true);
     try {
-      const response = await fetch(editingId ? `/api/admin/schedules/${encodeURIComponent(editingId)}` : "/api/admin/schedules", {
+      const response = await fetch(
+        editingId
+          ? `/api/admin/schedules/${encodeURIComponent(editingId)}`
+          : isRecurring
+            ? "/api/admin/schedules/recurring"
+            : "/api/admin/schedules",
+        {
         method: editingId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ patient_id: patientId, ...payload }),
-      });
-      const result = await response.json().catch(() => null) as { error?: string } | null;
+        body: JSON.stringify(requestPayload),
+        },
+      );
+      const result = await response.json().catch(() => null) as { error?: string; created_count?: number } | null;
       if (!response.ok) throw new Error(result?.error || "Não foi possível salvar a escala. Verifique os dados e tente novamente.");
 
       const refreshed = await refreshSchedule();
       setDraft(null);
+      setRecurrenceEnabled(false);
+      setRecurrenceDraft(null);
       setEditingId(null);
       setDeleteTargetId(null);
-      setMutationMessage(refreshed ? "Escala salva com sucesso." : "Escala salva. Atualize a página para carregar os dados mais recentes.");
+      const successMessage = isRecurring && result?.created_count
+        ? `${result.created_count} ${result.created_count === 1 ? "plantão recorrente foi aplicado" : "plantões recorrentes foram aplicados"}.`
+        : "Escala salva com sucesso.";
+      setMutationMessage(refreshed ? successMessage : `${successMessage} Atualize a página para carregar os dados mais recentes.`);
     } catch (error) {
       setMutationError(getErrorMessage(error, "Não foi possível salvar a escala. Verifique a conexão e tente novamente."));
     } finally {
@@ -549,12 +641,18 @@ export function ScheduleCalendar(props: CalendarProps) {
                         )}
                       </label>
                       <label className="text-sm font-medium text-[var(--foreground)]">
-                        Data
+                        {recurrenceEnabled && !editingId ? "Data inicial" : "Data"}
                         <input
                           type="date"
                           required
                           value={draft.scheduled_date}
-                          onChange={(event) => setDraft((current) => current ? { ...current, scheduled_date: event.target.value } : current)}
+                          onChange={(event) => {
+                            const nextStartDate = event.target.value;
+                            setDraft((current) => current ? { ...current, scheduled_date: nextStartDate } : current);
+                            setRecurrenceDraft((current) => current && current.end_date < nextStartDate
+                              ? { ...current, end_date: endDateAfterOneYear(nextStartDate) }
+                              : current);
+                          }}
                           className="mt-1.5 min-h-11 w-full rounded-xl border border-[var(--border-strong)] bg-white px-3 text-sm"
                         />
                       </label>
@@ -588,10 +686,205 @@ export function ScheduleCalendar(props: CalendarProps) {
                       />
                       O horário termina no dia seguinte
                     </label>
+                    {!editingId && (
+                      <section className="space-y-3 rounded-xl border border-[var(--border)] bg-white p-3 sm:p-4" aria-label="Recorrência do plantão">
+                        <label className="flex min-h-11 items-center gap-3 text-sm font-semibold text-[var(--foreground)]">
+                          <input
+                            type="checkbox"
+                            checked={recurrenceEnabled}
+                            onChange={(event) => setRecurrenceEnabled(event.target.checked)}
+                            className="h-4 w-4 accent-[var(--brand)]"
+                          />
+                          Repetir este plantão
+                        </label>
+                        {recurrenceEnabled && recurrenceDraft && (
+                          <div className="space-y-4 border-t border-[var(--border)] pt-4">
+                            <p className="text-sm text-[var(--muted)]">
+                              Escolha o padrão e confira as datas antes de aplicar. Cada ocorrência será criada como um plantão separado.
+                            </p>
+                            <label className="block text-sm font-medium text-[var(--foreground)]">
+                              Data final
+                              <input
+                                type="date"
+                                required
+                                min={draft.scheduled_date}
+                                value={recurrenceDraft.end_date}
+                                onChange={(event) => setRecurrenceDraft((current) => current ? { ...current, end_date: event.target.value } : current)}
+                                className="mt-1.5 min-h-11 w-full rounded-xl border border-[var(--border-strong)] bg-white px-3 text-base sm:max-w-xs sm:text-sm"
+                              />
+                            </label>
+
+                            <fieldset className="space-y-2">
+                              <legend className="text-sm font-medium text-[var(--foreground)]">Como repetir?</legend>
+                              <div className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 sm:grid-cols-4">
+                                {RECURRENCE_OPTIONS.map((option) => (
+                                  <label
+                                    key={option.value}
+                                    className={`flex min-h-11 cursor-pointer items-start gap-2 rounded-lg border p-2.5 text-sm leading-snug ${recurrenceDraft.pattern === option.value ? "border-[var(--brand)] bg-[var(--brand-light)] text-[var(--brand-dark)]" : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]"}`}
+                                  >
+                                    <input
+                                      type="radio"
+                                      name={`schedule-pattern-${recurrenceGroupId}`}
+                                      value={option.value}
+                                      checked={recurrenceDraft.pattern === option.value}
+                                      onChange={() => setRecurrenceDraft((current) => current ? { ...current, pattern: option.value } : current)}
+                                      className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--brand)]"
+                                    />
+                                    <span>{option.label}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </fieldset>
+
+                            {recurrenceDraft.pattern === "selected_weekdays" && (
+                              <fieldset className="space-y-2">
+                                <legend className="text-sm font-medium text-[var(--foreground)]">Dias da semana</legend>
+                                <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+                                  {WEEKDAYS.map((weekday, index) => (
+                                    <label key={weekday} className="flex min-h-11 items-center gap-2 rounded-lg border border-[var(--border)] px-2 text-sm text-[var(--foreground)]">
+                                      <input
+                                        type="checkbox"
+                                        checked={recurrenceDraft.weekdays.includes(index)}
+                                        onChange={(event) => setRecurrenceDraft((current) => {
+                                          if (!current) return current;
+                                          const weekdays = event.target.checked
+                                            ? [...current.weekdays, index].sort((a, b) => a - b)
+                                            : current.weekdays.filter((day) => day !== index);
+                                          return { ...current, weekdays };
+                                        })}
+                                        className="h-4 w-4 accent-[var(--brand)]"
+                                      />
+                                      {weekday}
+                                    </label>
+                                  ))}
+                                </div>
+                              </fieldset>
+                            )}
+
+                            {recurrenceDraft.pattern === "every_n_days" && (
+                              <label className="block text-sm font-medium text-[var(--foreground)]">
+                                Repetir a cada quantos dias?
+                                <input
+                                  type="number"
+                                  min={1}
+                                  max={366}
+                                  step={1}
+                                  value={recurrenceDraft.interval_days}
+                                  onChange={(event) => setRecurrenceDraft((current) => current ? { ...current, interval_days: Number(event.target.value) } : current)}
+                                  className="mt-1.5 min-h-11 w-full rounded-xl border border-[var(--border-strong)] bg-white px-3 text-base sm:max-w-xs sm:text-sm"
+                                />
+                              </label>
+                            )}
+
+                            {recurrenceDraft.pattern === "custom_dates" && (
+                              <fieldset className="space-y-2">
+                                <legend className="text-sm font-medium text-[var(--foreground)]">Datas dos plantões</legend>
+                                <div className="flex flex-col gap-2 min-[420px]:flex-row">
+                                  <input
+                                    type="date"
+                                    aria-label="Data avulsa"
+                                    value={recurrenceDraft.custom_date}
+                                    onChange={(event) => setRecurrenceDraft((current) => current ? { ...current, custom_date: event.target.value } : current)}
+                                    className="min-h-11 min-w-0 flex-1 rounded-xl border border-[var(--border-strong)] bg-white px-3 text-base sm:text-sm"
+                                  />
+                                  <button
+                                    type="button"
+                                    disabled={!recurrenceDraft.custom_date || recurrenceDraft.dates.includes(recurrenceDraft.custom_date)}
+                                    onClick={() => setRecurrenceDraft((current) => current ? {
+                                      ...current,
+                                      dates: [...current.dates, current.custom_date].sort(),
+                                      custom_date: "",
+                                    } : current)}
+                                    className="min-h-11 rounded-xl border border-[var(--border-strong)] px-3 text-sm font-medium text-[var(--brand)] disabled:cursor-not-allowed disabled:opacity-50"
+                                  >
+                                    Adicionar data
+                                  </button>
+                                </div>
+                                {recurrenceDraft.dates.length > 0 && (
+                                  <ul className="flex flex-wrap gap-2" aria-label="Datas avulsas selecionadas">
+                                    {recurrenceDraft.dates.map((date) => (
+                                      <li key={date}>
+                                        <button
+                                          type="button"
+                                          onClick={() => setRecurrenceDraft((current) => current ? { ...current, dates: current.dates.filter((item) => item !== date) } : current)}
+                                          aria-label={`Remover data ${formatLongDate(date)} das datas avulsas`}
+                                          className="min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm text-[var(--foreground)] hover:bg-[var(--brand-light)]"
+                                        >
+                                          {formatLongDate(date)} ×
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </fieldset>
+                            )}
+
+                            <fieldset className="space-y-2">
+                              <legend className="text-sm font-medium text-[var(--foreground)]">Datas para pular (opcional)</legend>
+                              <p className="text-xs text-[var(--muted)]">Use para folgas, feriados ou exceções do vínculo.</p>
+                              <div className="flex flex-col gap-2 min-[420px]:flex-row">
+                                <input
+                                  type="date"
+                                  aria-label="Data para pular"
+                                  value={recurrenceDraft.skip_date}
+                                  onChange={(event) => setRecurrenceDraft((current) => current ? { ...current, skip_date: event.target.value } : current)}
+                                  className="min-h-11 min-w-0 flex-1 rounded-xl border border-[var(--border-strong)] bg-white px-3 text-base sm:text-sm"
+                                />
+                                <button
+                                  type="button"
+                                  disabled={!recurrenceDraft.skip_date || recurrenceDraft.skip_dates.includes(recurrenceDraft.skip_date)}
+                                  onClick={() => setRecurrenceDraft((current) => current ? {
+                                    ...current,
+                                    skip_dates: [...current.skip_dates, current.skip_date].sort(),
+                                    skip_date: "",
+                                  } : current)}
+                                  className="min-h-11 rounded-xl border border-[var(--border-strong)] px-3 text-sm font-medium text-[var(--brand)] disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  Pular data
+                                </button>
+                              </div>
+                              {recurrenceDraft.skip_dates.length > 0 && (
+                                <ul className="flex flex-wrap gap-2" aria-label="Datas para pular selecionadas">
+                                  {recurrenceDraft.skip_dates.map((date) => (
+                                    <li key={date}>
+                                      <button
+                                        type="button"
+                                        onClick={() => setRecurrenceDraft((current) => current ? { ...current, skip_dates: current.skip_dates.filter((item) => item !== date) } : current)}
+                                        aria-label={`Remover data ${formatLongDate(date)} das exceções`}
+                                        className="min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-sm text-[var(--foreground)] hover:bg-[var(--brand-light)]"
+                                      >
+                                        {formatLongDate(date)} ×
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </fieldset>
+
+                            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] p-3 text-sm" role="status" aria-live="polite">
+                              <h6 className="font-semibold text-[var(--foreground)]">Prévia da recorrência</h6>
+                              {recurrencePreview && "error" in recurrencePreview ? (
+                                <p className="mt-1 text-[var(--status-critical)]">{recurrencePreview.error}</p>
+                              ) : recurrencePreview && "dates" in recurrencePreview ? (
+                                <>
+                                  <p className="mt-1 font-medium text-[var(--foreground)]">
+                                    {recurrencePreview.dates.length} {recurrencePreview.dates.length === 1 ? "plantão" : "plantões"} serão adicionados.
+                                  </p>
+                                  <p className="mt-1 text-[var(--muted)]">
+                                    Próximas datas: {recurrencePreview.dates.slice(0, 5).map(formatLongDate).join(" · ")}
+                                    {recurrencePreview.dates.length > 5 ? " · …" : ""}
+                                  </p>
+                                </>
+                              ) : null}
+                            </div>
+                          </div>
+                        )}
+                      </section>
+                    )}
                     {mutationError && <p role="alert" className="rounded-lg bg-[var(--status-critical-bg)] p-3 text-sm text-[var(--status-critical)]">{mutationError}</p>}
                     <div className="flex flex-wrap gap-2">
                       <button type="submit" disabled={saving} className="min-h-11 rounded-xl bg-[var(--brand)] px-4 text-sm font-semibold text-white hover:bg-[var(--brand-dark)] disabled:cursor-wait disabled:opacity-60">
-                        {saving ? "Salvando…" : editingId ? "Salvar alterações" : "Adicionar à escala"}
+                        {saving ? "Salvando…" : editingId ? "Salvar alterações" : recurrenceEnabled ? "Aplicar recorrência" : "Adicionar à escala"}
                       </button>
                       <button type="button" disabled={saving} onClick={() => { setDraft(null); setEditingId(null); setMutationError(null); }} className="min-h-11 rounded-xl border border-[var(--border-strong)] bg-white px-4 text-sm font-medium text-[var(--foreground)] disabled:opacity-60">
                         Cancelar

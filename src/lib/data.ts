@@ -644,6 +644,34 @@ export async function createCaregiverScheduleEntry(
   return created;
 }
 
+export async function createCaregiverScheduleEntries(
+  inputs: CaregiverScheduleEntryInput[],
+  actorUserId: string,
+): Promise<number> {
+  if (inputs.length === 0 || inputs.length > 366) {
+    throw new Error("A recorrência deve conter entre 1 e 366 plantões.");
+  }
+  if (shouldUseSupabaseData()) return supabaseData.createCaregiverScheduleEntries(inputs, actorUserId);
+
+  await executeBatch(inputs.map((input) => ({
+    text: `INSERT INTO caregiver_schedule_entries
+       (id, caregiver_assignment_id, scheduled_date, start_time, end_time,
+        ends_next_day, profession, created_by, updated_by)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8)`,
+    params: [
+      randomUUID(),
+      input.caregiver_assignment_id,
+      input.scheduled_date,
+      input.start_time,
+      input.end_time,
+      input.ends_next_day,
+      input.profession,
+      actorUserId,
+    ],
+  })));
+  return inputs.length;
+}
+
 export async function updateCaregiverScheduleEntry(
   id: string,
   input: CaregiverScheduleEntryInput,

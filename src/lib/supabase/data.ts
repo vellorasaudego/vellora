@@ -1134,6 +1134,30 @@ export async function createCaregiverScheduleEntry(
   return schedule;
 }
 
+export async function createCaregiverScheduleEntries(
+  inputs: CaregiverScheduleEntryInput[],
+  actorUserId: string,
+): Promise<number> {
+  if (inputs.length === 0 || inputs.length > 366) {
+    throw new Error("A recorrência deve conter entre 1 e 366 plantões.");
+  }
+  const client = await requestClient();
+  const rows = inputs.map((input) => ({
+    id: randomUUID(),
+    caregiver_assignment_id: assertUuid(input.caregiver_assignment_id, "Vínculo da escala"),
+    scheduled_date: input.scheduled_date,
+    start_time: input.start_time,
+    end_time: input.end_time,
+    ends_next_day: input.ends_next_day,
+    profession: input.profession,
+    created_by: assertUuid(actorUserId, "Administrador"),
+    updated_by: assertUuid(actorUserId, "Administrador"),
+  }));
+  const { error } = await client.from("caregiver_schedule_entries").insert(rows);
+  requireNoError("Não foi possível criar escalas recorrentes Supabase", error);
+  return rows.length;
+}
+
 export async function updateCaregiverScheduleEntry(
   id: string,
   input: CaregiverScheduleEntryInput,
