@@ -18,6 +18,15 @@ import type {
   ContractOwnerType,
   DailyRecord,
   DailyRecordAuditEvent,
+  FinanceCharge,
+  FinanceChargeInput,
+  FinanceDashboardSnapshot,
+  FinanceExpense,
+  FinanceExpenseCategory,
+  FinanceExpenseInput,
+  FinanceExpensePaymentMovement,
+  FinanceReceiptInput,
+  FinanceReceiptMovement,
   FamilyUserUpdate,
   Lead,
   Patient,
@@ -42,6 +51,8 @@ import {
 } from "../assignment-errors";
 import { DUPLICATE_ACCOUNT_EMAIL_MESSAGE, isDuplicateAccountEmailError } from "../user-errors";
 import { ScheduleHistoryConflictError } from "../schedule-errors";
+import { FinanceConflictError, FinanceNotFoundError } from "../finance-errors";
+import { buildFinanceCashFlow, financeChartRange, shiftFinanceMonth } from "../finance-utils";
 
 export type DataProvider = "legacy" | "supabase";
 
@@ -92,6 +103,14 @@ const CAREGIVER_STATUS_VALUES = new Set<CaregiverProfile["account_status"]>([
   "aguardando_acesso",
   "ativo",
   "inativo",
+]);
+const FINANCE_EXPENSE_CATEGORY_VALUES = new Set<FinanceExpenseCategory>([
+  "marketing",
+  "sistema",
+  "contabilidade",
+  "impostos",
+  "operacao",
+  "outros",
 ]);
 
 // Family and caregiver portals do not display the administrative patient
@@ -279,6 +298,42 @@ function asCaregiverStatus(value: unknown): CaregiverProfile["account_status"] {
     return value as CaregiverProfile["account_status"];
   }
   throw new SupabaseDataError("Perfil de cuidador Supabase contém um status inválido.");
+}
+
+function mapFinanceExpenseCategory(value: unknown): FinanceExpenseCategory {
+  if (
+    typeof value === "string" &&
+    FINANCE_EXPENSE_CATEGORY_VALUES.has(value as FinanceExpenseCategory)
+  ) {
+    return value as FinanceExpenseCategory;
+  }
+  throw new SupabaseDataError("Despesa Supabase contém uma categoria inválida.");
+}
+
+function mapFinanceCharge(row: SupabaseRow, receivedCents: number): FinanceCharge {
+  return {
+    id: assertUuid(asString(row.id), "Cobrança"),
+    label: asString(row.label),
+    competence_month: asString(row.competence_month).slice(0, 7),
+    due_date: asString(row.due_date),
+    amount_cents: asNumber(row.amount_cents) ?? 0,
+    received_cents: receivedCents,
+    created_at: asString(row.created_at),
+    updated_at: asString(row.updated_at),
+  };
+}
+
+function mapFinanceExpense(row: SupabaseRow): FinanceExpense {
+  return {
+    id: assertUuid(asString(row.id), "Despesa"),
+    expense_date: asString(row.expense_date),
+    category: mapFinanceExpenseCategory(row.category),
+    description: asString(row.description),
+    amount_cents: asNumber(row.amount_cents) ?? 0,
+    paid_on: asNullableString(row.paid_on),
+    created_at: asString(row.created_at),
+    updated_at: asString(row.updated_at),
+  };
 }
 
 function normalizeTime(value: unknown): string | null {
@@ -761,6 +816,16 @@ export async function updateFamilyUser(id: string, fields: FamilyUserUpdate): Pr
 }
 
 // ---------- Patients ----------
+export async function getActivePatientCount(): Promise<number> {
+  const client = await requestClient();
+  const { count, error } = await client
+    .from("patients")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "ativo");
+  requireNoError("Não foi possível contar pacientes ativos Supabase", error);
+  return count || 0;
+}
+
 export async function listPatients(): Promise<Patient[]> {
   const client = await requestClient();
   const { data, error } = await client.from("patients").select("*").order("created_at", { ascending: false });
@@ -2134,4 +2199,252 @@ export async function getCaregiverName(id: string): Promise<string> {
 export async function getCaregiverNamesMap(ids: string[]): Promise<Record<string, string>> {
   const users = await getUsersByIds([...new Set(ids)]);
   return Object.fromEntries(users.map((user) => [user.id, user.name]));
+}
+
+export async function getFinanceDashboardSnapshot(month: string): Promise<FinanceDashboardSnapshot> {
+  const client = await requestClient();
+  const start = `${month}-01`;
+  const end = `${shiftFinanceMonth(month, 1)}-01`;
+  const chartRange = financeChartRange(month);
+
+  const [chargesResult, expensesResult, receiptsResult, paymentsResult] = await Promise.all([
+    client
+      .from("finance_charges")
+      .select("*")
+      .eq("competence_month", start)
+      .order("due_date", { ascending: true })
+      .order("created_at", { ascending: true }),
+    client
+      .from("finance_expenses")
+      .select("*")
+      .gte("expense_date", start)
+      .lt("expense_date", end)
+      .order("expense_date", { ascending: false })
+      .order("created_at", { ascending: false }),
+    client
+      .from("finance_receipts")
+      .select("received_on,amount_cents")
+      .gte("received_on", chartRange.start)
+      .lt("received_on", chartRange.end),
+    client
+      .from("finance_expenses")
+      .select("paid_on,amount_cents")
+      .not("paid_on", "is", null)
+      .gte("paid_on", chartRange.start)
+      .lt("paid_on", chartRange.end),
+  ]);
+
+  requireNoError("Não foi possível listar cobranças financeiras Supabase", chargesResult.error);
+  requireNoError("Não foi possível listar despesas financeiras Supabase", expensesResult.error);
+  requireNoError("Não foi possível consultar recebimentos financeiros Supabase", receiptsResult.error);
+  requireNoError("Não foi possível consultar pagamentos financeiros Supabase", paymentsResult.error);
+
+  const chargeRows = (chargesResult.data || []) as SupabaseRow[];
+  const receiptTotals = new Map<string, number>();
+  if (chargeRows.length > 0) {
+    const chargeIds = chargeRows.map((row) => assertUuid(asString(row.id), "Cobrança"));
+    const { data, error } = await client
+      .from("finance_receipts")
+      .select("charge_id,amount_cents")
+      .in("charge_id", chargeIds);
+    requireNoError("Não foi possível totalizar recebimentos das cobranças Supabase", error);
+    for (const row of (data || []) as SupabaseRow[]) {
+      const chargeId = asString(row.charge_id);
+      receiptTotals.set(
+        chargeId,
+        (receiptTotals.get(chargeId) || 0) + (asNumber(row.amount_cents) || 0),
+      );
+    }
+  }
+
+  const receipts: FinanceReceiptMovement[] = ((receiptsResult.data || []) as SupabaseRow[]).map(
+    (row) => ({
+      received_on: asString(row.received_on),
+      amount_cents: asNumber(row.amount_cents) || 0,
+    }),
+  );
+  const payments: FinanceExpensePaymentMovement[] = ((paymentsResult.data || []) as SupabaseRow[]).map(
+    (row) => ({
+      paid_on: asString(row.paid_on),
+      amount_cents: asNumber(row.amount_cents) || 0,
+    }),
+  );
+
+  return {
+    month,
+    charges: chargeRows.map((row) =>
+      mapFinanceCharge(row, receiptTotals.get(asString(row.id)) || 0),
+    ),
+    expenses: ((expensesResult.data || []) as SupabaseRow[]).map(mapFinanceExpense),
+    cash_flow: buildFinanceCashFlow(month, receipts, payments),
+  };
+}
+
+export async function createFinanceCharge(
+  input: FinanceChargeInput,
+  actorId: string,
+): Promise<void> {
+  const client = await requestClient();
+  const { error } = await client.from("finance_charges").insert({
+    label: input.label,
+    competence_month: `${input.competence_month}-01`,
+    due_date: input.due_date,
+    amount_cents: input.amount_cents,
+    created_by: assertUuid(actorId, "Responsável"),
+  });
+  requireNoError("Não foi possível cadastrar cobrança financeira Supabase", error);
+}
+
+export async function updateFinanceCharge(
+  id: string,
+  input: FinanceChargeInput,
+): Promise<void> {
+  const client = await requestClient();
+  const chargeId = assertUuid(id, "Cobrança");
+  const { data: existing, error: selectError } = await client
+    .from("finance_charges")
+    .select("id")
+    .eq("id", chargeId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar cobrança financeira Supabase", selectError);
+  if (!existing) throw new FinanceNotFoundError("Cobrança não encontrada.");
+
+  const { data: receiptRows, error: receiptError } = await client
+    .from("finance_receipts")
+    .select("amount_cents")
+    .eq("charge_id", chargeId);
+  requireNoError("Não foi possível consultar recebimentos da cobrança Supabase", receiptError);
+  const alreadyReceived = ((receiptRows || []) as SupabaseRow[]).reduce(
+    (total, row) => total + (asNumber(row.amount_cents) || 0),
+    0,
+  );
+  if (input.amount_cents < alreadyReceived) {
+    throw new FinanceConflictError("O valor da cobrança não pode ficar abaixo dos recebimentos já registrados.");
+  }
+
+  const { error } = await client
+    .from("finance_charges")
+    .update({
+      label: input.label,
+      competence_month: `${input.competence_month}-01`,
+      due_date: input.due_date,
+      amount_cents: input.amount_cents,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", chargeId);
+  if (error) {
+    const translated = operationError("Não foi possível atualizar cobrança financeira Supabase", error);
+    if (translated.message.includes("FINANCE_CHARGE_BELOW_RECEIVED")) {
+      throw new FinanceConflictError("O valor da cobrança não pode ficar abaixo dos recebimentos já registrados.");
+    }
+    throw translated;
+  }
+}
+
+export async function deleteFinanceCharge(id: string): Promise<void> {
+  const client = await requestClient();
+  const chargeId = assertUuid(id, "Cobrança");
+  const { data, error } = await client
+    .from("finance_charges")
+    .delete()
+    .eq("id", chargeId)
+    .select("id")
+    .maybeSingle();
+  requireNoError("Não foi possível excluir cobrança financeira Supabase", error);
+  if (!data) throw new FinanceNotFoundError("Cobrança não encontrada.");
+}
+
+export async function recordFinanceReceipt(
+  chargeId: string,
+  input: FinanceReceiptInput,
+  actorId: string,
+): Promise<void> {
+  const client = await requestClient();
+  const validChargeId = assertUuid(chargeId, "Cobrança");
+  const { data: charge, error: chargeError } = await client
+    .from("finance_charges")
+    .select("id,amount_cents")
+    .eq("id", validChargeId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar cobrança financeira Supabase", chargeError);
+  if (!charge) throw new FinanceNotFoundError("Cobrança não encontrada.");
+
+  const { data: receiptRows, error: receiptError } = await client
+    .from("finance_receipts")
+    .select("amount_cents")
+    .eq("charge_id", validChargeId);
+  requireNoError("Não foi possível consultar recebimentos da cobrança Supabase", receiptError);
+  const alreadyReceived = ((receiptRows || []) as SupabaseRow[]).reduce(
+    (total, row) => total + (asNumber(row.amount_cents) || 0),
+    0,
+  );
+  if (alreadyReceived + input.amount_cents > (asNumber((charge as SupabaseRow).amount_cents) || 0)) {
+    throw new FinanceConflictError();
+  }
+
+  const { error } = await client.from("finance_receipts").insert({
+    charge_id: validChargeId,
+    received_on: input.received_on,
+    amount_cents: input.amount_cents,
+    created_by: assertUuid(actorId, "Responsável"),
+  });
+  if (error) {
+    const translated = operationError("Não foi possível registrar recebimento Supabase", error);
+    if (translated.message.includes("FINANCE_RECEIPT_EXCEEDS_CHARGE")) {
+      throw new FinanceConflictError();
+    }
+    throw translated;
+  }
+}
+
+export async function createFinanceExpense(
+  input: FinanceExpenseInput,
+  actorId: string,
+): Promise<void> {
+  const client = await requestClient();
+  const { error } = await client.from("finance_expenses").insert({
+    expense_date: input.expense_date,
+    category: input.category,
+    description: input.description,
+    amount_cents: input.amount_cents,
+    paid_on: input.paid_on,
+    created_by: assertUuid(actorId, "Responsável"),
+  });
+  requireNoError("Não foi possível cadastrar despesa financeira Supabase", error);
+}
+
+export async function updateFinanceExpense(
+  id: string,
+  input: FinanceExpenseInput,
+): Promise<void> {
+  const client = await requestClient();
+  const expenseId = assertUuid(id, "Despesa");
+  const { data, error } = await client
+    .from("finance_expenses")
+    .update({
+      expense_date: input.expense_date,
+      category: input.category,
+      description: input.description,
+      amount_cents: input.amount_cents,
+      paid_on: input.paid_on,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", expenseId)
+    .select("id")
+    .maybeSingle();
+  requireNoError("Não foi possível atualizar despesa financeira Supabase", error);
+  if (!data) throw new FinanceNotFoundError("Despesa não encontrada.");
+}
+
+export async function deleteFinanceExpense(id: string): Promise<void> {
+  const client = await requestClient();
+  const expenseId = assertUuid(id, "Despesa");
+  const { data, error } = await client
+    .from("finance_expenses")
+    .delete()
+    .eq("id", expenseId)
+    .select("id")
+    .maybeSingle();
+  requireNoError("Não foi possível excluir despesa financeira Supabase", error);
+  if (!data) throw new FinanceNotFoundError("Despesa não encontrada.");
 }

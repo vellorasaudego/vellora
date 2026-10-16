@@ -19,6 +19,8 @@ import {
   isAssignmentUniqueViolation,
 } from "./assignment-errors";
 import { ScheduleHistoryConflictError } from "./schedule-errors";
+import { FinanceConflictError, FinanceNotFoundError } from "./finance-errors";
+import { buildFinanceCashFlow, financeChartRange, shiftFinanceMonth } from "./finance-utils";
 
 export type User = {
   id: string;
@@ -237,6 +239,79 @@ export type RecordAuditActor = {
   name: string;
 };
 
+export type FinanceExpenseCategory =
+  | "marketing"
+  | "sistema"
+  | "contabilidade"
+  | "impostos"
+  | "operacao"
+  | "outros";
+
+export type FinanceCharge = {
+  id: string;
+  label: string;
+  competence_month: string;
+  due_date: string;
+  amount_cents: number;
+  received_cents: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FinanceExpense = {
+  id: string;
+  expense_date: string;
+  category: FinanceExpenseCategory;
+  description: string;
+  amount_cents: number;
+  paid_on: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FinanceReceiptMovement = {
+  received_on: string;
+  amount_cents: number;
+};
+
+export type FinanceExpensePaymentMovement = {
+  paid_on: string;
+  amount_cents: number;
+};
+
+export type FinanceCashFlowPoint = {
+  month: string;
+  received_cents: number;
+  paid_cents: number;
+};
+
+export type FinanceDashboardSnapshot = {
+  month: string;
+  charges: FinanceCharge[];
+  expenses: FinanceExpense[];
+  cash_flow: FinanceCashFlowPoint[];
+};
+
+export type FinanceChargeInput = {
+  label: string;
+  competence_month: string;
+  due_date: string;
+  amount_cents: number;
+};
+
+export type FinanceReceiptInput = {
+  received_on: string;
+  amount_cents: number;
+};
+
+export type FinanceExpenseInput = {
+  expense_date: string;
+  category: FinanceExpenseCategory;
+  description: string;
+  amount_cents: number;
+  paid_on: string | null;
+};
+
 // ---------- Users ----------
 function shouldUseSupabaseData(): boolean {
   const provider = supabaseData.getDataProvider();
@@ -339,6 +414,14 @@ export async function updateFamilyUser(id: string, fields: FamilyUserUpdate): Pr
 }
 
 // ---------- Patients ----------
+export async function getActivePatientCount(): Promise<number> {
+  if (shouldUseSupabaseData()) return supabaseData.getActivePatientCount();
+  const result = await queryOne<{ active_count: number | string }>(
+    "SELECT COUNT(*) AS active_count FROM patients WHERE status = 'ativo'",
+  );
+  return Number(result?.active_count || 0);
+}
+
 export async function listPatients(): Promise<Patient[]> {
   if (shouldUseSupabaseData()) return supabaseData.listPatients();
   return query<Patient>("SELECT * FROM patients ORDER BY created_at DESC");
@@ -1539,4 +1622,153 @@ export async function getCaregiverNamesMap(ids: string[]): Promise<Record<string
   const map: Record<string, string> = {};
   for (const u of users) map[u.id] = u.name;
   return map;
+}
+
+async function getLegacyFinanceCharge(id: string): Promise<FinanceCharge | undefined> {
+  return queryOne<FinanceCharge>(
+    `SELECT charge.id, charge.label, charge.competence_month, charge.due_date,
+            charge.amount_cents, COALESCE(SUM(receipt.amount_cents), 0) AS received_cents,
+            charge.created_at, charge.updated_at
+     FROM finance_charges charge
+     LEFT JOIN finance_receipts receipt ON receipt.charge_id = charge.id
+     WHERE charge.id = $1
+     GROUP BY charge.id`,
+    [id],
+  );
+}
+
+export async function getFinanceDashboardSnapshot(month: string): Promise<FinanceDashboardSnapshot> {
+  if (shouldUseSupabaseData()) return supabaseData.getFinanceDashboardSnapshot(month);
+  const range = financeChartRange(month);
+  const monthStart = `${month}-01`;
+  const monthEnd = `${shiftFinanceMonth(month, 1)}-01`;
+  const [charges, expenses, receipts, payments] = await Promise.all([
+    query<FinanceCharge>(
+      `SELECT charge.id, charge.label, charge.competence_month, charge.due_date,
+              charge.amount_cents, COALESCE(SUM(receipt.amount_cents), 0) AS received_cents,
+              charge.created_at, charge.updated_at
+       FROM finance_charges charge
+       LEFT JOIN finance_receipts receipt ON receipt.charge_id = charge.id
+       WHERE charge.competence_month = $1
+       GROUP BY charge.id
+       ORDER BY charge.due_date ASC, charge.created_at ASC`,
+      [month],
+    ),
+    query<FinanceExpense>(
+      `SELECT id, expense_date, category, description, amount_cents, paid_on, created_at, updated_at
+       FROM finance_expenses
+       WHERE expense_date >= $1 AND expense_date < $2
+       ORDER BY expense_date DESC, created_at DESC`,
+      [monthStart, monthEnd],
+    ),
+    query<FinanceReceiptMovement>(
+      "SELECT received_on, amount_cents FROM finance_receipts WHERE received_on >= $1 AND received_on < $2",
+      [range.start, range.end],
+    ),
+    query<FinanceExpensePaymentMovement>(
+      "SELECT paid_on, amount_cents FROM finance_expenses WHERE paid_on >= $1 AND paid_on < $2",
+      [range.start, range.end],
+    ),
+  ]);
+
+  return {
+    month,
+    charges,
+    expenses,
+    cash_flow: buildFinanceCashFlow(month, receipts, payments),
+  };
+}
+
+export async function createFinanceCharge(
+  input: FinanceChargeInput,
+  actorId: string,
+): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.createFinanceCharge(input, actorId);
+  await query(
+    `INSERT INTO finance_charges
+      (id, label, competence_month, due_date, amount_cents, created_by)
+     VALUES ($1,$2,$3,$4,$5,$6)`,
+    [randomUUID(), input.label, input.competence_month, input.due_date, input.amount_cents, actorId],
+  );
+}
+
+export async function updateFinanceCharge(id: string, input: FinanceChargeInput): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateFinanceCharge(id, input);
+  const current = await getLegacyFinanceCharge(id);
+  if (!current) throw new FinanceNotFoundError("Cobrança não encontrada.");
+  if (input.amount_cents < current.received_cents) {
+    throw new FinanceConflictError("O valor da cobrança não pode ficar abaixo dos recebimentos já registrados.");
+  }
+  await query(
+    `UPDATE finance_charges
+     SET label = $1, competence_month = $2, due_date = $3, amount_cents = $4,
+         updated_at = CURRENT_TIMESTAMP
+     WHERE id = $5`,
+    [input.label, input.competence_month, input.due_date, input.amount_cents, id],
+  );
+}
+
+export async function deleteFinanceCharge(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteFinanceCharge(id);
+  if (!(await getLegacyFinanceCharge(id))) throw new FinanceNotFoundError("Cobrança não encontrada.");
+  await query("DELETE FROM finance_charges WHERE id = $1", [id]);
+}
+
+export async function recordFinanceReceipt(
+  chargeId: string,
+  input: FinanceReceiptInput,
+  actorId: string,
+): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.recordFinanceReceipt(chargeId, input, actorId);
+  const charge = await getLegacyFinanceCharge(chargeId);
+  if (!charge) throw new FinanceNotFoundError("Cobrança não encontrada.");
+  if (charge.received_cents + input.amount_cents > charge.amount_cents) {
+    throw new FinanceConflictError();
+  }
+  await query(
+    `INSERT INTO finance_receipts (id, charge_id, received_on, amount_cents, created_by)
+     VALUES ($1,$2,$3,$4,$5)`,
+    [randomUUID(), chargeId, input.received_on, input.amount_cents, actorId],
+  );
+}
+
+export async function createFinanceExpense(
+  input: FinanceExpenseInput,
+  actorId: string,
+): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.createFinanceExpense(input, actorId);
+  await query(
+    `INSERT INTO finance_expenses
+      (id, expense_date, category, description, amount_cents, paid_on, created_by)
+     VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+    [
+      randomUUID(),
+      input.expense_date,
+      input.category,
+      input.description,
+      input.amount_cents,
+      input.paid_on,
+      actorId,
+    ],
+  );
+}
+
+export async function updateFinanceExpense(id: string, input: FinanceExpenseInput): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateFinanceExpense(id, input);
+  const current = await queryOne<{ id: string }>("SELECT id FROM finance_expenses WHERE id = $1", [id]);
+  if (!current) throw new FinanceNotFoundError("Despesa não encontrada.");
+  await query(
+    `UPDATE finance_expenses
+     SET expense_date = $1, category = $2, description = $3, amount_cents = $4,
+         paid_on = $5, updated_at = CURRENT_TIMESTAMP
+     WHERE id = $6`,
+    [input.expense_date, input.category, input.description, input.amount_cents, input.paid_on, id],
+  );
+}
+
+export async function deleteFinanceExpense(id: string): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.deleteFinanceExpense(id);
+  const current = await queryOne<{ id: string }>("SELECT id FROM finance_expenses WHERE id = $1", [id]);
+  if (!current) throw new FinanceNotFoundError("Despesa não encontrada.");
+  await query("DELETE FROM finance_expenses WHERE id = $1", [id]);
 }

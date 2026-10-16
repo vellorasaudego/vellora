@@ -322,3 +322,68 @@ export const contractDocuments = sqliteTable(
     ),
   ]
 );
+
+export const financeCharges = sqliteTable(
+  "finance_charges",
+  {
+    id: text("id").primaryKey(),
+    label: text("label").notNull(),
+    competence_month: text("competence_month").notNull(),
+    due_date: text("due_date").notNull(),
+    amount_cents: integer("amount_cents").notNull(),
+    created_by: text("created_by").references(() => users.id, { onDelete: "set null" }),
+    created_at: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updated_at: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("idx_finance_charges_month_due").on(table.competence_month, table.due_date),
+    check("finance_charges_amount_positive", sql`${table.amount_cents} > 0`),
+    check("finance_charges_label_nonempty", sql`length(trim(${table.label})) > 0`),
+  ],
+);
+
+export const financeReceipts = sqliteTable(
+  "finance_receipts",
+  {
+    id: text("id").primaryKey(),
+    charge_id: text("charge_id")
+      .notNull()
+      .references(() => financeCharges.id, { onDelete: "cascade" }),
+    received_on: text("received_on").notNull(),
+    amount_cents: integer("amount_cents").notNull(),
+    created_by: text("created_by").references(() => users.id, { onDelete: "set null" }),
+    created_at: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("idx_finance_receipts_charge").on(table.charge_id, table.received_on),
+    index("idx_finance_receipts_date").on(table.received_on),
+    check("finance_receipts_amount_positive", sql`${table.amount_cents} > 0`),
+  ],
+);
+
+export const financeExpenses = sqliteTable(
+  "finance_expenses",
+  {
+    id: text("id").primaryKey(),
+    expense_date: text("expense_date").notNull(),
+    category: text("category", {
+      enum: ["marketing", "sistema", "contabilidade", "impostos", "operacao", "outros"],
+    }).notNull(),
+    description: text("description").notNull(),
+    amount_cents: integer("amount_cents").notNull(),
+    paid_on: text("paid_on"),
+    created_by: text("created_by").references(() => users.id, { onDelete: "set null" }),
+    created_at: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updated_at: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("idx_finance_expenses_date").on(table.expense_date),
+    index("idx_finance_expenses_paid_on").on(table.paid_on),
+    check("finance_expenses_amount_positive", sql`${table.amount_cents} > 0`),
+    check(
+      "finance_expenses_category_valid",
+      sql`${table.category} IN ('marketing','sistema','contabilidade','impostos','operacao','outros')`,
+    ),
+    check("finance_expenses_description_nonempty", sql`length(trim(${table.description})) > 0`),
+  ],
+);
