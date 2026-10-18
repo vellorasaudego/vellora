@@ -7,6 +7,6 @@ export const onRequestError: Instrumentation.onRequestError = async (error, _req
     code: "NEXT_REQUEST_ERROR",
     route: context.routePath,
     routeType: context.routeType,
-    errorType: error.name,
+    errorType: error instanceof Error ? error.name : "Error",
   });
 };
