@@ -18,6 +18,7 @@ type ProfileDraft = {
   phone: string;
   city: string;
   profession: CaregiverProfile["profession"];
+  shift_rate: string;
   coren: string;
   experience: string;
   availability_days: string[];
@@ -30,6 +31,7 @@ type ManualDraft = {
   name: string;
   phone: string;
   profession: CaregiverProfile["profession"];
+  shift_rate: string;
   availability_days: string[];
   availability_shifts: string[];
   available_from: string;
@@ -45,6 +47,16 @@ const professionOptions = Object.entries(PROFESSION_LABELS);
 const inputClassName =
   "min-h-10 w-full rounded-lg border border-[var(--border)] bg-white px-3 py-2.5 text-sm text-[var(--foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]";
 
+function rateToInput(cents: number | null | undefined): string {
+  return cents === null || cents === undefined ? "" : (cents / 100).toFixed(2);
+}
+
+function rateFromInput(value: string): number | null {
+  if (!value.trim()) return null;
+  const amount = Number(value.replace(",", "."));
+  return Number.isFinite(amount) ? Math.round(amount * 100) : null;
+}
+
 function profileDraft(caregiver: CaregiverProfile): ProfileDraft {
   return {
     name: caregiver.name,
@@ -52,6 +64,7 @@ function profileDraft(caregiver: CaregiverProfile): ProfileDraft {
     phone: caregiver.phone,
     city: caregiver.city || "",
     profession: caregiver.profession,
+    shift_rate: rateToInput(caregiver.weekday_shift_rate_cents ?? caregiver.sunday_shift_rate_cents),
     coren: caregiver.coren || "",
     experience: caregiver.experience || "",
     availability_days: [...caregiver.availability_days],
@@ -66,6 +79,7 @@ function manualDraft(caregiver: CaregiverAccountData): ManualDraft {
     name: caregiver.name,
     phone: caregiver.phone || "",
     profession: "cuidador",
+    shift_rate: "",
     availability_days: [],
     availability_shifts: [],
     available_from: "",
@@ -214,6 +228,7 @@ function ProfileEditForm({ caregiver }: { caregiver: CaregiverProfile }) {
       phone: draft.phone.trim(),
       city: draft.city.trim() || null,
       profession: draft.profession,
+      shift_rate_cents: rateFromInput(draft.shift_rate),
       coren: draft.coren.trim() || null,
       experience: draft.experience.trim() || null,
       availability_days: draft.availability_days,
@@ -320,6 +335,27 @@ function ProfileEditForm({ caregiver }: { caregiver: CaregiverProfile }) {
             ))}
           </select>
         </Field>
+        <fieldset className="sm:col-span-2">
+          <legend className="text-xs font-medium text-[var(--muted)]">Remuneração por plantão</legend>
+          <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+            O mesmo valor vale para qualquer dia da semana. Ajustes pontuais podem ser feitos no Financeiro.
+          </p>
+          <div className="mt-3 max-w-sm">
+            <Field id={`caregiver-shift-rate-${caregiver.id}`} label="Valor por plantão (R$)">
+              <input
+                id={`caregiver-shift-rate-${caregiver.id}`}
+                type="number"
+                min="0"
+                max="1000000"
+                step="0.01"
+                inputMode="decimal"
+                value={draft.shift_rate}
+                onChange={(event) => setDraft((current) => ({ ...current, shift_rate: event.target.value }))}
+                className={inputClassName}
+              />
+            </Field>
+          </div>
+        </fieldset>
         <Field id={`caregiver-coren-${caregiver.id}`} label="COREN">
           <input
             id={`caregiver-coren-${caregiver.id}`}
@@ -465,6 +501,7 @@ function ManualEditForm({ caregiver }: { caregiver: CaregiverAccountData }) {
       name: draft.name.trim(),
       phone: draft.phone.trim() || null,
       profession: draft.profession,
+      shift_rate_cents: rateFromInput(draft.shift_rate),
       availability_days: draft.availability_days,
       availability_shifts: draft.availability_shifts,
       available_from: draft.available_from || null,
@@ -550,6 +587,27 @@ function ManualEditForm({ caregiver }: { caregiver: CaregiverAccountData }) {
             ))}
           </select>
         </Field>
+        <fieldset className="sm:col-span-2">
+          <legend className="text-xs font-medium text-[var(--muted)]">Remuneração por plantão</legend>
+          <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+            O mesmo valor vale para qualquer dia da semana. Ajustes pontuais podem ser feitos no Financeiro.
+          </p>
+          <div className="mt-3 max-w-sm">
+            <Field id={`manual-caregiver-shift-rate-${caregiver.id}`} label="Valor por plantão (R$)">
+              <input
+                id={`manual-caregiver-shift-rate-${caregiver.id}`}
+                type="number"
+                min="0"
+                max="1000000"
+                step="0.01"
+                inputMode="decimal"
+                value={draft.shift_rate}
+                onChange={(event) => setDraft((current) => ({ ...current, shift_rate: event.target.value }))}
+                className={inputClassName}
+              />
+            </Field>
+          </div>
+        </fieldset>
         <Field id={`manual-caregiver-available-from-${caregiver.id}`} label="Data inicial">
           <input
             id={`manual-caregiver-available-from-${caregiver.id}`}

@@ -24,6 +24,7 @@ import type {
   FinanceExpense,
   FinanceExpenseCategory,
   FinanceExpenseInput,
+  FinancePayrollExpenseUpdate,
   FinanceExpensePaymentMovement,
   FinanceReceiptInput,
   FinanceReceiptMovement,
@@ -109,6 +110,7 @@ const FINANCE_EXPENSE_CATEGORY_VALUES = new Set<FinanceExpenseCategory>([
   "sistema",
   "contabilidade",
   "impostos",
+  "equipe",
   "operacao",
   "outros",
 ]);
@@ -331,6 +333,10 @@ function mapFinanceExpense(row: SupabaseRow): FinanceExpense {
     description: asString(row.description),
     amount_cents: asNumber(row.amount_cents) ?? 0,
     paid_on: asNullableString(row.paid_on),
+    caregiver_schedule_entry_id: asNullableString(row.caregiver_schedule_entry_id),
+    caregiver_user_id: asNullableString(row.caregiver_user_id),
+    payee: asNullableString(row.payee),
+    caregiver_payroll_amount_overridden: asBoolean(row.caregiver_payroll_amount_overridden),
     created_at: asString(row.created_at),
     updated_at: asString(row.updated_at),
   };
@@ -457,6 +463,8 @@ function mapCaregiverProfile(row: SupabaseRow, accessEmail?: string | null): Car
     phone: asString(row.phone),
     city: asNullableString(row.city),
     profession: asProfession(row.profession),
+    weekday_shift_rate_cents: asNumber(row.weekday_shift_rate_cents),
+    sunday_shift_rate_cents: asNumber(row.sunday_shift_rate_cents),
     coren: asNullableString(row.coren),
     experience: asNullableString(row.experience),
     availability_days: asStringArray(row.availability_days),
@@ -1502,6 +1510,10 @@ export async function updateCaregiverProfile(id: string, fields: CaregiverProfil
   for (const key of allowed) {
     if (key in fields) update[key] = fields[key] ?? null;
   }
+  if ("shift_rate_cents" in fields) {
+    update.weekday_shift_rate_cents = fields.shift_rate_cents ?? null;
+    update.sunday_shift_rate_cents = fields.shift_rate_cents ?? null;
+  }
   if (!Object.keys(update).length) return;
   const { error } = await client.from("caregiver_profiles").update(update).eq("id", profileId);
   requireNoError("Não foi possível atualizar perfil de cuidador Supabase", error);
@@ -1558,6 +1570,10 @@ export async function updateCaregiverUser(
   for (const key of profileFields) {
     if (key in fields) profileUpdate[key] = key === "phone" ? fields.phone ?? "" : fields[key] ?? null;
   }
+  if ("shift_rate_cents" in fields) {
+    profileUpdate.weekday_shift_rate_cents = fields.shift_rate_cents ?? null;
+    profileUpdate.sunday_shift_rate_cents = fields.shift_rate_cents ?? null;
+  }
 
   async function updateProfile(profileId: string): Promise<void> {
     if (!Object.keys(profileUpdate).length) return;
@@ -1586,6 +1602,8 @@ export async function updateCaregiverUser(
     availability_days: fields.availability_days ?? [],
     availability_shifts: fields.availability_shifts ?? [],
     available_from: fields.available_from ?? null,
+    weekday_shift_rate_cents: fields.shift_rate_cents ?? null,
+    sunday_shift_rate_cents: fields.shift_rate_cents ?? null,
     account_status: "ativo" as const,
     approved_at: new Date().toISOString(),
   };
@@ -2419,6 +2437,17 @@ export async function updateFinanceExpense(
 ): Promise<void> {
   const client = await requestClient();
   const expenseId = assertUuid(id, "Despesa");
+  const { data: current, error: currentError } = await client
+    .from("finance_expenses")
+    .select("id,category,caregiver_schedule_entry_id")
+    .eq("id", expenseId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar despesa financeira Supabase", currentError);
+  if (!current) throw new FinanceNotFoundError("Despesa não encontrada.");
+  const currentRow = current as SupabaseRow;
+  if (asString(currentRow.category) === "equipe" || asNullableString(currentRow.caregiver_schedule_entry_id)) {
+    throw new FinanceConflictError("Este valor é calculado pela escala. Atualize apenas a data de pagamento.");
+  }
   const { data, error } = await client
     .from("finance_expenses")
     .update({
@@ -2436,9 +2465,87 @@ export async function updateFinanceExpense(
   if (!data) throw new FinanceNotFoundError("Despesa não encontrada.");
 }
 
+export async function updateFinancePayrollExpense(
+  id: string,
+  input: FinancePayrollExpenseUpdate,
+): Promise<void> {
+  const client = await requestClient();
+  const expenseId = assertUuid(id, "Despesa");
+  const { data: current, error: currentError } = await client
+    .from("finance_expenses")
+    .select("id,category,caregiver_schedule_entry_id,amount_cents,caregiver_payroll_amount_overridden")
+    .eq("id", expenseId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar plantão financeiro Supabase", currentError);
+  if (!current) throw new FinanceNotFoundError("Pagamento de plantão não encontrado.");
+  const currentRow = current as SupabaseRow;
+  if (asString(currentRow.category) !== "equipe") {
+    throw new FinanceConflictError("Esta despesa não é um pagamento automático da equipe.");
+  }
+  if (!asNullableString(currentRow.caregiver_schedule_entry_id)) {
+    throw new FinanceConflictError("Este pagamento pertence a uma escala removida e foi preservado como histórico.");
+  }
+  const previousAmount = asNumber(currentRow.amount_cents) ?? 0;
+  const alreadyOverridden = asBoolean(currentRow.caregiver_payroll_amount_overridden);
+  const { data, error } = await client
+    .from("finance_expenses")
+    .update({
+      amount_cents: input.amount_cents,
+      paid_on: input.paid_on,
+      caregiver_payroll_amount_overridden: alreadyOverridden || input.amount_cents !== previousAmount,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", expenseId)
+    .eq("category", "equipe")
+    .not("caregiver_schedule_entry_id", "is", null)
+    .select("id")
+    .maybeSingle();
+  requireNoError("Não foi possível atualizar plantão financeiro Supabase", error);
+  if (!data) throw new FinanceNotFoundError("Pagamento de plantão não encontrado.");
+}
+
+export async function updateFinanceExpensePayment(id: string, paidOn: string | null): Promise<void> {
+  const client = await requestClient();
+  const expenseId = assertUuid(id, "Despesa");
+  const { data: current, error: currentError } = await client
+    .from("finance_expenses")
+    .select("id,category,caregiver_schedule_entry_id")
+    .eq("id", expenseId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar pagamento de plantão Supabase", currentError);
+  if (!current) throw new FinanceNotFoundError("Pagamento de plantão não encontrado.");
+  if (asString((current as SupabaseRow).category) !== "equipe") {
+    throw new FinanceConflictError("Esta despesa não é um pagamento automático da equipe.");
+  }
+  if (!asNullableString((current as SupabaseRow).caregiver_schedule_entry_id)) {
+    throw new FinanceConflictError("Este pagamento pertence a uma escala removida e foi preservado como histórico.");
+  }
+  const { data, error } = await client
+    .from("finance_expenses")
+    .update({ paid_on: paidOn, updated_at: new Date().toISOString() })
+    .eq("id", expenseId)
+    .eq("category", "equipe")
+    .not("caregiver_schedule_entry_id", "is", null)
+    .select("id")
+    .maybeSingle();
+  requireNoError("Não foi possível atualizar pagamento de plantão Supabase", error);
+  if (!data) throw new FinanceNotFoundError("Pagamento de plantão não encontrado.");
+}
+
 export async function deleteFinanceExpense(id: string): Promise<void> {
   const client = await requestClient();
   const expenseId = assertUuid(id, "Despesa");
+  const { data: current, error: currentError } = await client
+    .from("finance_expenses")
+    .select("id,category,caregiver_schedule_entry_id")
+    .eq("id", expenseId)
+    .maybeSingle();
+  requireNoError("Não foi possível consultar despesa financeira Supabase", currentError);
+  if (!current) throw new FinanceNotFoundError("Despesa não encontrada.");
+  const currentRow = current as SupabaseRow;
+  if (asString(currentRow.category) === "equipe" || asNullableString(currentRow.caregiver_schedule_entry_id)) {
+    throw new FinanceConflictError("Este lançamento é gerado pela escala e não pode ser excluído manualmente.");
+  }
   const { data, error } = await client
     .from("finance_expenses")
     .delete()

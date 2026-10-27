@@ -197,6 +197,8 @@ export const caregiverProfiles = sqliteTable(
     profession: text("profession", {
       enum: ["cuidador", "tecnico_enfermagem", "enfermeiro", "outros"],
     }).notNull(),
+    weekday_shift_rate_cents: integer("weekday_shift_rate_cents"),
+    sunday_shift_rate_cents: integer("sunday_shift_rate_cents"),
     coren: text("coren"),
     experience: text("experience"),
     availability_days: text("availability_days", { mode: "json" })
@@ -221,6 +223,10 @@ export const caregiverProfiles = sqliteTable(
     uniqueIndex("caregiver_profiles_application_unique").on(table.application_id),
     uniqueIndex("caregiver_profiles_user_unique").on(table.user_id),
     index("idx_caregiver_profiles_status").on(table.account_status, table.approved_at),
+    check(
+      "caregiver_profiles_shift_rates_nonnegative",
+      sql`(${table.weekday_shift_rate_cents} IS NULL OR ${table.weekday_shift_rate_cents} >= 0) AND (${table.sunday_shift_rate_cents} IS NULL OR ${table.sunday_shift_rate_cents} >= 0)`,
+    ),
   ]
 );
 
@@ -367,11 +373,20 @@ export const financeExpenses = sqliteTable(
     id: text("id").primaryKey(),
     expense_date: text("expense_date").notNull(),
     category: text("category", {
-      enum: ["marketing", "sistema", "contabilidade", "impostos", "operacao", "outros"],
+      enum: ["marketing", "sistema", "contabilidade", "impostos", "equipe", "operacao", "outros"],
     }).notNull(),
     description: text("description").notNull(),
     amount_cents: integer("amount_cents").notNull(),
     paid_on: text("paid_on"),
+    caregiver_schedule_entry_id: text("caregiver_schedule_entry_id").references(
+      () => caregiverScheduleEntries.id,
+      { onDelete: "set null" },
+    ),
+    caregiver_user_id: text("caregiver_user_id").references(() => users.id, { onDelete: "set null" }),
+    payee: text("payee"),
+    caregiver_payroll_amount_overridden: integer("caregiver_payroll_amount_overridden", { mode: "boolean" })
+      .notNull()
+      .default(false),
     created_by: text("created_by").references(() => users.id, { onDelete: "set null" }),
     created_at: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
     updated_at: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
@@ -379,10 +394,12 @@ export const financeExpenses = sqliteTable(
   (table) => [
     index("idx_finance_expenses_date").on(table.expense_date),
     index("idx_finance_expenses_paid_on").on(table.paid_on),
+    index("idx_finance_expenses_caregiver_user").on(table.caregiver_user_id),
+    uniqueIndex("finance_expenses_schedule_entry_unique").on(table.caregiver_schedule_entry_id),
     check("finance_expenses_amount_positive", sql`${table.amount_cents} > 0`),
     check(
       "finance_expenses_category_valid",
-      sql`${table.category} IN ('marketing','sistema','contabilidade','impostos','operacao','outros')`,
+      sql`${table.category} IN ('marketing','sistema','contabilidade','impostos','equipe','operacao','outros')`,
     ),
     check("finance_expenses_description_nonempty", sql`length(trim(${table.description})) > 0`),
   ],

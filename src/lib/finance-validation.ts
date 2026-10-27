@@ -3,6 +3,7 @@ import type {
   FinanceChargeInput,
   FinanceExpenseCategory,
   FinanceExpenseInput,
+  FinancePayrollExpenseUpdate,
   FinanceReceiptInput,
 } from "./data";
 
@@ -90,4 +91,16 @@ export function parseFinanceExpenseInput(body: unknown): ParseResult<FinanceExpe
   return {
     value: { expense_date, category, description, amount_cents, paid_on },
   };
+}
+
+export function parseFinancePayrollExpenseUpdateInput(body: unknown): ParseResult<FinancePayrollExpenseUpdate> {
+  if (!isRecord(body)) return { error: "Informe os dados do plantão." };
+  const amount_cents = parseAmountCents(body.amount);
+  const paidValue = typeof body.paid_on === "string" ? body.paid_on : "";
+  const paid_on = paidValue === "" ? null : paidValue;
+
+  if (amount_cents === null) return { error: "Informe um valor maior que zero, com até duas casas decimais." };
+  if (paid_on && !isValidIsoDate(paid_on)) return { error: "Informe uma data de pagamento válida." };
+
+  return { value: { amount_cents, paid_on } };
 }

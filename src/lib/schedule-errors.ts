@@ -25,3 +25,12 @@ export function isScheduleOverlapConflictError(error: unknown): boolean {
   const message = "message" in error && typeof error.message === "string" ? error.message : "";
   return code === "23P01" || message.includes("SCHEDULE_OVERLAP_CONFLICT");
 }
+
+export const PAYROLL_PAID_SCHEDULE_CONFLICT_MESSAGE =
+  "Este plantão já foi marcado como pago. Desmarque o pagamento no Financeiro antes de alterar a data ou o cuidador da escala.";
+
+export function isPayrollPaidScheduleConflictError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const message = "message" in error && typeof error.message === "string" ? error.message : "";
+  return message.includes("PAYROLL_PAID_SCHEDULE_CONFLICT");
+}

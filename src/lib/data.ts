@@ -124,6 +124,8 @@ export type CaregiverProfile = {
   phone: string;
   city: string | null;
   profession: ProfessionalApplication["profession"];
+  weekday_shift_rate_cents: number | null;
+  sunday_shift_rate_cents: number | null;
   coren: string | null;
   experience: string | null;
   availability_days: string[];
@@ -144,6 +146,7 @@ export type CaregiverProfileUpdate = {
   phone?: string;
   city?: string | null;
   profession?: CaregiverProfile["profession"];
+  shift_rate_cents?: number | null;
   coren?: string | null;
   experience?: string | null;
   availability_days?: string[];
@@ -156,6 +159,7 @@ export type CaregiverUserUpdate = {
   name?: string;
   phone?: string | null;
   profession?: CaregiverProfile["profession"];
+  shift_rate_cents?: number | null;
   availability_days?: string[];
   availability_shifts?: string[];
   available_from?: string | null;
@@ -244,6 +248,7 @@ export type FinanceExpenseCategory =
   | "sistema"
   | "contabilidade"
   | "impostos"
+  | "equipe"
   | "operacao"
   | "outros";
 
@@ -265,6 +270,10 @@ export type FinanceExpense = {
   description: string;
   amount_cents: number;
   paid_on: string | null;
+  caregiver_schedule_entry_id: string | null;
+  caregiver_user_id: string | null;
+  payee: string | null;
+  caregiver_payroll_amount_overridden: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -308,6 +317,11 @@ export type FinanceExpenseInput = {
   expense_date: string;
   category: FinanceExpenseCategory;
   description: string;
+  amount_cents: number;
+  paid_on: string | null;
+};
+
+export type FinancePayrollExpenseUpdate = {
   amount_cents: number;
   paid_on: string | null;
 };
@@ -1036,6 +1050,11 @@ export async function updateCaregiverProfile(id: string, fields: CaregiverProfil
       index += 1;
     }
   }
+  if ("shift_rate_cents" in fields) {
+    sets.push(`weekday_shift_rate_cents = $${index}`, `sunday_shift_rate_cents = $${index + 1}`);
+    values.push(fields.shift_rate_cents ?? null, fields.shift_rate_cents ?? null);
+    index += 2;
+  }
   if (!sets.length) return;
   values.push(id);
   await query(`UPDATE caregiver_profiles SET ${sets.join(", ")} WHERE id = $${index}`, values);
@@ -1097,6 +1116,11 @@ export async function updateCaregiverUser(
       profileValues.push(key === "phone" ? fields.phone ?? "" : fields[key] ?? null);
       profileIndex += 1;
     }
+    if ("shift_rate_cents" in fields) {
+      profileSets.push(`weekday_shift_rate_cents = $${profileIndex}`, `sunday_shift_rate_cents = $${profileIndex + 1}`);
+      profileValues.push(fields.shift_rate_cents ?? null, fields.shift_rate_cents ?? null);
+      profileIndex += 2;
+    }
     if (profileSets.length) {
       profileValues.push(existingProfile.id);
       commands.push({
@@ -1115,15 +1139,18 @@ export async function updateCaregiverUser(
   commands.push({
     text: `INSERT INTO caregiver_profiles
       (id, application_id, user_id, name, contact_email, phone, profession,
-       availability_days, availability_shifts, available_from, account_status, approved_at)
-     VALUES ($1,NULL,$2,$3,$4,$5,$6,$7,$8,$9,'ativo',CURRENT_TIMESTAMP)
+       availability_days, availability_shifts, available_from, weekday_shift_rate_cents,
+       sunday_shift_rate_cents, account_status, approved_at)
+     VALUES ($1,NULL,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'ativo',CURRENT_TIMESTAMP)
      ON CONFLICT(user_id) DO UPDATE SET
        name = excluded.name,
        phone = excluded.phone,
        profession = excluded.profession,
        availability_days = excluded.availability_days,
        availability_shifts = excluded.availability_shifts,
-       available_from = excluded.available_from`,
+       available_from = excluded.available_from,
+       weekday_shift_rate_cents = excluded.weekday_shift_rate_cents,
+       sunday_shift_rate_cents = excluded.sunday_shift_rate_cents`,
     params: [
       profileId,
       id,
@@ -1134,6 +1161,8 @@ export async function updateCaregiverUser(
       fields.availability_days ?? [],
       fields.availability_shifts ?? [],
       fields.available_from ?? null,
+      fields.shift_rate_cents ?? null,
+      fields.shift_rate_cents ?? null,
     ],
   });
 
@@ -1655,7 +1684,9 @@ export async function getFinanceDashboardSnapshot(month: string): Promise<Financ
       [month],
     ),
     query<FinanceExpense>(
-      `SELECT id, expense_date, category, description, amount_cents, paid_on, created_at, updated_at
+      `SELECT id, expense_date, category, description, amount_cents, paid_on,
+              caregiver_schedule_entry_id, caregiver_user_id, payee, caregiver_payroll_amount_overridden,
+              created_at, updated_at
        FROM finance_expenses
        WHERE expense_date >= $1 AND expense_date < $2
        ORDER BY expense_date DESC, created_at DESC`,
@@ -1755,8 +1786,14 @@ export async function createFinanceExpense(
 
 export async function updateFinanceExpense(id: string, input: FinanceExpenseInput): Promise<void> {
   if (shouldUseSupabaseData()) return supabaseData.updateFinanceExpense(id, input);
-  const current = await queryOne<{ id: string }>("SELECT id FROM finance_expenses WHERE id = $1", [id]);
+  const current = await queryOne<{ id: string; category: FinanceExpenseCategory; caregiver_schedule_entry_id: string | null }>(
+    "SELECT id, category, caregiver_schedule_entry_id FROM finance_expenses WHERE id = $1",
+    [id],
+  );
   if (!current) throw new FinanceNotFoundError("Despesa não encontrada.");
+  if (current.category === "equipe" || current.caregiver_schedule_entry_id) {
+    throw new FinanceConflictError("Este valor é calculado pela escala. Atualize apenas a data de pagamento.");
+  }
   await query(
     `UPDATE finance_expenses
      SET expense_date = $1, category = $2, description = $3, amount_cents = $4,
@@ -1766,9 +1803,62 @@ export async function updateFinanceExpense(id: string, input: FinanceExpenseInpu
   );
 }
 
+export async function updateFinancePayrollExpense(
+  id: string,
+  input: FinancePayrollExpenseUpdate,
+): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateFinancePayrollExpense(id, input);
+  const current = await queryOne<{
+    id: string;
+    caregiver_schedule_entry_id: string | null;
+    amount_cents: number;
+    caregiver_payroll_amount_overridden: boolean;
+  }>(
+    `SELECT id, caregiver_schedule_entry_id, amount_cents, caregiver_payroll_amount_overridden
+     FROM finance_expenses WHERE id = $1 AND category = 'equipe'`,
+    [id],
+  );
+  if (!current) throw new FinanceNotFoundError("Pagamento de plantão não encontrado.");
+  if (!current.caregiver_schedule_entry_id) {
+    throw new FinanceConflictError("Este pagamento pertence a uma escala removida e foi preservado como histórico.");
+  }
+  await query(
+    `UPDATE finance_expenses
+     SET amount_cents = $1,
+         paid_on = $2,
+         caregiver_payroll_amount_overridden = CASE
+           WHEN $1 <> amount_cents THEN 1 ELSE caregiver_payroll_amount_overridden END,
+         updated_at = CURRENT_TIMESTAMP
+     WHERE id = $3 AND category = 'equipe'`,
+    [input.amount_cents, input.paid_on, id],
+  );
+}
+
+export async function updateFinanceExpensePayment(id: string, paidOn: string | null): Promise<void> {
+  if (shouldUseSupabaseData()) return supabaseData.updateFinanceExpensePayment(id, paidOn);
+  const current = await queryOne<{ id: string; caregiver_schedule_entry_id: string | null }>(
+    "SELECT id, caregiver_schedule_entry_id FROM finance_expenses WHERE id = $1 AND category = 'equipe'",
+    [id],
+  );
+  if (!current) throw new FinanceNotFoundError("Pagamento de plantão não encontrado.");
+  if (!current.caregiver_schedule_entry_id) {
+    throw new FinanceConflictError("Este pagamento pertence a uma escala removida e foi preservado como histórico.");
+  }
+  await query(
+    "UPDATE finance_expenses SET paid_on = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 AND category = 'equipe'",
+    [paidOn, id],
+  );
+}
+
 export async function deleteFinanceExpense(id: string): Promise<void> {
   if (shouldUseSupabaseData()) return supabaseData.deleteFinanceExpense(id);
-  const current = await queryOne<{ id: string }>("SELECT id FROM finance_expenses WHERE id = $1", [id]);
+  const current = await queryOne<{ id: string; category: FinanceExpenseCategory; caregiver_schedule_entry_id: string | null }>(
+    "SELECT id, category, caregiver_schedule_entry_id FROM finance_expenses WHERE id = $1",
+    [id],
+  );
   if (!current) throw new FinanceNotFoundError("Despesa não encontrada.");
+  if (current.category === "equipe" || current.caregiver_schedule_entry_id) {
+    throw new FinanceConflictError("Este lançamento é gerado pela escala e não pode ser excluído manualmente.");
+  }
   await query("DELETE FROM finance_expenses WHERE id = $1", [id]);
 }

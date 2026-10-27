@@ -21,12 +21,16 @@ export default async function AdminProjectionsPage() {
   const averageRevenuePerPatientCents = activePatients
     ? Math.round(monthlyChargesCents / activePatients)
     : 0;
+  const directTeamCostCents = finance.expenses
+    .filter((expense) => expense.category === "equipe")
+    .reduce((total, expense) => total + expense.amount_cents, 0);
 
   return (
     <ProjectionDashboard
       initialMonth={initialMonth}
       initialActivePatients={activePatients}
       initialAverageRevenuePerPatientCents={averageRevenuePerPatientCents}
+      initialDirectTeamCostCents={directTeamCostCents}
     />
   );
 }

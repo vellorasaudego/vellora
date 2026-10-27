@@ -7,7 +7,12 @@ import {
 } from "@/lib/data";
 import { apiError } from "@/lib/api-error";
 import { parseScheduleMutation, resolveScheduleMutation } from "@/lib/schedule-admin";
-import { isScheduleOverlapConflictError, SCHEDULE_OVERLAP_CONFLICT_MESSAGE } from "@/lib/schedule-errors";
+import {
+  isPayrollPaidScheduleConflictError,
+  isScheduleOverlapConflictError,
+  PAYROLL_PAID_SCHEDULE_CONFLICT_MESSAGE,
+  SCHEDULE_OVERLAP_CONFLICT_MESSAGE,
+} from "@/lib/schedule-errors";
 
 type RouteContext = { params: Promise<{ id: string }> };
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -33,6 +38,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     await updateCaregiverScheduleEntry(id, resolved.data, guard.session.userId);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    if (isPayrollPaidScheduleConflictError(error)) {
+      return NextResponse.json({ error: PAYROLL_PAID_SCHEDULE_CONFLICT_MESSAGE }, { status: 409 });
+    }
     if (isScheduleOverlapConflictError(error)) {
       return NextResponse.json({ error: SCHEDULE_OVERLAP_CONFLICT_MESSAGE }, { status: 409 });
     }

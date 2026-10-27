@@ -13,6 +13,7 @@ const VALID_SHIFTS = new Set([
 ]);
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const MAX_SHIFT_RATE_CENTS = 100_000_000;
 
 const PROFILE_FIELDS = new Set([
   "name",
@@ -20,6 +21,7 @@ const PROFILE_FIELDS = new Set([
   "phone",
   "city",
   "profession",
+  "shift_rate_cents",
   "coren",
   "experience",
   "availability_days",
@@ -31,6 +33,7 @@ const USER_FIELDS = new Set([
   "name",
   "phone",
   "profession",
+  "shift_rate_cents",
   "availability_days",
   "availability_shifts",
   "available_from",
@@ -63,6 +66,19 @@ function parseNullableText(value: unknown, label: string, maxLength: number): Pa
   const normalized = value.trim();
   if (normalized.length > maxLength) return { ok: false, error: `${label} deve ter no máximo ${maxLength} caracteres.` };
   return { ok: true, value: normalized || null };
+}
+
+function parseShiftRate(value: unknown, label: string): ParseUpdateResult<number | null> {
+  if (value === null || value === "") return { ok: true, value: null };
+  if (
+    typeof value !== "number" ||
+    !Number.isSafeInteger(value) ||
+    value < 0 ||
+    value > MAX_SHIFT_RATE_CENTS
+  ) {
+    return { ok: false, error: `${label} deve ser um valor válido entre R$ 0,00 e R$ 1.000.000,00.` };
+  }
+  return { ok: true, value };
 }
 
 function parsePhone(value: unknown, label: string, allowEmpty: boolean): ParseUpdateResult<string | null> {
@@ -123,6 +139,11 @@ export function parseCaregiverProfileUpdate(body: unknown): ParseUpdateResult<Ca
     }
     value.profession = body.profession as CaregiverProfileUpdate["profession"];
   }
+  if ("shift_rate_cents" in body) {
+    const result = parseShiftRate(body.shift_rate_cents, "Valor por plantão");
+    if (!result.ok) return result;
+    value.shift_rate_cents = result.value;
+  }
   if ("coren" in body) {
     const result = parseNullableText(body.coren, "COREN", 40);
     if (!result.ok) return result;
@@ -179,6 +200,11 @@ export function parseCaregiverUserUpdate(body: unknown): ParseUpdateResult<Careg
       return { ok: false, error: "Profissão inválida." };
     }
     value.profession = body.profession as CaregiverUserUpdate["profession"];
+  }
+  if ("shift_rate_cents" in body) {
+    const result = parseShiftRate(body.shift_rate_cents, "Valor por plantão");
+    if (!result.ok) return result;
+    value.shift_rate_cents = result.value;
   }
   if ("availability_days" in body) {
     const result = parseSelection(body.availability_days, "Dias disponíveis", VALID_DAYS, 7);

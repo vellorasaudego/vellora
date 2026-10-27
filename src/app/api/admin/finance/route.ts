@@ -8,9 +8,12 @@ import {
   recordFinanceReceipt,
   updateFinanceCharge,
   updateFinanceExpense,
+  updateFinancePayrollExpense,
+  updateFinanceExpensePayment,
 } from "@/lib/data";
 import { apiError } from "@/lib/api-error";
 import { requireRole } from "@/lib/guard";
+import { isValidIsoDate } from "@/lib/validation";
 import {
   FINANCE_SETUP_MESSAGE,
   FinanceConflictError,
@@ -21,6 +24,7 @@ import {
   isValidFinanceId,
   parseFinanceChargeInput,
   parseFinanceExpenseInput,
+  parseFinancePayrollExpenseUpdateInput,
   parseFinanceReceiptInput,
 } from "@/lib/finance-validation";
 
@@ -126,6 +130,22 @@ export async function PATCH(request: NextRequest) {
       const parsed = parseFinanceExpenseInput(body);
       if (!parsed.value) return NextResponse.json({ error: parsed.error }, { status: 400 });
       await updateFinanceExpense(id, parsed.value);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (body.action === "update_payroll_payment") {
+      const paidOn = body.paid_on === null || body.paid_on === "" ? null : body.paid_on;
+      if (paidOn !== null && (typeof paidOn !== "string" || !isValidIsoDate(paidOn))) {
+        return NextResponse.json({ error: "Informe uma data de pagamento válida." }, { status: 400 });
+      }
+      await updateFinanceExpensePayment(id, paidOn as string | null);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (body.action === "update_payroll_expense") {
+      const parsed = parseFinancePayrollExpenseUpdateInput(body);
+      if (!parsed.value) return NextResponse.json({ error: parsed.error }, { status: 400 });
+      await updateFinancePayrollExpense(id, parsed.value);
       return NextResponse.json({ ok: true });
     }
 

@@ -36,6 +36,20 @@
       "when": 1792172269206,
       "tag": "0004_rainy_ser_duncan",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1793037649483,
+      "tag": "0005_caregiver_payroll",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1793047470603,
+      "tag": "0006_caregiver_payroll_manual_adjustments",
+      "breakpoints": true
     }
   ]
 }

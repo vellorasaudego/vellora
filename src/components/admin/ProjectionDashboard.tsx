@@ -18,7 +18,7 @@ import { Card } from "@/components/ui/Card";
 type ProjectionInputs = {
   patientsAtStart: string;
   revenuePerPatient: string;
-  directTeamPercent: string;
+  directTeamCost: string;
   fixedCosts: string;
   taxPercent: string;
   availableCash: string;
@@ -53,7 +53,7 @@ type ScenarioProjection = ScenarioSpec & {
 const INITIAL_INPUTS: ProjectionInputs = {
   patientsAtStart: "",
   revenuePerPatient: "",
-  directTeamPercent: "65",
+  directTeamCost: "",
   fixedCosts: "0",
   taxPercent: "6",
   availableCash: "0",
@@ -248,10 +248,12 @@ export function ProjectionDashboard({
   initialMonth,
   initialActivePatients,
   initialAverageRevenuePerPatientCents,
+  initialDirectTeamCostCents,
 }: {
   initialMonth: string;
   initialActivePatients: number;
   initialAverageRevenuePerPatientCents: number;
+  initialDirectTeamCostCents: number;
 }) {
   const [month, setMonth] = useState(initialMonth);
   const [inputs, setInputs] = useState(INITIAL_INPUTS);
@@ -271,7 +273,9 @@ export function ProjectionDashboard({
     );
     const fixedCostsCents = centsFromInput(inputs.fixedCosts);
     const availableCashCents = centsFromInput(inputs.availableCash);
-    const directTeamPercent = boundedNumber(inputs.directTeamPercent, 0, 100);
+    const directTeamCostCents = centsFromInput(
+      inputs.directTeamCost || String(initialDirectTeamCostCents / 100),
+    );
     const taxPercent = boundedNumber(inputs.taxPercent, 0, 100);
     const realisticGrowth = boundedNumber(inputs.realisticGrowth, -100, 50);
     const horizonMonths = Math.round(boundedNumber(inputs.horizonMonths, 1, 24));
@@ -299,13 +303,13 @@ export function ProjectionDashboard({
     const scenarioResults: ScenarioProjection[] = scenarios.map((scenario) => {
       let cumulativeResultCents = 0;
       let finalRevenueCents = monthlyRevenueCents;
-      let finalCostsCents = fixedCostsCents + Math.round(monthlyRevenueCents * (directTeamPercent + taxPercent) / 100);
+      let finalCostsCents = fixedCostsCents + directTeamCostCents + Math.round(monthlyRevenueCents * taxPercent / 100);
 
       for (let monthIndex = 1; monthIndex <= horizonMonths; monthIndex += 1) {
         const revenueGrowthFactor = Math.pow(1 + scenario.growth / 100, monthIndex);
         finalRevenueCents = Math.round(monthlyRevenueCents * revenueGrowthFactor);
-        const projectedDirectCosts = Math.round(finalRevenueCents * (directTeamPercent + taxPercent) / 100);
-        finalCostsCents = fixedCostsCents + projectedDirectCosts;
+        const projectedTaxes = Math.round(finalRevenueCents * taxPercent / 100);
+        finalCostsCents = fixedCostsCents + directTeamCostCents + projectedTaxes;
         cumulativeResultCents += finalRevenueCents - finalCostsCents;
       }
 
@@ -342,9 +346,9 @@ export function ProjectionDashboard({
       scenarios: scenarioResults,
       chartData,
       horizonMonths,
-      hasBaseline: monthlyRevenueCents > 0 || fixedCostsCents > 0,
+      hasBaseline: monthlyRevenueCents > 0 || fixedCostsCents > 0 || directTeamCostCents > 0,
     };
-  }, [inputs, month, initialActivePatients, initialAverageRevenuePerPatientCents]);
+  }, [inputs, month, initialActivePatients, initialAverageRevenuePerPatientCents, initialDirectTeamCostCents]);
 
   function updateInput(key: keyof ProjectionInputs) {
     return (event: ChangeEvent<HTMLInputElement>) => {
@@ -448,15 +452,19 @@ export function ProjectionDashboard({
                 Referência: cobranças de {formatMonth(initialMonth)} ÷ {initialActivePatients} pacientes ativos = {formatCurrency(initialAverageRevenuePerPatientCents)} por paciente.
               </p>
             </div>
-            <NumericField
-              id="projection-direct-team-cost"
-              label="Custo direto da equipe (%)"
-              value={inputs.directTeamPercent}
-              onChange={updateInput("directTeamPercent")}
-              max="100"
-              step="0.1"
-              suffix="%"
-            />
+            <div>
+              <NumericField
+                id="projection-direct-team-cost"
+                label="Custo direto mensal da equipe (R$)"
+                value={inputs.directTeamCost}
+                onChange={updateInput("directTeamCost")}
+                step="0.01"
+                placeholder={String((initialDirectTeamCostCents / 100).toFixed(2))}
+              />
+              <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                Padrão atual: {formatCurrency(initialDirectTeamCostCents)} em plantões lançados no Financeiro.
+              </p>
+            </div>
             <NumericField
               id="projection-fixed-costs"
               label="Despesas fixas mensais (R$)"

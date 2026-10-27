@@ -126,6 +126,7 @@ function getChargeStatus(
 }
 
 function categoryLabel(category: FinanceExpenseCategory): string {
+  if (category === "equipe") return "Equipe";
   return EXPENSE_CATEGORIES.find((option) => option.value === category)?.label || "Outros";
 }
 
@@ -179,6 +180,7 @@ function FinanceDialog({
 
   const charge = dialog.kind === "charge" ? dialog.record : undefined;
   const expense = dialog.kind === "expense" ? dialog.record : undefined;
+  const payrollExpense = expense?.category === "equipe";
   const receiptCharge = dialog.kind === "receipt" ? dialog.charge : undefined;
   const title =
     dialog.kind === "charge"
@@ -186,12 +188,16 @@ function FinanceDialog({
         ? "Editar cobrança"
         : "Nova cobrança"
       : dialog.kind === "expense"
-        ? expense
+        ? payrollExpense
+          ? "Editar plantão"
+          : expense
           ? "Editar despesa"
           : "Nova despesa"
         : "Registrar recebimento";
   const description =
-    dialog.kind === "receipt"
+    payrollExpense
+      ? "Ajuste o valor deste plantão e registre a data do pagamento."
+      : dialog.kind === "receipt"
       ? "Informe a data e o valor recebido para esta cobrança."
       : "Os campos marcados com * são obrigatórios.";
   const remainingCents = receiptCharge
@@ -286,63 +292,95 @@ function FinanceDialog({
 
           {dialog.kind === "expense" && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="expense-date" className={LABEL_CLASS}>Data *</label>
+              {payrollExpense ? (
+                <div className="sm:col-span-2">
+                  <div className="rounded-xl bg-[var(--surface-soft)] p-4">
+                    <p className="text-sm font-semibold text-[var(--foreground)]">{expense?.payee || "Cuidador"}</p>
+                    <p className="mt-1 text-sm text-[var(--muted)]">
+                      Plantão em {formatDate(expense?.expense_date || null)}
+                    </p>
+                  </div>
+                  <div className="mt-4">
+                    <label htmlFor="payroll-amount" className={LABEL_CLASS}>Valor do plantão (R$) *</label>
+                    <input
+                      id="payroll-amount"
+                      name="amount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      inputMode="decimal"
+                      required
+                      defaultValue={expense ? centsToInput(expense.amount_cents) : ""}
+                      className={INPUT_CLASS}
+                    />
+                    <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+                      Alterações pontuais ficam vinculadas a este plantão e não serão substituídas por atualizações futuras do perfil.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label htmlFor="expense-date" className={LABEL_CLASS}>Data *</label>
+                    <input
+                      id="expense-date"
+                      name="expense_date"
+                      type="date"
+                      required
+                      defaultValue={expense?.expense_date || todayInSaoPaulo()}
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="expense-category" className={LABEL_CLASS}>Categoria *</label>
+                    <select
+                      id="expense-category"
+                      name="category"
+                      required
+                      defaultValue={expense?.category || ""}
+                      className={INPUT_CLASS}
+                    >
+                      <option value="" disabled>Selecione</option>
+                      {EXPENSE_CATEGORIES.map((option) => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="expense-description" className={LABEL_CLASS}>Descrição *</label>
+                    <input
+                      id="expense-description"
+                      name="description"
+                      type="text"
+                      maxLength={180}
+                      autoComplete="off"
+                      required
+                      defaultValue={expense?.description || ""}
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="expense-amount" className={LABEL_CLASS}>Valor (R$) *</label>
+                    <input
+                      id="expense-amount"
+                      name="amount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      inputMode="decimal"
+                      required
+                      defaultValue={expense ? centsToInput(expense.amount_cents) : ""}
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                </>
+              )}
+              <div className={payrollExpense ? "sm:col-span-2" : ""}>
+                <label htmlFor={payrollExpense ? "payroll-paid-on" : "expense-paid-on"} className={LABEL_CLASS}>
+                  Data do pagamento
+                </label>
                 <input
-                  id="expense-date"
-                  name="expense_date"
-                  type="date"
-                  required
-                  defaultValue={expense?.expense_date || todayInSaoPaulo()}
-                  className={INPUT_CLASS}
-                />
-              </div>
-              <div>
-                <label htmlFor="expense-category" className={LABEL_CLASS}>Categoria *</label>
-                <select
-                  id="expense-category"
-                  name="category"
-                  required
-                  defaultValue={expense?.category || ""}
-                  className={INPUT_CLASS}
-                >
-                  <option value="" disabled>Selecione</option>
-                  {EXPENSE_CATEGORIES.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="expense-description" className={LABEL_CLASS}>Descrição *</label>
-                <input
-                  id="expense-description"
-                  name="description"
-                  type="text"
-                  maxLength={180}
-                  autoComplete="off"
-                  required
-                  defaultValue={expense?.description || ""}
-                  className={INPUT_CLASS}
-                />
-              </div>
-              <div>
-                <label htmlFor="expense-amount" className={LABEL_CLASS}>Valor (R$) *</label>
-                <input
-                  id="expense-amount"
-                  name="amount"
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  inputMode="decimal"
-                  required
-                  defaultValue={expense ? centsToInput(expense.amount_cents) : ""}
-                  className={INPUT_CLASS}
-                />
-              </div>
-              <div>
-                <label htmlFor="expense-paid-on" className={LABEL_CLASS}>Data do pagamento</label>
-                <input
-                  id="expense-paid-on"
+                  id={payrollExpense ? "payroll-paid-on" : "expense-paid-on"}
                   name="paid_on"
                   type="date"
                   defaultValue={expense?.paid_on || ""}
@@ -400,7 +438,13 @@ function FinanceDialog({
               Cancelar
             </Button>
             <Button type="submit" disabled={busy} className="min-h-11">
-              {busy ? "Salvando…" : dialog.kind === "receipt" ? "Registrar recebimento" : "Salvar"}
+              {busy
+                ? "Salvando…"
+                : dialog.kind === "receipt"
+                  ? "Registrar recebimento"
+                  : payrollExpense
+                    ? "Salvar pagamento"
+                    : "Salvar"}
             </Button>
           </div>
         </form>
@@ -465,24 +509,32 @@ function ExpenseActions({
   onEdit: (expense: FinanceExpense) => void;
   onDelete: (expense: FinanceExpense) => void;
 }) {
+  const isPayrollExpense = expense.category === "equipe";
+  const isArchivedPayroll = isPayrollExpense && !expense.caregiver_schedule_entry_id;
   return (
     <div className="flex items-center justify-end gap-1">
-      <button
-        type="button"
-        onClick={() => onEdit(expense)}
-        className="min-h-11 rounded-lg px-2 text-sm font-semibold text-[var(--brand-dark)] hover:bg-[var(--brand-light)]"
-      >
-        Editar
-      </button>
-      <button
-        type="button"
-        onClick={() => onDelete(expense)}
-        disabled={busy}
-        aria-label={"Excluir despesa " + expense.description}
-        className="min-h-11 rounded-lg px-2 text-sm font-semibold text-[var(--status-critical)] hover:bg-[var(--status-critical-bg)] disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        Excluir
-      </button>
+      {!isArchivedPayroll && (
+        <button
+          type="button"
+          onClick={() => onEdit(expense)}
+          disabled={busy}
+          className="min-h-11 rounded-lg px-2 text-sm font-semibold text-[var(--brand-dark)] hover:bg-[var(--brand-light)]"
+        >
+          {isPayrollExpense ? "Editar plantão" : "Editar"}
+        </button>
+      )}
+      {isArchivedPayroll && <span className="px-2 text-xs text-[var(--muted)]">Histórico pago</span>}
+      {!isPayrollExpense && (
+        <button
+          type="button"
+          onClick={() => onDelete(expense)}
+          disabled={busy}
+          aria-label={"Excluir despesa " + expense.description}
+          className="min-h-11 rounded-lg px-2 text-sm font-semibold text-[var(--status-critical)] hover:bg-[var(--status-critical-bg)] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Excluir
+        </button>
+      )}
     </div>
   );
 }
@@ -561,6 +613,27 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
   );
   const resultCents = monthFlow.received_cents - monthFlow.paid_cents;
   const hasCashMovements = chartTotals.received > 0 || chartTotals.paid > 0;
+  const payrollSummary = useMemo(() => {
+    const groups = new Map<string, { key: string; name: string; shifts: number; totalCents: number; paidCents: number }>();
+    for (const expense of snapshot.expenses) {
+      if (expense.category !== "equipe") continue;
+      const key = expense.caregiver_user_id || expense.payee || "cuidador-sem-nome";
+      const group = groups.get(key) || {
+        key,
+        name: expense.payee || "Cuidador",
+        shifts: 0,
+        totalCents: 0,
+        paidCents: 0,
+      };
+      group.shifts += 1;
+      group.totalCents += expense.amount_cents;
+      if (expense.paid_on) group.paidCents += expense.amount_cents;
+      groups.set(key, group);
+    }
+    return [...groups.values()]
+      .map((group) => ({ ...group, openCents: group.totalCents - group.paidCents }))
+      .sort((left, right) => left.name.localeCompare(right.name, "pt-BR"));
+  }, [snapshot.expenses]);
 
   function openDialog(nextDialog: DialogState) {
     setDialogError("");
@@ -588,16 +661,26 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
       };
       if (dialog.record) payload.id = dialog.record.id;
     } else if (dialog.kind === "expense") {
-      action = dialog.record ? "update_expense" : "create_expense";
-      payload = {
-        action,
-        expense_date: String(formData.get("expense_date") || ""),
-        category: String(formData.get("category") || ""),
-        description: String(formData.get("description") || ""),
-        amount: String(formData.get("amount") || ""),
-        paid_on: String(formData.get("paid_on") || ""),
-      };
-      if (dialog.record) payload.id = dialog.record.id;
+      if (dialog.record?.category === "equipe") {
+        action = "update_payroll_expense";
+        payload = {
+          action,
+          id: dialog.record.id,
+          amount: String(formData.get("amount") || ""),
+          paid_on: String(formData.get("paid_on") || ""),
+        };
+      } else {
+        action = dialog.record ? "update_expense" : "create_expense";
+        payload = {
+          action,
+          expense_date: String(formData.get("expense_date") || ""),
+          category: String(formData.get("category") || ""),
+          description: String(formData.get("description") || ""),
+          amount: String(formData.get("amount") || ""),
+          paid_on: String(formData.get("paid_on") || ""),
+        };
+        if (dialog.record) payload.id = dialog.record.id;
+      }
     } else {
       action = "record_receipt";
       payload = {
@@ -625,9 +708,11 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
             ? dialog.record
               ? "Cobrança atualizada."
               : "Cobrança adicionada."
-            : dialog.record
-              ? "Despesa atualizada."
-              : "Despesa adicionada.";
+            : dialog.record?.category === "equipe"
+              ? "Plantão atualizado."
+              : dialog.record
+                ? "Despesa atualizada."
+                : "Despesa adicionada.";
       setDialog(null);
       setNotice(successText);
       await loadSnapshot(month);
@@ -986,12 +1071,58 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
                 Despesas
               </h3>
               <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                Registre gastos da operação, impostos, marketing e sistemas.
+                Acompanhe os gastos da operação e os plantões calculados automaticamente pela escala.
               </p>
             </div>
             <Button type="button" onClick={() => openDialog({ kind: "expense" })} className="min-h-11 self-start lg:self-auto">
               <span aria-hidden="true">＋</span> Nova despesa
             </Button>
+          </div>
+
+          <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] p-4 sm:p-5">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h4 className="font-semibold text-[var(--foreground)]">Pagamentos da equipe</h4>
+                <p className="mt-1 text-sm text-[var(--muted)]">Resumo dos plantões desta competência por cuidador.</p>
+              </div>
+              <p className="text-sm text-[var(--muted)]">
+                Em aberto: <strong className="font-semibold tabular-nums text-[var(--foreground)]">
+                  {formatCurrency(payrollSummary.reduce((total, caregiver) => total + caregiver.openCents, 0))}
+                </strong>
+              </p>
+            </div>
+            {payrollSummary.length > 0 ? (
+              <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {payrollSummary.map((caregiver) => (
+                  <div key={caregiver.key} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="min-w-0 break-words font-semibold text-[var(--foreground)]">{caregiver.name}</p>
+                      <span className="shrink-0 text-xs text-[var(--muted)]">
+                        {caregiver.shifts} {caregiver.shifts === 1 ? "plantão" : "plantões"}
+                      </span>
+                    </div>
+                    <dl className="mt-3 space-y-2 text-sm">
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-[var(--muted)]">Total</dt>
+                        <dd className="font-medium tabular-nums text-[var(--foreground)]">{formatCurrency(caregiver.totalCents)}</dd>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-[var(--muted)]">Pago</dt>
+                        <dd className="font-medium tabular-nums text-[var(--foreground)]">{formatCurrency(caregiver.paidCents)}</dd>
+                      </div>
+                      <div className="flex justify-between gap-3 border-t border-[var(--border)] pt-2">
+                        <dt className="font-semibold text-[var(--brand-dark)]">A pagar</dt>
+                        <dd className="font-semibold tabular-nums text-[var(--brand-dark)]">{formatCurrency(caregiver.openCents)}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-4 rounded-lg bg-[var(--surface)] px-4 py-3 text-sm leading-5 text-[var(--muted)]">
+                Os valores serão calculados quando houver plantões na escala e remuneração cadastrada no perfil dos cuidadores.
+              </p>
+            )}
           </div>
 
           {snapshot.expenses.length > 0 ? (
@@ -1146,7 +1277,7 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
             </div>
           </dl>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--muted)]">
-            O resultado gerencial considera cobranças e despesas lançadas na competência. O resultado de caixa considera recebimentos e pagamentos efetivos. Custos de equipe por plantão ainda não entram neste cálculo.
+            O resultado gerencial considera cobranças e despesas lançadas na competência; plantões entram automaticamente como despesas de equipe. O resultado de caixa considera recebimentos e pagamentos efetivos.
           </p>
         </Card>
       </section>
