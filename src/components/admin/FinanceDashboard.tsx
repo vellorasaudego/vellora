@@ -552,8 +552,6 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
   const [notice, setNotice] = useState("");
 
   const loadSnapshot = useCallback(async (selectedMonth: string, signal?: AbortSignal) => {
-    setLoading(true);
-    setLoadError("");
     try {
       const response = await fetch(
         "/api/admin/finance?month=" + encodeURIComponent(selectedMonth),
@@ -563,6 +561,7 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
       if (!response.ok) {
         throw new Error(typeof payload?.error === "string" ? payload.error : "Não foi possível carregar o financeiro.");
       }
+      setLoadError("");
       setSnapshot(payload as FinanceDashboardSnapshot);
       return true;
     } catch (error) {
@@ -577,10 +576,13 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    setNotice("");
-    setActionError("");
-    void loadSnapshot(month, controller.signal);
-    return () => controller.abort();
+    const refresh = window.setTimeout(() => {
+      void loadSnapshot(month, controller.signal);
+    }, 0);
+    return () => {
+      window.clearTimeout(refresh);
+      controller.abort();
+    };
   }, [loadSnapshot, month]);
 
   const monthFlow = useMemo<FinanceCashFlowPoint>(
@@ -791,7 +793,13 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
               id="finance-month"
               type="month"
               value={month}
-              onChange={(event) => setMonth(event.target.value)}
+              onChange={(event) => {
+                setLoading(true);
+                setLoadError("");
+                setNotice("");
+                setActionError("");
+                setMonth(event.target.value);
+              }}
               className={INPUT_CLASS + " min-w-48"}
             />
           </div>

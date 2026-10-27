@@ -27,6 +27,8 @@ const approvedProfile = {
   availability_days: ["segunda"],
   availability_shifts: ["manha"],
   available_from: null,
+  weekday_shift_rate_cents: null,
+  sunday_shift_rate_cents: null,
   notes: null,
   account_status: "aguardando_acesso" as const,
   approved_at: "2026-09-01T12:00:00.000Z",
