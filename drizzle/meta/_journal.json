@@ -50,6 +50,20 @@
       "when": 1793047470603,
       "tag": "0006_caregiver_payroll_manual_adjustments",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1793118492418,
+      "tag": "0007_family_patient_service_rates",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1793395389050,
+      "tag": "0008_family_service_rates_monthly",
+      "breakpoints": true
     }
   ]
 }

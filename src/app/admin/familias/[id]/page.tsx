@@ -3,12 +3,25 @@ import { notFound } from "next/navigation";
 import { ContractManager } from "@/components/admin/ContractManager";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { FamilyEditForm } from "@/components/admin/FamilyEditForm";
+import { FamilyPatientServiceRatesManager } from "@/components/admin/FamilyPatientServiceRatesManager";
 import { Card } from "@/components/ui/Card";
 import {
   getUserById,
   listContractDocuments,
+  listFamilyPatientServiceRates,
   listPatientsByFamily,
+  type FamilyPatientServiceRate,
 } from "@/lib/data";
+
+function isMissingFamilyServiceRatesTable(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as { code?: unknown; message?: unknown };
+  if (candidate.code === "PGRST205") return true;
+  if (typeof candidate.message !== "string") return false;
+  const message = candidate.message.toLowerCase();
+  return message.includes("family_patient_service_rates")
+    && (message.includes("schema cache") || message.includes("does not exist"));
+}
 
 export default async function AdminFamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -20,6 +33,22 @@ export default async function AdminFamilyDetailPage({ params }: { params: Promis
     listPatientsByFamily(family.id),
     listContractDocuments("family", family.id),
   ]);
+  let rates: FamilyPatientServiceRate[] = [];
+  let serviceRatesAvailable = true;
+  try {
+    rates = await listFamilyPatientServiceRates(family.id);
+  } catch (error) {
+    if (!isMissingFamilyServiceRatesTable(error)) throw error;
+    serviceRatesAvailable = false;
+  }
+  const todayParts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const todayValues = Object.fromEntries(todayParts.map((part) => [part.type, part.value]));
+  const today = `${todayValues.year}-${todayValues.month}-${todayValues.day}`;
 
   return (
     <div className="max-w-4xl">
@@ -79,6 +108,14 @@ export default async function AdminFamilyDetailPage({ params }: { params: Promis
           )}
         </Card>
       </div>
+
+      <FamilyPatientServiceRatesManager
+        familyId={family.id}
+        patients={patients}
+        rates={rates}
+        today={today}
+        available={serviceRatesAvailable}
+      />
 
       <section className="mt-8">
         <h2 className="mb-3 text-lg font-semibold text-[var(--foreground)]">Contratos</h2>

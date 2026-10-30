@@ -9,6 +9,7 @@ export type ScheduleEntry = {
   end_time: string;
   ends_next_day: boolean;
   profession: ScheduleProfession;
+  payroll_rate_status?: "valor_pendente" | "gerado";
   professional_name?: string;
   professional_phone?: string;
   patient_name?: string;

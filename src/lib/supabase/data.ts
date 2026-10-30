@@ -28,6 +28,8 @@ import type {
   FinanceExpensePaymentMovement,
   FinanceReceiptInput,
   FinanceReceiptMovement,
+  FamilyPatientServiceRate,
+  FamilyPatientServiceRateInput,
   FamilyUserUpdate,
   Lead,
   Patient,
@@ -325,7 +327,7 @@ function mapFinanceCharge(row: SupabaseRow, receivedCents: number): FinanceCharg
   };
 }
 
-function mapFinanceExpense(row: SupabaseRow): FinanceExpense {
+function mapFinanceExpense(row: SupabaseRow, patientName: string | null = null): FinanceExpense {
   return {
     id: assertUuid(asString(row.id), "Despesa"),
     expense_date: asString(row.expense_date),
@@ -334,6 +336,7 @@ function mapFinanceExpense(row: SupabaseRow): FinanceExpense {
     amount_cents: asNumber(row.amount_cents) ?? 0,
     paid_on: asNullableString(row.paid_on),
     caregiver_schedule_entry_id: asNullableString(row.caregiver_schedule_entry_id),
+    patient_name: patientName,
     caregiver_user_id: asNullableString(row.caregiver_user_id),
     payee: asNullableString(row.payee),
     caregiver_payroll_amount_overridden: asBoolean(row.caregiver_payroll_amount_overridden),
@@ -409,6 +412,7 @@ function mapCaregiverScheduleEntry(
     end_time: normalizeTime(asString(row.end_time)) || "",
     ends_next_day: asBoolean(row.ends_next_day),
     profession: asProfession(row.profession),
+    payroll_rate_status: row.payroll_rate_status === "gerado" ? "gerado" : "valor_pendente",
     created_at: asString(row.created_at),
     updated_at: asString(row.updated_at),
   };
@@ -463,8 +467,6 @@ function mapCaregiverProfile(row: SupabaseRow, accessEmail?: string | null): Car
     phone: asString(row.phone),
     city: asNullableString(row.city),
     profession: asProfession(row.profession),
-    weekday_shift_rate_cents: asNumber(row.weekday_shift_rate_cents),
-    sunday_shift_rate_cents: asNumber(row.sunday_shift_rate_cents),
     coren: asNullableString(row.coren),
     experience: asNullableString(row.experience),
     availability_days: asStringArray(row.availability_days),
@@ -868,6 +870,44 @@ export async function listPatientsByFamily(familyUserId: string): Promise<Patien
     .order("created_at", { ascending: false });
   requireNoError("Não foi possível listar pacientes da família", error);
   return ((data || []) as SupabaseRow[]).map(mapPatient);
+}
+
+function mapFamilyPatientServiceRate(row: SupabaseRow): FamilyPatientServiceRate {
+  return {
+    id: assertUuid(asString(row.id), "Valor de serviço"),
+    family_user_id: assertUuid(asString(row.family_user_id), "Família"),
+    patient_id: assertUuid(asString(row.patient_id), "Paciente"),
+    profession: asProfession(row.profession),
+    amount_cents: asNumber(row.amount_cents) ?? 0,
+    valid_from: asString(row.valid_from),
+    valid_to: asNullableString(row.valid_to),
+    created_at: asString(row.created_at),
+    updated_at: asString(row.updated_at),
+  };
+}
+
+export async function listFamilyPatientServiceRates(familyUserId: string): Promise<FamilyPatientServiceRate[]> {
+  const client = await requestClient();
+  const { data, error } = await client
+    .from("family_patient_service_rates")
+    .select("*")
+    .eq("family_user_id", assertUuid(familyUserId, "Família"))
+    .order("patient_id")
+    .order("profession")
+    .order("valid_from", { ascending: false });
+  requireNoError("Não foi possível listar os valores dos serviços da família", error);
+  return ((data || []) as SupabaseRow[]).map(mapFamilyPatientServiceRate);
+}
+
+export async function saveFamilyPatientServiceRates(input: FamilyPatientServiceRateInput): Promise<void> {
+  const client = await requestClient();
+  const { error } = await client.rpc("save_family_patient_service_rates", {
+    p_family_user_id: assertUuid(input.family_user_id, "Família"),
+    p_patient_id: assertUuid(input.patient_id, "Paciente"),
+    p_effective_from: input.effective_from,
+    p_rates: input.rates,
+  });
+  requireNoError("Não foi possível salvar os valores dos serviços da família", error);
 }
 
 export async function listPatientsByCaregiver(caregiverUserId: string): Promise<Patient[]> {
@@ -1510,10 +1550,6 @@ export async function updateCaregiverProfile(id: string, fields: CaregiverProfil
   for (const key of allowed) {
     if (key in fields) update[key] = fields[key] ?? null;
   }
-  if ("shift_rate_cents" in fields) {
-    update.weekday_shift_rate_cents = fields.shift_rate_cents ?? null;
-    update.sunday_shift_rate_cents = fields.shift_rate_cents ?? null;
-  }
   if (!Object.keys(update).length) return;
   const { error } = await client.from("caregiver_profiles").update(update).eq("id", profileId);
   requireNoError("Não foi possível atualizar perfil de cuidador Supabase", error);
@@ -1570,10 +1606,6 @@ export async function updateCaregiverUser(
   for (const key of profileFields) {
     if (key in fields) profileUpdate[key] = key === "phone" ? fields.phone ?? "" : fields[key] ?? null;
   }
-  if ("shift_rate_cents" in fields) {
-    profileUpdate.weekday_shift_rate_cents = fields.shift_rate_cents ?? null;
-    profileUpdate.sunday_shift_rate_cents = fields.shift_rate_cents ?? null;
-  }
 
   async function updateProfile(profileId: string): Promise<void> {
     if (!Object.keys(profileUpdate).length) return;
@@ -1602,8 +1634,6 @@ export async function updateCaregiverUser(
     availability_days: fields.availability_days ?? [],
     availability_shifts: fields.availability_shifts ?? [],
     available_from: fields.available_from ?? null,
-    weekday_shift_rate_cents: fields.shift_rate_cents ?? null,
-    sunday_shift_rate_cents: fields.shift_rate_cents ?? null,
     account_status: "ativo" as const,
     approved_at: new Date().toISOString(),
   };
@@ -2258,6 +2288,26 @@ export async function getFinanceDashboardSnapshot(month: string): Promise<Financ
   requireNoError("Não foi possível consultar pagamentos financeiros Supabase", paymentsResult.error);
 
   const chargeRows = (chargesResult.data || []) as SupabaseRow[];
+  const expenseRows = (expensesResult.data || []) as SupabaseRow[];
+  const scheduleEntryIds = [...new Set(
+    expenseRows
+      .map((row) => asNullableString(row.caregiver_schedule_entry_id))
+      .filter((id): id is string => Boolean(id)),
+  )];
+  const patientNameByScheduleEntryId = new Map<string, string>();
+  if (scheduleEntryIds.length > 0) {
+    const { data: scheduleRows, error: scheduleError } = await client
+      .from("caregiver_schedule_entries")
+      .select("id,assignment:caregiver_assignments!caregiver_schedule_entries_caregiver_assignment_id_fkey(patient:patients!caregiver_assignments_patient_id_fkey(name))")
+      .in("id", scheduleEntryIds);
+    requireNoError("Não foi possível consultar os pacientes dos plantões Supabase", scheduleError);
+    for (const scheduleRow of (scheduleRows || []) as SupabaseRow[]) {
+      const assignment = scheduleRow.assignment as SupabaseRow | null;
+      const patient = assignment?.patient as SupabaseRow | null;
+      const patientName = asNullableString(patient?.name);
+      if (patientName) patientNameByScheduleEntryId.set(asString(scheduleRow.id), patientName);
+    }
+  }
   const receiptTotals = new Map<string, number>();
   if (chargeRows.length > 0) {
     const chargeIds = chargeRows.map((row) => assertUuid(asString(row.id), "Cobrança"));
@@ -2293,7 +2343,11 @@ export async function getFinanceDashboardSnapshot(month: string): Promise<Financ
     charges: chargeRows.map((row) =>
       mapFinanceCharge(row, receiptTotals.get(asString(row.id)) || 0),
     ),
-    expenses: ((expensesResult.data || []) as SupabaseRow[]).map(mapFinanceExpense),
+    expenses: expenseRows.map((row) => {
+      const scheduleEntryId = asNullableString(row.caregiver_schedule_entry_id);
+      const patientName = scheduleEntryId ? patientNameByScheduleEntryId.get(scheduleEntryId) || null : null;
+      return mapFinanceExpense(row, patientName);
+    }),
     cash_flow: buildFinanceCashFlow(month, receipts, payments),
   };
 }

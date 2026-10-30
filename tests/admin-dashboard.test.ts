@@ -39,8 +39,6 @@ function application(id: string, created_at: string, status: "novo" | "em_analis
     availability_days: [],
     availability_shifts: [],
     available_from: null,
-    weekday_shift_rate_cents: null,
-    sunday_shift_rate_cents: null,
     notes: null,
     status,
     lgpd_consent: true,
@@ -72,8 +70,6 @@ function caregiver(
     availability_days: [],
     availability_shifts: [],
     available_from: null,
-    weekday_shift_rate_cents: null,
-    sunday_shift_rate_cents: null,
     notes: null,
     account_status,
     approved_at: "2026-09-01T10:00:00.000Z",
@@ -118,8 +114,8 @@ describe("agregações do dashboard administrativo", () => {
       ],
       caregiverUsers: [],
       caregivers: [
-        { id: "active", application_id: null, user_id: "user", name: "Ativo", contact_email: "ativo@example.com", access_email: "ativo@example.com", phone: "62999999999", city: null, profession: "cuidador", coren: null, experience: null, availability_days: [], availability_shifts: [], available_from: null, weekday_shift_rate_cents: null, sunday_shift_rate_cents: null, notes: null, account_status: "ativo", approved_at: "2026-09-01T10:00:00.000Z", created_at: "2026-09-01T10:00:00.000Z" },
-        { id: "waiting", application_id: null, user_id: null, name: "Aguardando", contact_email: "aguardando@example.com", access_email: null, phone: "62999999999", city: null, profession: "cuidador", coren: null, experience: null, availability_days: [], availability_shifts: [], available_from: null, weekday_shift_rate_cents: null, sunday_shift_rate_cents: null, notes: null, account_status: "aguardando_acesso", approved_at: "2026-09-01T10:00:00.000Z", created_at: "2026-09-01T10:00:00.000Z" },
+        { id: "active", application_id: null, user_id: "user", name: "Ativo", contact_email: "ativo@example.com", access_email: "ativo@example.com", phone: "62999999999", city: null, profession: "cuidador", coren: null, experience: null, availability_days: [], availability_shifts: [], available_from: null, notes: null, account_status: "ativo", approved_at: "2026-09-01T10:00:00.000Z", created_at: "2026-09-01T10:00:00.000Z" },
+        { id: "waiting", application_id: null, user_id: null, name: "Aguardando", contact_email: "aguardando@example.com", access_email: null, phone: "62999999999", city: null, profession: "cuidador", coren: null, experience: null, availability_days: [], availability_shifts: [], available_from: null, notes: null, account_status: "aguardando_acesso", approved_at: "2026-09-01T10:00:00.000Z", created_at: "2026-09-01T10:00:00.000Z" },
       ],
     };
 

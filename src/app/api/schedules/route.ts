@@ -36,10 +36,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         entries: entries
           .filter((entry) => entry.caregiver_user_id === guard.session.userId)
-          .map((entry) => ({
-            ...entry,
-            patient_name: patientNames.get(entry.patient_id) || "Paciente",
-          })),
+          .map((entry) => {
+            const safeEntry = { ...entry };
+            delete safeEntry.payroll_rate_status;
+            return {
+              ...safeEntry,
+              patient_name: patientNames.get(entry.patient_id) || "Paciente",
+            };
+          }),
       });
     }
 

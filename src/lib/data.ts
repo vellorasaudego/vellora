@@ -57,6 +57,30 @@ export type Assignment = {
   created_at: string;
 };
 
+export type PayrollRateStatus = "valor_pendente" | "gerado";
+
+export type FamilyPatientServiceRate = {
+  id: string;
+  family_user_id: string;
+  patient_id: string;
+  profession: ProfessionalApplication["profession"];
+  amount_cents: number;
+  valid_from: string;
+  valid_to: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FamilyPatientServiceRateInput = {
+  family_user_id: string;
+  patient_id: string;
+  effective_from: string;
+  rates: Array<{
+    profession: ProfessionalApplication["profession"];
+    amount_cents: number;
+  }>;
+};
+
 export type CaregiverScheduleEntry = {
   id: string;
   caregiver_assignment_id: string;
@@ -67,6 +91,7 @@ export type CaregiverScheduleEntry = {
   end_time: string;
   ends_next_day: boolean;
   profession: ProfessionalApplication["profession"];
+  payroll_rate_status?: PayrollRateStatus;
   created_at: string;
   updated_at: string;
 };
@@ -124,8 +149,6 @@ export type CaregiverProfile = {
   phone: string;
   city: string | null;
   profession: ProfessionalApplication["profession"];
-  weekday_shift_rate_cents: number | null;
-  sunday_shift_rate_cents: number | null;
   coren: string | null;
   experience: string | null;
   availability_days: string[];
@@ -146,7 +169,6 @@ export type CaregiverProfileUpdate = {
   phone?: string;
   city?: string | null;
   profession?: CaregiverProfile["profession"];
-  shift_rate_cents?: number | null;
   coren?: string | null;
   experience?: string | null;
   availability_days?: string[];
@@ -159,7 +181,6 @@ export type CaregiverUserUpdate = {
   name?: string;
   phone?: string | null;
   profession?: CaregiverProfile["profession"];
-  shift_rate_cents?: number | null;
   availability_days?: string[];
   availability_shifts?: string[];
   available_from?: string | null;
@@ -271,6 +292,7 @@ export type FinanceExpense = {
   amount_cents: number;
   paid_on: string | null;
   caregiver_schedule_entry_id: string | null;
+  patient_name: string | null;
   caregiver_user_id: string | null;
   payee: string | null;
   caregiver_payroll_amount_overridden: boolean;
@@ -338,6 +360,30 @@ function shouldUseSupabaseData(): boolean {
     );
   }
   return provider === "supabase";
+}
+
+function brazilToday(): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function familyPatientRateMonthStart(date: string): string {
+  const parsedDate = new Date(`${date}T00:00:00.000Z`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(parsedDate.valueOf()) || parsedDate.toISOString().slice(0, 10) !== date) {
+    throw new Error("Informe uma competência válida para a tarifa.");
+  }
+  const monthStart = `${date.slice(0, 7)}-01`;
+  const currentMonthStart = `${brazilToday().slice(0, 7)}-01`;
+  if (monthStart < currentMonthStart) {
+    throw new Error("Não é possível alterar tarifas de competências passadas.");
+  }
+  return monthStart;
 }
 
 export async function getUserByEmail(email: string): Promise<User | undefined> {
@@ -464,6 +510,72 @@ export async function listPatientsByFamily(familyUserId: string): Promise<Patien
   );
 }
 
+export async function listFamilyPatientServiceRates(familyUserId: string): Promise<FamilyPatientServiceRate[]> {
+  if (shouldUseSupabaseData()) return supabaseData.listFamilyPatientServiceRates(familyUserId);
+  return query<FamilyPatientServiceRate>(
+    `SELECT id, family_user_id, patient_id, profession, amount_cents, valid_from, valid_to, created_at, updated_at
+     FROM family_patient_service_rates
+     WHERE family_user_id = $1
+     ORDER BY patient_id, profession, valid_from DESC`,
+    [familyUserId],
+  );
+}
+
+export async function saveFamilyPatientServiceRates(input: FamilyPatientServiceRateInput): Promise<void> {
+  const effectiveFrom = familyPatientRateMonthStart(input.effective_from);
+  const normalizedInput = { ...input, effective_from: effectiveFrom };
+  if (shouldUseSupabaseData()) return supabaseData.saveFamilyPatientServiceRates(normalizedInput);
+
+  const patient = await getPatient(normalizedInput.patient_id);
+  if (!patient || patient.family_user_id !== normalizedInput.family_user_id) {
+    throw new Error("O paciente não pertence à família informada.");
+  }
+
+  const supportedProfessions: ProfessionalApplication["profession"][] = [
+    "cuidador",
+    "tecnico_enfermagem",
+    "enfermeiro",
+    "outros",
+  ];
+  const selectedRates = new Map(normalizedInput.rates.map((rate) => [rate.profession, rate.amount_cents] as const));
+  if (
+    selectedRates.size !== normalizedInput.rates.length ||
+    normalizedInput.rates.some((rate) => !supportedProfessions.includes(rate.profession)
+      || !Number.isSafeInteger(rate.amount_cents)
+      || rate.amount_cents <= 0
+      || rate.amount_cents > 100_000_000)
+  ) {
+    throw new Error("Informe valores válidos e únicos para os serviços contratados.");
+  }
+
+  const commands: Array<{ text: string; params: unknown[] }> = [];
+  for (const profession of supportedProfessions) {
+    commands.push({
+      text: `DELETE FROM family_patient_service_rates
+             WHERE family_user_id = $1 AND patient_id = $2 AND profession = $3 AND valid_from >= $4`,
+      params: [normalizedInput.family_user_id, normalizedInput.patient_id, profession, effectiveFrom],
+    });
+    commands.push({
+      text: `UPDATE family_patient_service_rates
+             SET valid_to = date($1, '-1 day'), updated_at = CURRENT_TIMESTAMP
+             WHERE family_user_id = $2 AND patient_id = $3 AND profession = $4
+               AND valid_from < $1 AND (valid_to IS NULL OR valid_to >= $1)`,
+      params: [effectiveFrom, normalizedInput.family_user_id, normalizedInput.patient_id, profession],
+    });
+    const amountCents = selectedRates.get(profession);
+    if (amountCents !== undefined) {
+      commands.push({
+        text: `INSERT INTO family_patient_service_rates
+                 (id, family_user_id, patient_id, profession, amount_cents, valid_from)
+               VALUES ($1, $2, $3, $4, $5, $6)`,
+        params: [randomUUID(), normalizedInput.family_user_id, normalizedInput.patient_id, profession, amountCents, effectiveFrom],
+      });
+    }
+  }
+  await executeBatch(commands);
+  await syncLegacyCaregiverPayrollForPatient(normalizedInput.patient_id, effectiveFrom);
+}
+
 export async function listPatientsByCaregiver(caregiverUserId: string): Promise<Patient[]> {
   if (shouldUseSupabaseData()) return supabaseData.listPatientsByCaregiver(caregiverUserId);
   return query<Patient>(
@@ -530,6 +642,7 @@ export async function updatePatient(id: string, fields: Partial<Patient>): Promi
   if (sets.length === 0) return;
   values.push(id);
   await query(`UPDATE patients SET ${sets.join(", ")} WHERE id = $${i}`, values);
+  if ("family_user_id" in fields) await syncLegacyCaregiverPayrollForPatient(id, brazilToday());
 }
 
 export async function deletePatient(id: string): Promise<void> {
@@ -650,7 +763,7 @@ export async function listCaregiverScheduleEntriesForPatient(
   return query<CaregiverScheduleEntry>(
     `SELECT s.id, s.caregiver_assignment_id, a.patient_id, a.caregiver_user_id,
             s.scheduled_date, s.start_time, s.end_time, s.ends_next_day,
-            s.profession, s.created_at, s.updated_at
+            s.profession, s.payroll_rate_status, s.created_at, s.updated_at
      FROM caregiver_schedule_entries s
      JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
      WHERE a.patient_id = $1 AND s.scheduled_date >= $2 AND s.scheduled_date < $3
@@ -670,7 +783,7 @@ export async function listCaregiverScheduleEntriesForCaregiver(
   return query<CaregiverScheduleEntry>(
     `SELECT s.id, s.caregiver_assignment_id, a.patient_id, a.caregiver_user_id,
             s.scheduled_date, s.start_time, s.end_time, s.ends_next_day,
-            s.profession, s.created_at, s.updated_at
+            s.profession, s.payroll_rate_status, s.created_at, s.updated_at
      FROM caregiver_schedule_entries s
      JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
      WHERE a.caregiver_user_id = $1 AND a.active = 1
@@ -691,7 +804,7 @@ export async function listCaregiverScheduleEntriesForProfessional(
   return query<CaregiverScheduleEntry>(
     `SELECT s.id, s.caregiver_assignment_id, a.patient_id, a.caregiver_user_id,
             s.scheduled_date, s.start_time, s.end_time, s.ends_next_day,
-            s.profession, s.created_at, s.updated_at
+            s.profession, s.payroll_rate_status, s.created_at, s.updated_at
      FROM caregiver_schedule_entries s
      JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
      WHERE a.caregiver_user_id = $1
@@ -706,7 +819,7 @@ export async function getCaregiverScheduleEntry(id: string): Promise<CaregiverSc
   return queryOne<CaregiverScheduleEntry>(
     `SELECT s.id, s.caregiver_assignment_id, a.patient_id, a.caregiver_user_id,
             s.scheduled_date, s.start_time, s.end_time, s.ends_next_day,
-            s.profession, s.created_at, s.updated_at
+            s.profession, s.payroll_rate_status, s.created_at, s.updated_at
      FROM caregiver_schedule_entries s
      JOIN caregiver_assignments a ON a.id = s.caregiver_assignment_id
      WHERE s.id = $1`,
@@ -738,6 +851,9 @@ export async function createCaregiverScheduleEntry(
   );
   const created = await getCaregiverScheduleEntry(id);
   if (!created) throw new Error("Não foi possível confirmar a escala criada.");
+  await syncLegacyCaregiverPayroll([id]);
+  const synced = await getCaregiverScheduleEntry(id);
+  if (synced) return synced;
   return created;
 }
 
@@ -750,13 +866,14 @@ export async function createCaregiverScheduleEntries(
   }
   if (shouldUseSupabaseData()) return supabaseData.createCaregiverScheduleEntries(inputs, actorUserId);
 
-  await executeBatch(inputs.map((input) => ({
+  const scheduleIds = inputs.map(() => randomUUID());
+  await executeBatch(inputs.map((input, index) => ({
     text: `INSERT INTO caregiver_schedule_entries
        (id, caregiver_assignment_id, scheduled_date, start_time, end_time,
         ends_next_day, profession, created_by, updated_by)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$8)`,
     params: [
-      randomUUID(),
+      scheduleIds[index],
       input.caregiver_assignment_id,
       input.scheduled_date,
       input.start_time,
@@ -766,6 +883,7 @@ export async function createCaregiverScheduleEntries(
       actorUserId,
     ],
   })));
+  await syncLegacyCaregiverPayroll(scheduleIds);
   return inputs.length;
 }
 
@@ -792,11 +910,134 @@ export async function updateCaregiverScheduleEntry(
       id,
     ],
   );
+  await syncLegacyCaregiverPayroll([id]);
 }
 
 export async function deleteCaregiverScheduleEntry(id: string): Promise<void> {
   if (shouldUseSupabaseData()) return supabaseData.deleteCaregiverScheduleEntry(id);
+  await query(
+    `DELETE FROM finance_expenses
+     WHERE caregiver_schedule_entry_id = $1 AND paid_on IS NULL
+       AND caregiver_payroll_amount_overridden = 0`,
+    [id],
+  );
   await query("DELETE FROM caregiver_schedule_entries WHERE id = $1", [id]);
+}
+
+async function syncLegacyCaregiverPayroll(scheduleIds: string[]): Promise<void> {
+  if (!scheduleIds.length) return;
+  if (scheduleIds.length > 80) {
+    for (let index = 0; index < scheduleIds.length; index += 80) {
+      await syncLegacyCaregiverPayroll(scheduleIds.slice(index, index + 80));
+    }
+    return;
+  }
+  const placeholders = scheduleIds.map((_, index) => `$${index + 1}`).join(", ");
+  const rows = await query<{
+    id: string;
+    scheduled_date: string;
+    profession: ProfessionalApplication["profession"];
+    caregiver_user_id: string;
+    caregiver_name: string | null;
+    patient_name: string | null;
+    created_by: string | null;
+    amount_cents: number | null;
+  }>(
+    `SELECT entry.id, entry.scheduled_date, entry.profession,
+            assignment.caregiver_user_id, caregiver.name AS caregiver_name,
+            patient.name AS patient_name, entry.created_by,
+            (SELECT rate.amount_cents
+             FROM family_patient_service_rates AS rate
+             JOIN patients AS patient ON patient.id = rate.patient_id
+             WHERE rate.patient_id = assignment.patient_id
+               AND rate.family_user_id = patient.family_user_id
+               AND rate.profession = entry.profession
+               AND entry.scheduled_date >= rate.valid_from
+               AND (rate.valid_to IS NULL OR entry.scheduled_date <= rate.valid_to)
+             ORDER BY rate.valid_from DESC LIMIT 1) AS amount_cents
+     FROM caregiver_schedule_entries AS entry
+     JOIN caregiver_assignments AS assignment ON assignment.id = entry.caregiver_assignment_id
+     JOIN patients AS patient ON patient.id = assignment.patient_id
+     LEFT JOIN caregiver_profiles AS caregiver ON caregiver.user_id = assignment.caregiver_user_id
+     WHERE entry.id IN (${placeholders})`,
+    scheduleIds,
+  );
+
+  const commands: Array<{ text: string; params: unknown[] }> = [];
+  const currentDate = brazilToday();
+  async function flushCommands() {
+    if (!commands.length) return;
+    await executeBatch(commands.splice(0));
+  }
+  for (const entry of rows) {
+    const amountCents = Number.isSafeInteger(entry.amount_cents) && (entry.amount_cents || 0) > 0
+      ? entry.amount_cents
+      : null;
+    const caregiverName = entry.caregiver_name || "Profissional";
+    const description = `Plantão — ${caregiverName} · ${entry.patient_name || "Paciente"}`;
+    if (amountCents) {
+      commands.push({
+        text: "UPDATE caregiver_schedule_entries SET payroll_rate_status = 'gerado' WHERE id = $1",
+        params: [entry.id],
+      });
+      commands.push({
+        text: `INSERT INTO finance_expenses (
+                 id, expense_date, category, description, amount_cents, paid_on,
+                 caregiver_schedule_entry_id, caregiver_user_id, payee, created_by
+               ) VALUES ($1,$2,'equipe',$3,$4,NULL,$5,$6,$8,$7)
+               ON CONFLICT(caregiver_schedule_entry_id) DO UPDATE SET
+                 expense_date = excluded.expense_date,
+                 description = excluded.description,
+                 amount_cents = CASE
+                   WHEN finance_expenses.caregiver_payroll_amount_overridden THEN finance_expenses.amount_cents
+                   ELSE excluded.amount_cents
+                 END,
+                 caregiver_user_id = excluded.caregiver_user_id,
+                 payee = excluded.payee,
+                 updated_at = CURRENT_TIMESTAMP
+               WHERE finance_expenses.paid_on IS NULL`,
+        params: [randomUUID(), entry.scheduled_date, description, amountCents,
+          entry.id, entry.caregiver_user_id, entry.created_by, caregiverName],
+      });
+    } else if (entry.scheduled_date >= currentDate) {
+      commands.push({
+        text: `DELETE FROM finance_expenses
+               WHERE caregiver_schedule_entry_id = $1 AND paid_on IS NULL
+                 AND caregiver_payroll_amount_overridden = 0`,
+        params: [entry.id],
+      });
+      commands.push({
+        text: `UPDATE caregiver_schedule_entries
+               SET payroll_rate_status = CASE WHEN EXISTS (
+                 SELECT 1 FROM finance_expenses WHERE caregiver_schedule_entry_id = $1
+               ) THEN 'gerado' ELSE 'valor_pendente' END
+               WHERE id = $1`,
+        params: [entry.id],
+      });
+    } else {
+      commands.push({
+        text: `UPDATE caregiver_schedule_entries
+               SET payroll_rate_status = CASE WHEN EXISTS (
+                 SELECT 1 FROM finance_expenses WHERE caregiver_schedule_entry_id = $1
+               ) THEN 'gerado' ELSE 'valor_pendente' END
+               WHERE id = $1`,
+        params: [entry.id],
+      });
+    }
+    if (commands.length >= 80) await flushCommands();
+  }
+  await flushCommands();
+}
+
+async function syncLegacyCaregiverPayrollForPatient(patientId: string, fromDate: string): Promise<void> {
+  const entries = await query<{ id: string }>(
+    `SELECT entry.id
+     FROM caregiver_schedule_entries AS entry
+     JOIN caregiver_assignments AS assignment ON assignment.id = entry.caregiver_assignment_id
+     WHERE assignment.patient_id = $1 AND entry.scheduled_date >= $2`,
+    [patientId, fromDate],
+  );
+  await syncLegacyCaregiverPayroll(entries.map((entry) => entry.id));
 }
 
 // ---------- Leads ----------
@@ -1050,11 +1291,6 @@ export async function updateCaregiverProfile(id: string, fields: CaregiverProfil
       index += 1;
     }
   }
-  if ("shift_rate_cents" in fields) {
-    sets.push(`weekday_shift_rate_cents = $${index}`, `sunday_shift_rate_cents = $${index + 1}`);
-    values.push(fields.shift_rate_cents ?? null, fields.shift_rate_cents ?? null);
-    index += 2;
-  }
   if (!sets.length) return;
   values.push(id);
   await query(`UPDATE caregiver_profiles SET ${sets.join(", ")} WHERE id = $${index}`, values);
@@ -1116,11 +1352,6 @@ export async function updateCaregiverUser(
       profileValues.push(key === "phone" ? fields.phone ?? "" : fields[key] ?? null);
       profileIndex += 1;
     }
-    if ("shift_rate_cents" in fields) {
-      profileSets.push(`weekday_shift_rate_cents = $${profileIndex}`, `sunday_shift_rate_cents = $${profileIndex + 1}`);
-      profileValues.push(fields.shift_rate_cents ?? null, fields.shift_rate_cents ?? null);
-      profileIndex += 2;
-    }
     if (profileSets.length) {
       profileValues.push(existingProfile.id);
       commands.push({
@@ -1139,18 +1370,15 @@ export async function updateCaregiverUser(
   commands.push({
     text: `INSERT INTO caregiver_profiles
       (id, application_id, user_id, name, contact_email, phone, profession,
-       availability_days, availability_shifts, available_from, weekday_shift_rate_cents,
-       sunday_shift_rate_cents, account_status, approved_at)
-     VALUES ($1,NULL,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'ativo',CURRENT_TIMESTAMP)
+       availability_days, availability_shifts, available_from, account_status, approved_at)
+     VALUES ($1,NULL,$2,$3,$4,$5,$6,$7,$8,$9,'ativo',CURRENT_TIMESTAMP)
      ON CONFLICT(user_id) DO UPDATE SET
        name = excluded.name,
        phone = excluded.phone,
        profession = excluded.profession,
        availability_days = excluded.availability_days,
        availability_shifts = excluded.availability_shifts,
-       available_from = excluded.available_from,
-       weekday_shift_rate_cents = excluded.weekday_shift_rate_cents,
-       sunday_shift_rate_cents = excluded.sunday_shift_rate_cents`,
+       available_from = excluded.available_from`,
     params: [
       profileId,
       id,
@@ -1161,8 +1389,6 @@ export async function updateCaregiverUser(
       fields.availability_days ?? [],
       fields.availability_shifts ?? [],
       fields.available_from ?? null,
-      fields.shift_rate_cents ?? null,
-      fields.shift_rate_cents ?? null,
     ],
   });
 
@@ -1305,6 +1531,10 @@ export async function deleteCaregiverUser(id: string): Promise<void> {
 export async function deleteFamilyUser(id: string): Promise<void> {
   if (shouldUseSupabaseData()) return supabaseData.deleteFamilyUser(id);
   const keys = await contractKeysOwnedBy("family_user_id", id);
+  const linkedPatients = await query<{ id: string }>(
+    "SELECT id FROM patients WHERE family_user_id = $1",
+    [id],
+  );
   await executeBatch([
     { text: "UPDATE patients SET family_user_id = NULL WHERE family_user_id = $1", params: [id] },
     { text: "DELETE FROM contract_documents WHERE family_user_id = $1", params: [id] },
@@ -1317,6 +1547,9 @@ export async function deleteFamilyUser(id: string): Promise<void> {
     },
     { text: "DELETE FROM password_reset_tokens WHERE user_id = $1", params: [id] },
   ]);
+  for (const patient of linkedPatients) {
+    await syncLegacyCaregiverPayrollForPatient(patient.id, brazilToday());
+  }
   await cleanupStoredContracts(keys);
 }
 
@@ -1684,12 +1917,18 @@ export async function getFinanceDashboardSnapshot(month: string): Promise<Financ
       [month],
     ),
     query<FinanceExpense>(
-      `SELECT id, expense_date, category, description, amount_cents, paid_on,
-              caregiver_schedule_entry_id, caregiver_user_id, payee, caregiver_payroll_amount_overridden,
-              created_at, updated_at
-       FROM finance_expenses
-       WHERE expense_date >= $1 AND expense_date < $2
-       ORDER BY expense_date DESC, created_at DESC`,
+      `SELECT expense.id, expense.expense_date, expense.category, expense.description,
+              expense.amount_cents, expense.paid_on, expense.caregiver_schedule_entry_id,
+              patient.name AS patient_name, expense.caregiver_user_id, expense.payee,
+              expense.caregiver_payroll_amount_overridden, expense.created_at, expense.updated_at
+       FROM finance_expenses AS expense
+       LEFT JOIN caregiver_schedule_entries AS entry
+         ON entry.id = expense.caregiver_schedule_entry_id
+       LEFT JOIN caregiver_assignments AS assignment
+         ON assignment.id = entry.caregiver_assignment_id
+       LEFT JOIN patients AS patient ON patient.id = assignment.patient_id
+       WHERE expense.expense_date >= $1 AND expense.expense_date < $2
+       ORDER BY expense.expense_date DESC, expense.created_at DESC`,
       [monthStart, monthEnd],
     ),
     query<FinanceReceiptMovement>(

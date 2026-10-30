@@ -297,6 +297,9 @@ function FinanceDialog({
                   <div className="rounded-xl bg-[var(--surface-soft)] p-4">
                     <p className="text-sm font-semibold text-[var(--foreground)]">{expense?.payee || "Cuidador"}</p>
                     <p className="mt-1 text-sm text-[var(--muted)]">
+                      Paciente: {expense?.patient_name || "Não identificado"}
+                    </p>
+                    <p className="mt-1 text-sm text-[var(--muted)]">
                       Plantão em {formatDate(expense?.expense_date || null)}
                     </p>
                   </div>
@@ -314,7 +317,7 @@ function FinanceDialog({
                       className={INPUT_CLASS}
                     />
                     <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
-                      Alterações pontuais ficam vinculadas a este plantão e não serão substituídas por atualizações futuras do perfil.
+                      Alterações pontuais ficam vinculadas a este plantão e não serão substituídas por atualizações futuras da tarifa da família.
                     </p>
                   </div>
                 </div>
@@ -605,6 +608,7 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
   );
   const chargedCents = snapshot.charges.reduce((total, charge) => total + charge.amount_cents, 0);
   const expenseCents = snapshot.expenses.reduce((total, expense) => total + expense.amount_cents, 0);
+  const expenseDetails = snapshot.expenses.filter((expense) => expense.category !== "equipe");
   const managerialResultCents = chargedCents - expenseCents;
   const chartTotals = snapshot.cash_flow.reduce(
     (total, point) => ({
@@ -616,7 +620,14 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
   const resultCents = monthFlow.received_cents - monthFlow.paid_cents;
   const hasCashMovements = chartTotals.received > 0 || chartTotals.paid > 0;
   const payrollSummary = useMemo(() => {
-    const groups = new Map<string, { key: string; name: string; shifts: number; totalCents: number; paidCents: number }>();
+    const groups = new Map<string, {
+      key: string;
+      name: string;
+      shifts: number;
+      totalCents: number;
+      paidCents: number;
+      expenses: FinanceExpense[];
+    }>();
     for (const expense of snapshot.expenses) {
       if (expense.category !== "equipe") continue;
       const key = expense.caregiver_user_id || expense.payee || "cuidador-sem-nome";
@@ -626,10 +637,12 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
         shifts: 0,
         totalCents: 0,
         paidCents: 0,
+        expenses: [],
       };
       group.shifts += 1;
       group.totalCents += expense.amount_cents;
       if (expense.paid_on) group.paidCents += expense.amount_cents;
+      group.expenses.push(expense);
       groups.set(key, group);
     }
     return [...groups.values()]
@@ -1079,7 +1092,7 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
                 Despesas
               </h3>
               <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                Acompanhe os gastos da operação e os plantões calculados automaticamente pela escala.
+                Acompanhe os gastos da operação. Os pagamentos da equipe ficam resumidos acima.
               </p>
             </div>
             <Button type="button" onClick={() => openDialog({ kind: "expense" })} className="min-h-11 self-start lg:self-auto">
@@ -1091,7 +1104,7 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
             <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h4 className="font-semibold text-[var(--foreground)]">Pagamentos da equipe</h4>
-                <p className="mt-1 text-sm text-[var(--muted)]">Resumo dos plantões desta competência por cuidador.</p>
+                <p className="mt-1 text-sm text-[var(--muted)]">Resumo dos pagamentos lançados para plantões nesta competência.</p>
               </div>
               <p className="text-sm text-[var(--muted)]">
                 Em aberto: <strong className="font-semibold tabular-nums text-[var(--foreground)]">
@@ -1106,7 +1119,7 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
                     <div className="flex items-start justify-between gap-3">
                       <p className="min-w-0 break-words font-semibold text-[var(--foreground)]">{caregiver.name}</p>
                       <span className="shrink-0 text-xs text-[var(--muted)]">
-                        {caregiver.shifts} {caregiver.shifts === 1 ? "plantão" : "plantões"}
+                        {caregiver.shifts} {caregiver.shifts === 1 ? "pagamento" : "pagamentos"}
                       </span>
                     </div>
                     <dl className="mt-3 space-y-2 text-sm">
@@ -1123,17 +1136,44 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
                         <dd className="font-semibold tabular-nums text-[var(--brand-dark)]">{formatCurrency(caregiver.openCents)}</dd>
                       </div>
                     </dl>
+                    <details className="mt-3 border-t border-[var(--border)] pt-1">
+                      <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold text-[var(--brand-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--brand)]">
+                        Ver plantões para ajuste
+                      </summary>
+                      <ul className="space-y-2 pb-2">
+                        {caregiver.expenses.map((expense) => (
+                          <li key={expense.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-[var(--surface-soft)] p-3">
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium tabular-nums text-[var(--foreground)]">{formatDate(expense.expense_date)}</p>
+                              <p className="mt-1 text-xs text-[var(--muted)]">{expense.patient_name || "Paciente não identificado"}</p>
+                              <p className="mt-1 text-xs text-[var(--muted)]">
+                                {expense.paid_on ? `Pago em ${formatDate(expense.paid_on)}` : "Em aberto"}
+                              </p>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <span className="text-sm font-semibold tabular-nums text-[var(--foreground)]">{formatCurrency(expense.amount_cents)}</span>
+                              <ExpenseActions
+                                expense={expense}
+                                busy={busyId === expense.id}
+                                onEdit={(item) => openDialog({ kind: "expense", record: item })}
+                                onDelete={removeExpense}
+                              />
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
                   </div>
                 ))}
               </div>
             ) : (
               <p className="mt-4 rounded-lg bg-[var(--surface)] px-4 py-3 text-sm leading-5 text-[var(--muted)]">
-                Os valores serão calculados quando houver plantões na escala e remuneração cadastrada no perfil dos cuidadores.
+                Os valores serão calculados quando houver plantões na escala e tarifas cadastradas para o paciente na família.
               </p>
             )}
           </div>
 
-          {snapshot.expenses.length > 0 ? (
+          {expenseDetails.length > 0 ? (
             <>
               <div className="mt-5 hidden overflow-hidden rounded-xl border border-[var(--border)] sm:block">
                 <div className="overflow-x-auto">
@@ -1150,7 +1190,7 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {snapshot.expenses.map((expense) => (
+                      {expenseDetails.map((expense) => (
                         <tr key={expense.id} className="hover:bg-[var(--surface-soft)]/70">
                           <td className={TABLE_CELL_CLASS + " whitespace-nowrap font-semibold tabular-nums"}>
                             {formatDate(expense.expense_date)}
@@ -1185,7 +1225,7 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
               </div>
 
               <div className="mt-5 space-y-3 sm:hidden">
-                {snapshot.expenses.map((expense) => (
+                {expenseDetails.map((expense) => (
                   <details key={expense.id} className="group overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]">
                     <summary className="flex min-h-20 cursor-pointer list-none items-center justify-between gap-3 p-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--brand)] [&::-webkit-details-marker]:hidden">
                       <div className="min-w-0 flex-1">
@@ -1236,15 +1276,15 @@ export function FinanceDashboard({ initialMonth }: { initialMonth: string }) {
             </>
           ) : (
             <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-8 text-center">
-              <p className="font-semibold text-[var(--foreground)]">Nenhuma despesa nesta competência</p>
-              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">Cadastre as despesas para acompanhar valores e datas de pagamento.</p>
+              <p className="font-semibold text-[var(--foreground)]">Nenhuma outra despesa nesta competência</p>
+              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">Os pagamentos da equipe ficam resumidos acima. Cadastre outras despesas para acompanhar valores e datas de pagamento.</p>
               <Button type="button" variant="secondary" onClick={() => openDialog({ kind: "expense" })} className="mt-4 min-h-11">
                 Adicionar despesa
               </Button>
             </div>
           )}
           <p className="mt-3 text-sm text-[var(--muted)]">
-            Total lançado: <strong className="font-semibold tabular-nums text-[var(--foreground)]">{formatCurrency(expenseCents)}</strong>
+            Total lançado (inclui pagamentos da equipe): <strong className="font-semibold tabular-nums text-[var(--foreground)]">{formatCurrency(expenseCents)}</strong>
           </p>
         </Card>
       </section>

@@ -583,6 +583,11 @@ export function ScheduleCalendar(props: CalendarProps) {
                         <h5 className="break-words font-semibold text-[var(--foreground)]">{entry.professional_name || "Profissional"}</h5>
                         <p className="mt-1 text-sm text-[var(--muted)]">Função: {PROFESSION_LABELS[entry.profession] || "Profissional"}</p>
                         <p className="text-sm text-[var(--muted)]">Horário: {formatShiftTime(entry)}</p>
+                        {mode === "admin" && entry.payroll_rate_status === "valor_pendente" && (
+                          <p className="mt-2 inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900">
+                            Valor pendente
+                          </p>
+                        )}
                         {entry.professional_phone && (
                           <a href={`tel:${entry.professional_phone.replace(/[^\d+]/g, "")}`} className="mt-1 inline-flex min-h-10 items-center text-sm font-medium text-[var(--brand)] underline underline-offset-2">
                             Telefone: {entry.professional_phone}

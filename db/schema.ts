@@ -105,6 +105,11 @@ export const caregiverScheduleEntries = sqliteTable(
     profession: text("profession", {
       enum: ["cuidador", "tecnico_enfermagem", "enfermeiro", "outros"],
     }).notNull(),
+    payroll_rate_status: text("payroll_rate_status", {
+      enum: ["valor_pendente", "gerado"],
+    })
+      .notNull()
+      .default("valor_pendente"),
     created_by: text("created_by").references(() => users.id, { onDelete: "set null" }),
     updated_by: text("updated_by").references(() => users.id, { onDelete: "set null" }),
     created_at: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
@@ -122,8 +127,53 @@ export const caregiverScheduleEntries = sqliteTable(
       sql`${table.profession} IN ('cuidador','tecnico_enfermagem','enfermeiro','outros')`,
     ),
     check(
+      "caregiver_schedule_entries_payroll_rate_status_check",
+      sql`${table.payroll_rate_status} IN ('valor_pendente','gerado')`,
+    ),
+    check(
       "caregiver_schedule_entries_time_order",
       sql`(${table.ends_next_day} = 0 AND ${table.end_time} > ${table.start_time}) OR (${table.ends_next_day} = 1 AND ${table.end_time} <= ${table.start_time})`,
+    ),
+  ],
+);
+
+export const familyPatientServiceRates = sqliteTable(
+  "family_patient_service_rates",
+  {
+    id: text("id").primaryKey(),
+    family_user_id: text("family_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    patient_id: text("patient_id")
+      .notNull()
+      .references(() => patients.id, { onDelete: "cascade" }),
+    profession: text("profession", {
+      enum: ["cuidador", "tecnico_enfermagem", "enfermeiro", "outros"],
+    }).notNull(),
+    amount_cents: integer("amount_cents").notNull(),
+    valid_from: text("valid_from").notNull(),
+    valid_to: text("valid_to"),
+    created_at: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updated_at: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("idx_family_patient_service_rates_lookup").on(
+      table.family_user_id,
+      table.patient_id,
+      table.profession,
+      table.valid_from,
+    ),
+    check(
+      "family_patient_service_rates_profession_check",
+      sql`${table.profession} IN ('cuidador','tecnico_enfermagem','enfermeiro','outros')`,
+    ),
+    check(
+      "family_patient_service_rates_amount_check",
+      sql`${table.amount_cents} > 0 AND ${table.amount_cents} <= 100000000`,
+    ),
+    check(
+      "family_patient_service_rates_valid_dates_check",
+      sql`${table.valid_to} IS NULL OR ${table.valid_to} >= ${table.valid_from}`,
     ),
   ],
 );
@@ -197,8 +247,6 @@ export const caregiverProfiles = sqliteTable(
     profession: text("profession", {
       enum: ["cuidador", "tecnico_enfermagem", "enfermeiro", "outros"],
     }).notNull(),
-    weekday_shift_rate_cents: integer("weekday_shift_rate_cents"),
-    sunday_shift_rate_cents: integer("sunday_shift_rate_cents"),
     coren: text("coren"),
     experience: text("experience"),
     availability_days: text("availability_days", { mode: "json" })
@@ -223,10 +271,6 @@ export const caregiverProfiles = sqliteTable(
     uniqueIndex("caregiver_profiles_application_unique").on(table.application_id),
     uniqueIndex("caregiver_profiles_user_unique").on(table.user_id),
     index("idx_caregiver_profiles_status").on(table.account_status, table.approved_at),
-    check(
-      "caregiver_profiles_shift_rates_nonnegative",
-      sql`(${table.weekday_shift_rate_cents} IS NULL OR ${table.weekday_shift_rate_cents} >= 0) AND (${table.sunday_shift_rate_cents} IS NULL OR ${table.sunday_shift_rate_cents} >= 0)`,
-    ),
   ]
 );
 

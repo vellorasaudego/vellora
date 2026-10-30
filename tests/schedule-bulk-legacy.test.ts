@@ -2,12 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   executeBatch: vi.fn(),
+  query: vi.fn(),
   getDataProvider: vi.fn(),
 }));
 
 vi.mock("../src/lib/db", () => ({
   executeBatch: mocks.executeBatch,
-  query: vi.fn(),
+  query: mocks.query,
   queryOne: vi.fn(),
 }));
 vi.mock("../src/lib/supabase/data", () => ({
@@ -28,6 +29,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.getDataProvider.mockReturnValue("legacy");
   mocks.executeBatch.mockResolvedValue(undefined);
+  mocks.query.mockResolvedValue([]);
 });
 
 describe("createCaregiverScheduleEntries legado", () => {
